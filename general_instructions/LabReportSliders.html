@@ -1,0 +1,17 @@
+<div class="report-question">
+    <label class="report-question-label" for="report-own-slider">Quanta attrezzatura prevedi di avere all'accertamento principale (alla fine del Periodo 5)?</label>
+    <input type="range" id="report-own-slider" class="slider report-slider" min="0" max="100" step="1" value="0" data-untouched aria-valuetext="Nessun valore selezionato" aria-describedby="report-own-selected">
+    <div class="report-slider-endpoints" aria-hidden="true"><span>0</span><span>100</span></div>
+    <div class="report-selected-value" aria-live="polite"><strong>Valore selezionato: <span id="report-own-selected">—</span></strong></div>
+    <input type="hidden" id="report-own-value" name="expected_own_equipment_main" value="">
+    {{ formfield_errors 'expected_own_equipment_main' }}
+</div>
+<div class="report-question">
+    <label class="report-question-label" for="report-group-slider">Quanta attrezzatura prevedi che il tuo gruppo avrà in media all'accertamento principale (alla fine del Periodo 5)?</label>
+    <input type="range" id="report-group-slider" class="slider report-slider" min="0" max="100" step="1" value="0" data-untouched aria-valuetext="Nessun valore selezionato" aria-describedby="report-group-selected">
+    <div class="report-slider-endpoints" aria-hidden="true"><span>0</span><span>100</span></div>
+    <div class="report-selected-value" aria-live="polite"><strong>Valore selezionato: <span id="report-group-selected">—</span></strong></div>
+    <input type="hidden" id="report-group-value" name="expected_group_average_main" value="">
+    {{ formfield_errors 'expected_group_average_main' }}
+</div>
+<div class="actions"><button type="submit" id="reports-continue" class="otree-btn-next btn btn-primary" disabled>Continua</button></div>

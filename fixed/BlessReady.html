@@ -1,0 +1,9 @@
+{{ extends 'otree/WaitPage.html' }}
+{{ block title }}{{ endblock }}
+{{ block content }}
+{{ if session.is_demo }}
+<p class="otree-wait-page__body">{{ body_text }}</p>
+{{ else }}
+{{ include 'fixed/BlessSplashBody.html' }}
+{{ endif }}
+{{ endblock }}

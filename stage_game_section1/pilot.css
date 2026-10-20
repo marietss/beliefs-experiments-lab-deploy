@@ -1,0 +1,505 @@
+:root {
+    --participant-blue: #007bff;
+    --participant-blue-dark: #0069d9;
+    --neutral-gray: #5f6368;
+    --light-border: #d9d9d9;
+}
+
+html,
+body {
+    scroll-behavior: auto;
+}
+
+/* Keep the pilot compact and use the available screen width. */
+.otree-body,
+.otree-body.container,
+.container {
+    padding-top: 0 !important;
+}
+
+.decision-page {
+    gap: 7px;
+    padding-top: 0;
+    padding-bottom: 6px;
+}
+
+/* Compact custom heading: points left, centered game/period, rules right. */
+.page-heading-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr);
+    align-items: center;
+    column-gap: 14px;
+    width: 100%;
+    padding: 0 10px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.page-heading {
+    grid-column: 2;
+    margin: 0;
+    text-align: center;
+    font-size: clamp(24px, 2.2vw, 34px);
+    line-height: 1.1;
+    font-weight: 700;
+    color: #212529;
+    white-space: nowrap;
+}
+
+.current-points-badge {
+    grid-column: 1;
+    justify-self: start;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+    padding: 5px 9px;
+    border: 1px solid var(--light-border);
+    border-radius: 7px;
+    background: #fff;
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.current-points-label {
+    color: #4f4f4f;
+}
+
+.current-points-badge strong {
+    font-size: 16px;
+    color: #212529;
+}
+
+.game-rules-button {
+    grid-column: 3;
+    justify-self: end;
+    white-space: nowrap;
+}
+
+.result-heading-row > :first-child {
+    grid-column: 1;
+}
+
+.result-heading-row > :last-child {
+    grid-column: 3;
+}
+
+/* Two charts should remain prominent but leave the decision controls in view. */
+.top-row {
+    gap: 10px;
+}
+
+/* Decision-page graph height */
+.top-row .section,
+.cost-graph-section {
+    height: clamp(260px, 42vh, 400px);
+}
+
+.graph-section,
+.cost-graph-section {
+    padding: 4px 7px 12px;
+}
+
+.section h3 {
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+}
+
+.control-section {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.control-section h3 {
+    margin-bottom: 3px;
+}
+
+.slider-wrapper {
+    margin-bottom: 0;
+}
+
+.slider {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+.precision-controls {
+    grid-template-columns: 38px 105px 38px;
+    gap: 5px;
+}
+
+.precision-controls .btn {
+    padding: 5px 9px;
+}
+
+.precision-controls .form-control {
+    min-height: 34px;
+    height: 34px;
+}
+
+.decision-summary {
+    margin-top: 4px;
+    padding: 6px 9px;
+}
+
+.decision-summary-grid {
+    row-gap: 3px;
+}
+
+.points-after-row {
+    grid-column: 1 / -1;
+    padding-top: 4px;
+    margin-top: 1px;
+    border-top: 1px solid #ececec;
+    text-align: center;
+}
+
+.zero-capital-state {
+    padding: 9px 12px;
+}
+
+.zero-capital-message {
+    margin: 0 0 5px;
+}
+
+.actions-row,
+.zero-capital-actions {
+    margin-top: 1px;
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+}
+
+.actions-row button,
+.zero-capital-actions .btn {
+    padding: 8px 24px;
+}
+
+.otree-btn-next.btn-primary:not(:disabled) {
+    background-color: var(--participant-blue);
+    border-color: var(--participant-blue);
+}
+
+.otree-btn-next.btn-primary:not(:disabled):hover,
+.otree-btn-next.btn-primary:not(:disabled):focus {
+    background-color: var(--participant-blue-dark);
+    border-color: var(--participant-blue-dark);
+}
+
+/* Rules popup */
+.game-rules-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1080;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.game-rules-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1090;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.game-rules-modal.is-open {
+    display: flex;
+}
+
+.game-rules-card {
+    width: min(620px, 96vw);
+    max-height: min(78vh, 680px);
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.28);
+    outline: none;
+}
+
+.game-rules-header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.game-rules-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.game-rules-close {
+    border: 0;
+    background: transparent;
+    color: #333;
+    font-size: 28px;
+    line-height: 1;
+    padding: 0 4px;
+    cursor: pointer;
+}
+
+.game-rules-content {
+    padding: 14px 18px 18px;
+    line-height: 1.42;
+}
+
+.game-rules-content p {
+    margin: 0 0 11px;
+}
+
+/* =========================================================
+   RESULT PAGE
+   ========================================================= */
+
+/*
+   Result.html is one vertical flex column:
+   heading -> graph -> results card -> Continue.
+   Keep all result sizing isolated under .results-page so it
+   cannot interfere with the Decision page charts.
+*/
+.results-page {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+
+    width: 100% !important;
+    max-width: none !important;
+    padding-top: 0 !important;
+    padding-bottom: 8px !important;
+    box-sizing: border-box;
+}
+
+/* Result title */
+.results-page .result-heading-row {
+    display: grid !important;
+    grid-template-columns: minmax(80px, 1fr) auto minmax(80px, 1fr) !important;
+    align-items: center !important;
+
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    box-sizing: border-box;
+}
+
+.results-page .result-heading-row .page-heading {
+    grid-column: 2 !important;
+    margin: 0 !important;
+    text-align: center !important;
+    white-space: nowrap;
+}
+
+/* Graph card */
+.results-page .result-graph-section {
+    display: flex !important;
+    flex-direction: column !important;
+
+    width: min(92vw, 960px) !important;
+    max-width: 960px !important;
+    height: auto !important;
+    min-height: 0 !important;
+
+    margin: 0 auto !important;
+    padding: 4px 8px 8px !important;
+    box-sizing: border-box;
+    overflow: hidden !important;
+}
+
+/*
+   This wrapper owns the chart height.
+   Chart.js is not allowed to determine the height of its parent.
+*/
+.results-page .result-chart-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: 330px !important;
+    min-height: 330px !important;
+    flex: 0 0 330px !important;
+    overflow: hidden !important;
+}
+
+.results-page #resultBrownCapitalChart {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    display: block !important;
+}
+
+/* Result information card */
+.results-page .result-summary-card {
+    width: min(86vw, 680px) !important;
+    max-width: 680px !important;
+    height: auto !important;
+    min-height: 0 !important;
+
+    margin: 0 auto !important;
+    padding: 0 10px 8px !important;
+    box-sizing: border-box;
+}
+
+.results-page .result-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 24px;
+    row-gap: 3px;
+}
+
+.results-page .result-summary-grid p {
+    margin: 3px 0;
+}
+
+.results-page .result-current-points {
+    grid-column: 1 / -1;
+    padding-top: 5px;
+    margin-top: 4px !important;
+    border-top: 1px solid #ececec;
+    text-align: center;
+}
+
+/* Continue stays below the results card */
+.results-page .actions-row {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 2px 0 !important;
+}
+
+/* On shorter screens, make only the result chart a little shorter. */
+@media (max-height: 760px) {
+    .results-page .result-chart-wrapper {
+        height: 350px !important;
+        min-height: 350px !important;
+        flex-basis: 350px !important;
+    }
+}
+
+/* Responsive result layout */
+@media (max-width: 1000px) {
+    .results-page .result-heading-row {
+        display: block !important;
+    }
+
+    .results-page .result-heading-row .page-heading {
+        white-space: normal;
+    }
+
+    .results-page .result-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .results-page .result-current-points {
+        grid-column: 1;
+    }
+}
+
+
+/* Plain game-transition screens. */
+.interstitial-page {
+    min-height: calc(100vh - 24px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    text-align: center;
+    background: #fff;
+}
+
+.interstitial-card {
+    width: min(520px, 92vw);
+    padding: 28px 24px;
+    background: #fff;
+    border: 0;
+    box-shadow: none;
+}
+
+.interstitial-card h1 {
+    margin: 0 0 22px;
+    font-size: clamp(34px, 5vw, 52px);
+    font-weight: 700;
+}
+
+.interstitial-card p {
+    margin: 0 0 22px;
+    font-size: 20px;
+}
+
+@media (max-height: 760px) {
+    .top-row .section,
+    .cost-graph-section {
+        height: clamp(390px, 40vh, 400px);
+    }
+
+    .decision-page {
+        gap: 4px;
+    }
+
+    .section {
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+
+    .page-heading {
+        font-size: 24px;
+    }
+
+    .current-points-badge {
+        padding: 4px 7px;
+    }
+
+}
+
+@media (max-width: 1000px) {
+    .page-heading-row {
+        grid-template-columns: 1fr auto;
+        row-gap: 7px;
+    }
+
+    .page-heading {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        white-space: normal;
+    }
+
+    .current-points-badge {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .game-rules-button {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+}
+
+@media (max-width: 760px) {
+    .decision-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .points-after-row {
+        grid-column: 1;
+    }
+
+    .current-points-badge {
+        font-size: 13px;
+    }
+
+    .current-points-badge strong {
+        font-size: 14px;
+    }
+}
+

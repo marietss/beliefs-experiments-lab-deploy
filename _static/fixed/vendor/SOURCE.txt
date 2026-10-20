@@ -1,0 +1,6 @@
+Chart.js 4.4.8 (UMD distribution), MIT licensed; license in Chart.js-LICENSE.txt.
+Downloaded unchanged from https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.js
+SHA-256: e4cf4d144b222634f2e64ff707cd57b953f8de4b65b231cd5ac6bde114648e4d
+Loaded locally by fixed/ChartScripts.html, included by Decision.html and Result.html.
+Tested in Task 5; core retirement controls do not depend on Chart.js loading.
+No legacy online assets or fonts are modified or loaded by this interface.

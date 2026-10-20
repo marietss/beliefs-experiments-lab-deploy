@@ -1,0 +1,10 @@
+<section class="lab-card section graph-section">
+    <h2>La tua attrezzatura</h2>
+    {{ if threshold_revealed }}
+    <p class="chart-note" id="revealed-threshold">Soglia per questo blocco: <strong>{{ threshold }}</strong> unità.</p>
+    {{ else }}
+    <p class="chart-note" id="threshold-support">La soglia può essere qualsiasi numero intero da {{ support_low }} a {{ support_high }} unità, estremi inclusi. Non conosci la soglia selezionata fino all'accertamento principale alla fine del Periodo 5, dopo che tutte e sei le decisioni sono state completate.</p>
+    {{ endif }}
+    <div class="chart-box"><canvas id="equipment-chart" role="img" aria-label="La tua attrezzatura e la media effettiva del gruppo di sei partecipanti dopo le decisioni"></canvas></div>
+    <p id="chart-unavailable" class="chart-note" hidden>Il grafico non è disponibile. Puoi comunque usare le informazioni e i controlli di questa pagina.</p>
+</section>

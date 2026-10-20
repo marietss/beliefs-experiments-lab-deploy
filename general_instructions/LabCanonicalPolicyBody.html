@@ -1,0 +1,59 @@
+<section class="instruction-section" data-instruction-panel>
+<h2>Introduzione</h2>
+<p>In questa sezione completerai i Blocchi 3.1, 3.2 e 3.3.</p>
+<p>La struttura di base di ogni blocco è la stessa della Sezione 2.</p>
+{{ if is_ambiguity }}<p>L'accertamento principale usa la stessa regola della soglia sconosciuta della Sezione 2.</p>{{ elif is_messages }}<p>L'accertamento principale usa la stessa soglia nota di 45 unità della Sezione 2. Anche le due domande e la media pubblica delle risposte del gruppo funzionano nello stesso modo.</p>{{ else }}<p>L'accertamento principale usa la stessa soglia nota di 45 unità della Sezione 2.</p>{{ endif }}
+<p>L'attrezzatura e il portafoglio iniziali, le decisioni in ogni periodo, il costo della dismissione dell'attrezzatura e l'accertamento finale funzionano nello stesso modo.</p>
+<p>Nella Sezione 3, invece, parte dei punti raccolti attraverso le sanzioni all'accertamento principale può essere redistribuita all'interno del gruppo.</p>
+<p>Le pagine seguenti spiegano cosa rimane uguale e cosa cambia.</p>
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Cosa rimane uguale</h2>
+<p>Ogni blocco inizia con 100 unità di attrezzatura e 1000 punti nel tuo portafoglio e dura 10 periodi.</p>
+<p>In ogni periodo scegli quante unità dismettere. La quantità può essere qualsiasi numero intero da 0 fino al numero di unità rimanenti. Il costo è 0.075 × il quadrato del numero di unità dismesse in quel periodo.</p>
+<p>La schermata delle decisioni, la schermata dei risultati e l'accertamento finale funzionano come nella Sezione 2.</p>
+<p>Dopo il Periodo 10, l'attrezzatura rimanente comporta una sanzione di 275 punti e la dismissione automatica. Il costo della dismissione automatica viene sottratto separatamente. Se non rimane attrezzatura, non si applicano né la sanzione all'accertamento finale né il costo della dismissione automatica.</p>
+{{ if is_ambiguity }}
+<p>La soglia dell'accertamento principale è un numero intero da 40 a 50 unità, estremi inclusi. Non ti vengono fornite informazioni su quanto siano probabili i diversi valori. La soglia del blocco attuale viene rivelata solo dopo che tutti e sei i responsabili hanno completato le decisioni del Periodo 5 e l'accertamento principale è completato.</p>
+<p>Se l'attrezzatura media rimanente del gruppo è maggiore di quella soglia, non viene imposta alcuna sanzione all'accertamento principale. Se è uguale o inferiore alla soglia, la propria attrezzatura rimanente positiva comporta una sanzione di 175 + 0.5 × la propria attrezzatura rimanente. A zero non viene imposta alcuna sanzione.</p>
+{{ else }}
+<p>L'accertamento principale confronta l'attrezzatura media rimanente effettiva del gruppo, inclusa la tua impresa, con 45 unità. Se la media è maggiore di 45, non viene imposta alcuna sanzione all'accertamento principale. Se è 45 unità o meno, la propria attrezzatura rimanente positiva comporta una sanzione di 175 + 0.5 × la propria attrezzatura rimanente. A zero non viene imposta alcuna sanzione.</p>
+{{ endif }}
+{{ if is_ambiguity }}
+{{ include 'general_instructions/LabMainAmbiguityOutcomes.html' }}
+{{ else }}
+{{ include 'general_instructions/LabMainKnownOutcomes.html' }}
+{{ endif }}
+{{ if is_messages }}<p>Prima delle decisioni dei periodi, rispondi alle stesse due domande. La Risposta 1 riguarda l'attrezzatura che pianifichi di avere all'accertamento principale. La Risposta 2 riguarda la media attesa del gruppo, inclusa la tua impresa. Dopo che tutti e sei i responsabili hanno inviato entrambe le risposte, viene mostrata per tutto il blocco attuale la media anonima della Risposta 1 e le sei risposte individuali come punti grigi anonimi al Periodo 5. Le identità non vengono mostrate. La Risposta 2 rimane privata. La media pubblica non modifica l'applicazione delle sanzioni all'accertamento principale.</p>{{ include 'general_instructions/LabPlannedMeanExplanation.html' }}{{ else }}<p>Le due risposte iniziali rimangono private.</p>{{ endif }}
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Cosa cambia</h2>
+<p>Dopo aver valutato la condizione dell'accertamento principale, le sanzioni effettive vengono determinate esattamente come prima.</p>
+<p>L'autorità somma poi le <strong>sanzioni effettive all'accertamento principale pagate da tutte e sei le imprese</strong>. Questo è il fondo delle sanzioni del gruppo.</p>
+<p><strong>{{ policy_share }}</strong> di questo totale è disponibile per la redistribuzione. I rimanenti {{ policy_remainder }} non vengono redistribuiti.</p>
+<p>La sanzione ordinaria all'accertamento principale viene sottratta una sola volta. Non è previsto alcun addebito aggiuntivo per finanziare la redistribuzione.</p>
+<p>Solo le sanzioni effettive all'accertamento principale entrano nel fondo. I costi di dismissione dell'attrezzatura, le sanzioni all'accertamento finale e i costi di dismissione automatica non vi entrano.</p>
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Chi riceve la redistribuzione</h2>
+<p>Un'impresa ha diritto a ricevere un trasferimento se la propria attrezzatura rimanente all'accertamento principale è esattamente 0, dopo la decisione del Periodo 5.</p>
+<p>Se almeno un'impresa ha attrezzatura 0, <strong>{{ policy_share }}</strong> del fondo effettivo delle sanzioni all'accertamento principale viene diviso in parti uguali tra tutte le imprese idonee.</p>
+<p>Se nessuna impresa ha attrezzatura 0, non avviene alcuna redistribuzione.</p>
+<p>Se non sono state imposte sanzioni all'accertamento principale, il fondo delle sanzioni è zero e non viene pagato alcun trasferimento.</p>
+<p>Un trasferimento viene aggiunto al portafoglio del destinatario. Non modifica la condizione dell'accertamento principale o le sanzioni già determinate.</p>
+<p>Non avviene alcuna redistribuzione all'accertamento finale.</p>
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Accertamento principale — Esempio</h2>
+<div class="instruction-example">
+<p>Supponi che, dopo le sei decisioni del Periodo 5, due imprese abbiano attrezzatura 0 e quattro imprese abbiano ciascuna 40 unità rimanenti.</p>
+<p>Il totale del gruppo è di 160 unità. La media del gruppo è 160 ÷ 6, che è inferiore alla soglia di questa sezione.</p>
+<p>Le due imprese a 0 non pagano alcuna sanzione all'accertamento principale. Ognuna delle altre quattro imprese paga 175 + 0.5 × 40 = 195 punti.</p>
+<p>Il fondo effettivo delle sanzioni è 4 × 195 = {{ example_pool }} punti.</p>
+<p>L'importo redistribuito è {{ policy_share }} di {{ example_pool }} = {{ example_redistribution }} punti.</p>
+<p>Le due imprese idonee ricevono ciascuna {{ example_redistribution }} ÷ 2 = {{ example_transfer }} punti. Le altre imprese non ricevono alcun trasferimento.</p>
+</div>
+<p>Le sanzioni all'accertamento principale non vengono addebitate una seconda volta. Se non ci fossero imprese a 0, la redistribuzione effettiva sarebbe zero.</p>
+<p>Il blocco prosegue poi nel Periodo 6. L'accertamento finale rimane invariato.</p>
+<p>Nella pagina seguente risponderai ad alcune domande di comprensione sulle istruzioni della Sezione 3.</p>
+</section>

@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Local oTree / database files
+db.sqlite3
+*.sqlite3
+
+# Environment / secrets
+.env
+.env.*
+*.env
+
+# Generated archives
+*.otreezip
+
+# Logs
+*.log
+
+# Private externally supplied laboratory study parameters (prefer outside repo)
+/lab-study*.json
+
+# Deployment private configuration (prefer outside this repository)
+/private/
+/secrets/
+/credentials/
+*.pem
+*.key

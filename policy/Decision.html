@@ -1,0 +1,61 @@
+{{ block styles }}
+{{ include 'fixed/ComparableStyles.html' }}
+<link rel="stylesheet" href="{{ static 'fixed/equipment-graph.css' }}?v=short-references-4">
+<link rel="stylesheet" href="{{ static 'fixed/decision-interface.css' }}?v=selected-number-compact-7">
+{{ endblock }}
+{{ block content }}
+<div class="lab-page decision-page">
+    <header class="lab-heading page-heading-row">
+        <div class="wallet-badge current-points-badge"><span>Il tuo portafoglio:</span><strong id="current-wallet">{{ wallet }} punti</strong></div>
+        <h1 class="page-heading">Blocco 3.{{ player.local_block }} · Periodo {{ player.period }} / 10</h1>
+        <button type="button" id="rules-open" class="btn btn-outline-secondary rules-button" aria-haspopup="dialog" aria-controls="rules-dialog">Istruzioni del blocco</button>
+    </header>
+    <div class="graph-row top-row">
+        {{ include 'policy/DecisionEquipmentGraph.html' }}
+        <section class="lab-card section cost-graph-section">
+            <h2>Costo della dismissione</h2>
+            <div class="chart-box"><canvas id="cost-chart" role="img" aria-label="Curva del costo di dismissione: 0.075 per il quadrato delle unità dismesse"></canvas></div>
+        </section>
+    </div>
+    <section class="lab-card section control-section decision-control">
+        {{ if equipment == 0 }}
+        <h2>La tua attrezzatura ha già raggiunto 0.</h2>
+        <p class="decision-zero-message">Puoi continuare a osservare come cambia nel tempo l'attrezzatura del tuo gruppo.<br>Seleziona Continua per continuare.</p>
+        <div class="decision-slider-scale decision-slider-scale-zero" style="--available-units: 0;" aria-hidden="true">
+            <span class="decision-slider-rail"></span><span class="decision-slider-unavailable"></span>
+        </div>
+        <div class="decision-slider-endpoints" aria-hidden="true"><span>0</span><span>100</span></div>
+        <input type="hidden" id="retirement-value" name="retirement" value="0">
+        {{ else }}
+        <h2 style="text-align: center;"><label for="retirement-slider">Quanta attrezzatura vuoi dismettere in questo periodo?</label></h2>
+        <div class="decision-slider-scale" style="--available-units: {{ equipment }};">
+            <span class="decision-slider-rail" aria-hidden="true"></span>
+            <span class="decision-slider-unavailable" aria-hidden="true"></span>
+        <input type="range" id="retirement-slider" class="slider" min="0" max="{{ equipment }}" step="1" value="0" data-untouched aria-valuetext="Nessuna quantità selezionata">
+        </div>
+        <div class="decision-slider-endpoints" aria-hidden="true"><span>0</span><span>100</span></div>
+        <div class="selected-units-box" aria-live="polite"><strong><span id="selected-unit-count" aria-label="Attrezzatura selezionata">—</span></strong></div>
+        <input type="hidden" id="retirement-value" name="retirement" value="">
+        {{ endif }}
+        <dl class="decision-summary" aria-live="polite">
+            <div><dt>La tua attrezzatura:</dt><dd>{{ equipment }} unità</dd></div>
+            <div><dt>Attrezzatura dismessa:</dt><dd id="selected-retirement">{{ if equipment == 0 }}0{{ else }}—{{ endif }} unità</dd></div>
+            <div><dt>Attrezzatura dopo la decisione:</dt><dd id="remaining-equipment">{{ if equipment == 0 }}0{{ else }}—{{ endif }} unità</dd></div>
+            <div><dt>Costo in questo periodo:</dt><dd id="selected-cost">{{ if equipment == 0 }}0{{ else }}—{{ endif }} punti</dd></div>
+        </dl>
+    </section>
+    <div class="actions actions-row">
+        <button type="submit" id="confirm-retirement" class="otree-btn-next btn btn-primary" {{ if equipment > 0 }}disabled{{ endif }}>{{ if equipment == 0 }}Continua{{ else }}Conferma{{ endif }}</button>
+    </div>
+    <noscript><p>Per il cursore di dismissione è necessario JavaScript. Avvisa il personale di laboratorio.</p></noscript>
+</div>
+{{ include 'policy/Rules.html' }}
+<script id="lab-chart-config" type="application/json">{{ chart_config_json|safe }}</script>
+<!-- Core controls initialize independently of optional chart rendering. -->
+<script src="{{ static 'fixed/display-numbers.js' }}"></script>
+<script src="{{ static 'fixed/decision.js' }}"></script>
+<script src="{{ static 'fixed/vendor/chart.umd-4.4.8.js' }}"></script>
+<script src="{{ static 'fixed/equipment-presentation.js' }}?v=anonymous-plans-5"></script>
+<script src="{{ static 'fixed/decision-charts.js' }}?v=short-references-4"></script>
+<script src="{{ static 'policy/charts.js' }}"></script>
+{{ endblock }}

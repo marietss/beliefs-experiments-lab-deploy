@@ -1,0 +1,62 @@
+/* Comparable F/E/A pages only. Legacy decision.css/pilot.css supply the shell.
+   Never load this stylesheet in Messages, Policy or payment. */
+.otree-title,.otree-timer { display:none; }
+.lab-page.decision-page { gap:7px; padding:0 10px 8px; }
+.lab-heading.page-heading-row { gap:14px; margin:0; }
+.lab-heading .page-heading { font-size:clamp(24px,2.2vw,34px); }
+.wallet-badge.current-points-badge { display:inline-flex; align-items:baseline; gap:7px; padding:5px 9px; }
+.wallet-badge span { display:inline; }
+.wallet-badge strong { font-size:16px; }
+.graph-row.top-row { display:flex; gap:10px; }
+.graph-row.top-row>.section { width:calc(50% - 5px); max-width:none; height:auto; }
+.lab-page .section { padding:4px 8px 10px; }
+.lab-page .section h2 { font-size:18px; margin:0 0 6px; padding:0 0 5px; }
+.graph-row .chart-box { height:clamp(250px,35vh,365px); }
+.lab-page .chart-note { font-size:13px; margin:5px 0 0; }
+.decision-control.control-section { max-width:760px; width:min(86vw,760px); }
+.lab-page .slider { margin:8px 0; }
+.lab-page .decision-summary { background:#fff; border:1px solid #d9d9d9; padding:7px 9px; gap:3px 12px; }
+.lab-page .decision-summary div,.lab-page .result-summary div { padding:3px 0; border-radius:0; background:transparent; }
+.lab-page .decision-summary div { display:flex; flex-wrap:wrap; align-items:baseline; gap:5px; }
+.lab-page dt { font-weight:600; color:#212529; }
+.lab-page dd { font-size:14px; font-weight:400; margin:0; }
+.lab-page .actions button { font-size:16px; font-weight:700; padding:8px 24px; }
+.results-page>.graph-section { width:min(92vw,960px); max-width:960px; height:auto; }
+.results-page .chart-box { height:330px; }
+.results-page>.result-summary-card { width:min(86vw,680px); max-width:680px; padding:4px 10px 8px; }
+.results-page .result-summary { gap:3px 24px; margin-top:4px; }
+.results-page .result-summary dt,.results-page .result-summary dd { display:inline; font-size:14px; }
+.results-page .result-summary dt::after { content:': '; }
+.results-page .wallet-result { margin-top:4px; padding-top:5px; border-top:1px solid #ececec; }
+.results-page .wallet-result dd { font-weight:700; }
+.results-page .follow-up { border:2px solid #d98c2b; background:#fff8f1; }
+.results-page .follow-up h2 { color:#7a3e00; }
+.check-explanation { text-align:center; margin-top:14px; line-height:1.5; }
+.rules-dialog { padding:0; border-radius:10px; width:min(620px,96vw); }
+.rules-dialog header { position:sticky; top:0; padding:12px 16px; background:white; border-bottom:1px solid #ddd; }
+.rules-dialog h2 { font-size:22px; }
+.rules-dialog p { margin:14px 18px; font-size:16px; line-height:1.42; }
+.interstitial-page .lab-page { margin:0; padding:28px 24px; gap:12px; }
+.interstitial-card.lab-card { border:0; box-shadow:none; background:#fff; }
+.interstitial-card.game-end-card { width:min(940px,92vw); }
+.interstitial-card h1 { margin-bottom:12px; }
+.interstitial-card p { font-size:18px; margin-bottom:12px; }
+.block-feedback-table { width:100%; border-collapse:collapse; margin:18px auto; }
+.block-feedback-table th,.block-feedback-table td { border:1px solid #d9d9d9; padding:9px 12px; }
+.block-feedback-table th { background:#f4f6f8; }
+.block-feedback-table .own-outcome { background:#fffbe6; border:2px solid #f2c94c; font-weight:700; }
+.expectation-card { max-width:720px; margin:48px auto; padding:30px; background:#fff; }
+.expectation-card h1 { font-size:clamp(32px,4vw,50px); text-align:center; }
+.expectation-card .actions { margin-top:22px; }
+@media(max-width:1000px) {
+ .graph-row.top-row { flex-direction:column; }
+ .graph-row.top-row>.section { width:100%; }
+ .graph-row .chart-box { height:240px; }
+ .lab-heading.page-heading-row { grid-template-columns:1fr 1fr; }
+ .lab-heading.page-heading-row h1 { grid-column:1/-1; grid-row:1; }
+ .results-page .lab-heading.page-heading-row { display:grid !important; }
+}
+@media(max-width:760px) {
+ .results-page .result-summary { grid-template-columns:1fr; }
+ .results-page .chart-box { height:260px; }
+}

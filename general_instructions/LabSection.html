@@ -1,0 +1,15 @@
+{{ block styles }}{{ include 'general_instructions/LabComparableStyles.html' }}{{ if is_fixed }}
+{{ include 'fixed/ComparableStyles.html' }}
+<link rel="stylesheet" href="{{ static 'fixed/equipment-graph.css' }}?v=practice-parity-6">
+<link rel="stylesheet" href="{{ static 'fixed/decision-interface.css' }}?v=selected-number-compact-7">
+<link rel="stylesheet" href="{{ static 'fixed/practice-interface.css' }}?v=decision-parity-1">
+{{ endif }}{{ endblock }}
+{{ block content }}
+<div class="instruction-page"><main class="instruction-card" data-instruction-deck>
+<div class="section-heading-row"><h1>Sezione {{ instruction_section }}</h1></div>
+{{ include 'general_instructions/LabCanonicalSectionBody.html' }}
+{{ include 'general_instructions/LabComparableNavigation.html' }}
+</main></div>
+<script src="{{ static 'fixed/instructions-parity.js' }}?v=section-start-2"></script>
+{{ if is_fixed }}{{ include 'general_instructions/LabCanonicalPracticeScripts.html' }}{{ endif }}
+{{ endblock }}

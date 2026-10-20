@@ -1,0 +1,13 @@
+{{ block styles }}
+{{ include 'general_instructions/LabComparableStyles.html' }}
+{{ include 'fixed/ComparableStyles.html' }}
+<link rel="stylesheet" href="{{ static 'fixed/equipment-graph.css' }}?v=practice-parity-6">
+<link rel="stylesheet" href="{{ static 'fixed/decision-interface.css' }}?v=selected-number-compact-7">
+<link rel="stylesheet" href="{{ static 'fixed/practice-interface.css' }}?v=decision-parity-1">
+{{ endblock }}
+{{ block content }}
+<div class="instruction-page"><main class="instruction-card practice-card"><h1>Prova</h1>
+{{ include 'general_instructions/LabCanonicalPracticeBody.html' }}
+<div class="instruction-actions"><button type="submit" class="otree-btn-next btn btn-primary">Continua</button></div></main></div>
+{{ include 'general_instructions/LabCanonicalPracticeScripts.html' }}
+{{ endblock }}

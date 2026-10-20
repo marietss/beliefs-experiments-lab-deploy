@@ -1,0 +1,47 @@
+/* Restored legacy instruction cards, loaded only for General/F/E/A. */
+.instruction-card p { line-height:1.48; margin:9px 0; }
+.instruction-card h2 { margin:18px 0 9px; font-size:20px; }
+.instruction-card fieldset { padding:14px 0; margin:18px 0; border:0; border-bottom:1px solid #eee; }
+.instruction-card legend { font-size:18px; font-weight:600; }
+.instruction-card details { margin:16px 0; }
+.instruction-card summary { cursor:pointer; }
+.instruction-card .study-overview { display:grid; gap:12px; margin:18px 0; }
+.instruction-card .study-part { padding:12px 14px; border:1px solid #d9d9d9; border-radius:8px; background:#f9f9f9; }
+.instruction-card .study-part h2 { margin:0 0 9px; font-size:19px; }
+.instruction-card .block-sequence { display:flex; gap:9px; align-items:center; flex-wrap:wrap; }
+.instruction-card .block-sequence-arrow { color:#667; }
+.instruction-card .instruction-example { padding:13px 15px; background:#f4f8fc; border:0; border-left:4px solid #88aed0; border-radius:6px; margin:15px 0; }
+.instruction-card .capital-check-box { border:1px solid #b8cfe8; border-radius:8px; padding:12px 16px; margin:16px 0; background:#f5f9fd; }
+.instruction-card .follow-up-check-box { border-color:#e7ad73; background:#fff8f1; }
+.instruction-card .follow-up-check-box h2 { color:#7a3e00; }
+.instruction-card .instruction-actions-split { margin-top:22px; }
+.instruction-card .instruction-progress { color:#555; font-size:14px; text-align:center; margin:0 0 12px; }
+.instruction-card .section-heading-row { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; }
+.instruction-card .section-heading-row h1 { flex:1; }
+.instruction-card .practice-graphs { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.instruction-card .practice-graph { min-width:0; background:#f9f9f9; border:1px solid #ddd; border-radius:8px; padding:8px; }
+.instruction-card .practice-graph h2 { margin:0 0 8px; padding-bottom:5px; text-align:center; font-size:18px; border-bottom:2px solid #007bff; }
+.instruction-card .practice-chart-box { position:relative; height:200px; }
+.instruction-card .practice-summary { display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; padding:10px; background:#fff; border:1px solid #d9d9d9; border-radius:8px; margin:14px 0; }
+.instruction-card .practice-summary dd { margin:0; }
+.instruction-card .practice-summary div:last-child { grid-column:1/-1; border-top:1px solid #ececec; padding-top:6px; text-align:center; }
+.instruction-card input[type=range] { width:100%; margin:12px 0; accent-color:#007bff; }
+.instruction-card .practice-confirm-row { text-align:center; }
+.comparable-review { border:0; border-radius:10px; width:min(760px,95vw); max-height:84vh; padding:0; }
+.comparable-review::backdrop { background:rgba(0,0,0,.35); }
+.comparable-review header { position:sticky; top:0; display:flex; align-items:center; justify-content:space-between; background:#fff; padding:12px 16px; border-bottom:1px solid #ddd; }
+.comparable-review header h2 { margin:0; font-size:22px; }
+.comparable-review header button { border:0; background:transparent; font-size:28px; }
+.comparable-review .instructions-modal-content { padding:15px 18px; }
+[hidden] { display:none !important; }
+@media(max-width:700px) { .instruction-card .practice-graphs,.instruction-card .practice-summary { grid-template-columns:1fr; } }
+
+.instruction-card.general-overview { width:min(820px,94vw); }
+.instruction-card [data-instruction-back][hidden]+[data-instruction-next] { margin-left:auto; margin-right:auto; }
+
+.instruction-card.practice-card { width:min(1180px,94vw); }
+.practice-frame { border:2px solid #007bff; border-radius:10px; background:#f7faff; padding:12px; margin:18px 0; }
+.practice-intro { text-align:center; }
+.practice-wallet-badge { display:inline-flex; gap:7px; padding:6px 9px; margin:8px 0; background:white; border:1px solid #d9d9d9; border-radius:7px; font-size:14px; }
+.instruction-card.practice-card .practice-chart-box { height:300px; }
+.instruction-card .practice-summary div:last-child { grid-column:auto; border-top:0; padding-top:0; text-align:left; }

@@ -1,0 +1,8 @@
+{{ block styles }}{{ include 'general_instructions/LabComparableStyles.html' }}{{ endblock }}
+{{ block content }}
+<div class="instruction-page"><main class="instruction-card general-overview" data-instruction-deck>
+{{ include 'general_instructions/LabGeneralBody.html' }}
+{{ include 'general_instructions/LabComparableNavigation.html' }}
+</main></div>
+<script src="{{ static 'fixed/instructions-parity.js' }}"></script>
+{{ endblock }}

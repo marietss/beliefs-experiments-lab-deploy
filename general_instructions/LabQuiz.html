@@ -1,0 +1,22 @@
+{{ block styles }}{{ include 'general_instructions/LabComparableStyles.html' }}{{ endblock }}
+{{ block content }}
+<div class="instruction-page"><main class="instruction-card comprehension-card">
+<h1>{{ if general }}Comprensione generale{{ else }}Sezione {{ instruction_section }} — Domande di comprensione{{ endif }}</h1>
+<p>Le tue risposte alle domande di comprensione non influiscono sul tuo portafoglio o sul tuo pagamento. Devi rispondere correttamente a tutte le domande prima di continuare.</p>
+<details id="instruction-review"><summary>Rivedi le istruzioni</summary>
+{{ if general }}{{ include 'general_instructions/LabGeneralBody.html' }}{{ include 'general_instructions/LabCanonicalCosts.html' }}<p>Ogni blocco ha 10 periodi: Accertamento principale dopo il Periodo 5, Accertamento finale dopo il Periodo 10. L'attrezzatura non può aumentare durante un blocco. Il tuo portafoglio può essere negativo e non limita le scelte.</p>{{ else }}{{ include 'general_instructions/LabCanonicalSectionReview.html' }}{{ endif }}
+</details>
+<div data-instruction-deck data-quiz-deck>
+{{ for quiz_page in quiz_pages }}
+<section data-instruction-panel><h2>Pagina di comprensione {{ quiz_page.number }}</h2>
+{{ for question in quiz_page.questions }}
+<fieldset><legend style="font-size:1.1rem">{{ question.prompt }}</legend>
+{{ for value, label in question.options }}<label style="display:block;margin:0.7rem 0" for="{{ question.field }}-{{ value }}"><input type="radio" id="{{ question.field }}-{{ value }}" name="{{ question.field }}" value="{{ value }}"> {{ label }}</label>{{ endfor }}
+</fieldset>
+{{ endfor }}</section>
+{{ endfor }}
+<p class="instruction-progress" data-instruction-progress></p>
+<div class="instruction-actions-split"><button type="button" class="btn previous-page-review" data-instruction-back>← Rivedi la pagina precedente</button><button type="button" class="btn btn-primary" data-instruction-next>Continua</button><button type="submit" class="otree-btn-next btn btn-primary" data-instruction-finish>Verifica le risposte</button></div>
+</div></main></div>
+<script src="{{ static 'fixed/instructions-parity.js' }}"></script>
+{{ endblock }}

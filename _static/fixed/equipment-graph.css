@@ -1,0 +1,18 @@
+/* Matching graph heights across Decision and Results; existing widths stay. */
+@media (min-width: 1001px) {
+    .lab-page .chart-box { height: calc(clamp(220px, 30vh, 310px) + 80px); }
+    .lab-page.decision-page .chart-box { height: calc(clamp(250px, 35vh, 365px) + 80px); }
+}
+
+/* Assessment results stand apart from ordinary two-column period summaries. */
+.results-page > .result-check-card { width: min(94vw, 1040px); max-width: 1040px; }
+.check-result-summary > div { min-width: 0; }
+.lab-page .check-wallet-result { margin: 16px 0 4px; text-align: center; font-size: 18px; }
+@media (min-width: 801px) {
+    .lab-page .check-result-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.lab-page .result-check-card { padding: 16px 22px; }
+.lab-page .result-check-card > h2 { font-size: 22px; }
+
+.lab-page .result-check-card.follow-up { padding: 22px 26px; }

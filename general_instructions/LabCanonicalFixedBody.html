@@ -1,0 +1,73 @@
+<section class="instruction-section" data-instruction-panel>
+<h2>Attrezzatura e portafoglio</h2>
+<p>All'inizio di ogni blocco, la tua impresa ha:</p>
+<ul><li><strong>100 unità di attrezzatura</strong> che devono infine essere dismesse;</li><li>un portafoglio contenente <strong>1000 punti</strong>.</li></ul>
+<p>Le 100 unità rappresentano la quantità di attrezzatura attualmente rimanente nella tua impresa. Le unità di attrezzatura non vengono convertite in pagamento.</p>
+<p>Il tuo pagamento dipende dai punti rimanenti nel tuo portafoglio alla fine del blocco selezionato per il pagamento.</p>
+<p>All'inizio di ogni blocco, la quantità di attrezzatura e il portafoglio vengono ripristinati: non si trasferiscono al blocco successivo.</p>
+<p>Sia l'attrezzatura rimanente sia il portafoglio saranno sempre visibili sullo schermo.</p>
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>La tua decisione</h2>
+<p>In ogni periodo scegli quante unità di attrezzatura dismettere.</p>
+<p>La quantità può essere qualsiasi numero intero da 0 fino al numero di unità di attrezzatura rimanenti in quel periodo.</p>
+<p>Sposta o clicca il cursore per selezionare una quantità, incluso 0. Quando sei pronto a registrare la tua decisione, clicca “Conferma”.</p>
+<p>L'attrezzatura che dismetti viene rimossa definitivamente dall'uso all'interno di quel blocco.</p>
+<p>La quantità di attrezzatura rimanente nella tua impresa può restare uguale o diminuire, ma non può aumentare durante un blocco.</p>
+<p>Quando l'attrezzatura rimanente raggiunge 0, rimane a 0 per il resto del blocco:</p>
+<ul><li>Non puoi dismettere altre unità.</li><li>Non dovrai più prendere decisioni sulla dismissione dell'attrezzatura.</li><li>Seleziona “Continua” in ogni periodo rimanente per inviare 0 e attendere il tuo gruppo.</li></ul>
+<p>Il tuo portafoglio può essere negativo. Non limita la quantità di attrezzatura che puoi dismettere.</p>
+<p>Le pagine seguenti spiegano il costo della dismissione dell'attrezzatura e cosa accade quando l'autorità controlla se la dismissione richiesta è stata completata all'accertamento principale e all'accertamento finale.</p>
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Costo della dismissione dell'attrezzatura</h2>
+{{ include 'general_instructions/LabCanonicalCosts.html' }}
+<p>Tra poche pagine potrai provare a usare la schermata delle decisioni.</p>
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Accertamenti</h2>
+<p>Un'autorità esterna ha stabilito dei requisiti riguardo a quando l'attrezzatura della tua impresa deve essere dismessa.</p>
+<p>Ci sono due periodi in cui l'autorità controlla la quantità di attrezzatura rimanente nella tua impresa.</p>
+<p>Il primo è l'<strong>accertamento principale</strong>, dopo la tua decisione nel Periodo 5.</p>
+<p>Il secondo è l'<strong>accertamento finale</strong>, dopo la tua decisione nel Periodo 10.</p>
+<div class="capital-check-box"><h3>Accertamento principale</h3>
+<p>Dopo la tua decisione nel Periodo 5, l'autorità controlla la quantità di attrezzatura rimanente nella tua impresa.</p>
+<ul><li>Se la tua attrezzatura rimanente è maggiore di 0, l'autorità impone la sanzione all'accertamento principale: <strong>175 + 0.5 × attrezzatura rimanente</strong>. Questo importo viene sottratto dal tuo portafoglio.</li><li>Se la tua attrezzatura rimanente è 0, non viene imposta alcuna sanzione.</li></ul>
+<p>Il blocco prosegue poi nel Periodo 6.</p></div>
+<div class="instruction-example"><p><strong>Esempio:</strong> Se la tua attrezzatura rimanente è 50, la sanzione è pari a 175 + 0.5 × 50 = 200 punti. Un portafoglio di 700 punti prima di questa sanzione diventa quindi 500 punti. Se non rimane attrezzatura, non è prevista alcuna sanzione all'accertamento principale.</p></div>
+<div class="capital-check-box follow-up-check-box"><h3>Accertamento finale</h3>
+<p>Dopo la tua decisione nel Periodo 10, l'autorità controlla nuovamente la tua attrezzatura rimanente.</p>
+<ul><li>Se la tua attrezzatura rimanente è maggiore di 0:<ul><li>l'autorità impone una <strong>Sanzione di 275 punti</strong>;</li><li>tutta l'attrezzatura rimanente deve poi essere dismessa immediatamente;</li><li>anche il relativo costo viene sottratto dal tuo portafoglio, usando 0.075 × attrezzatura rimanente².</li></ul></li><li>Se la tua attrezzatura rimanente è 0, non viene imposta alcuna sanzione e non viene sottratto alcun costo di dismissione automatica.</li></ul>
+<p>La tua attrezzatura rimanente sarà quindi 0 alla fine di ogni blocco, sia che la dismetta tu sia che venga dismessa automaticamente dopo l'accertamento finale.</p></div>
+<div class="instruction-example"><p><strong>Esempio:</strong> Se rimangono 25 unità dopo la tua decisione del Periodo 10, la sanzione all'accertamento finale è di 275 punti. Il costo della dismissione automatica di queste unità è 0.075 × 25² = 46.875 punti e viene sottratto separatamente. Un portafoglio di 800 punti immediatamente prima di queste deduzioni diventa 800 − 275 − 46.875 = 478.125 punti.</p></div>
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Schermata delle decisioni</h2>
+<p>In ogni periodo, la schermata delle decisioni mostra le informazioni necessarie per prendere la tua decisione.</p>
+<h3>Esempio di schermata delle decisioni</h3>
+<div class="instruction-example"><table class="table"><tbody><tr><th>Il tuo portafoglio</th><td>1000 punti</td></tr><tr><th>Blocco / Periodo</th><td>Blocco 1.1 / Periodo 1</td></tr><tr><th>Attrezzatura rimanente prima della decisione</th><td>100 unità</td></tr><tr><th>Dismissione selezionata</th><td>25 unità</td></tr><tr><th>Attrezzatura rimanente dopo la decisione</th><td>75 unità</td></tr><tr><th>Costo in questo periodo</th><td>46.875 punti</td></tr></tbody></table></div>
+<ul><li>In alto sullo schermo puoi vedere il tuo portafoglio e il Blocco e il Periodo attuali. La prima parte del numero del Blocco identifica la Sezione.</li><li>Il grafico “Attrezzatura nel tempo” mostra l'attrezzatura rimanente della tua impresa e la media del gruppo per i periodi completati. L'attrezzatura della tua impresa è inclusa in questa media. Prima del primo periodo non viene mostrata alcuna media del gruppo di periodi precedenti.</li><li>Il grafico indica il Periodo 5 e il Periodo 10 come promemoria dell'accertamento principale e dell'accertamento finale.</li><li>Il grafico “Costo in questo periodo” mostra il costo della quantità selezionata.</li><li>Usa il cursore per scegliere quante unità dismettere. Il riepilogo mostra l'attrezzatura prima della decisione, la quantità selezionata, l'attrezzatura rimanente dopo la decisione e il relativo costo.</li><li>Il portafoglio in alto comprende i risultati dei periodi completati. Cambia dopo che tutte e sei le decisioni sono state inviate; l'anteprima della selezione non include una sanzione all'accertamento principale che non è ancora stata determinata.</li><li>Quando sei pronto a registrare la tua decisione, clicca “Conferma”.</li><li>Puoi cliccare “Istruzioni del blocco” per rivedere un riepilogo delle istruzioni del blocco attuale.</li></ul>
+<p>Nella Sezione 1, la media del gruppo è solo informativa. Non determina la sanzione all'accertamento principale; in questa sezione non c'è una soglia di gruppo.</p>
+<p>Prima della prima decisione di ogni blocco, rispondi a due domande separate: l'attrezzatura che pianifichi di avere all'accertamento principale e la media del gruppo che ti aspetti all'accertamento principale, inclusa la tua impresa. Entrambe le risposte sono numeri interi da 0 a 100. Queste domande non sono incentivate e le risposte rimangono private.</p>
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Prova</h2>
+{{ include 'general_instructions/LabCanonicalPracticeBody.html' }}
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Schermata dei risultati</h2>
+<p>Dopo ogni periodo completato, la schermata dei risultati mostra un riepilogo di ciò che è accaduto in quel periodo.</p>
+<h3>Esempio di schermata dei risultati dopo il Periodo 1</h3>
+<div class="instruction-example"><table class="table"><tbody><tr><th>Attrezzatura dismessa</th><td>25 unità</td></tr><tr><th>Costo in questo periodo</th><td>46.875 punti</td></tr><tr><th>Attrezzatura rimanente</th><td>75 unità</td></tr><tr><th>Punti rimanenti nel tuo portafoglio</th><td>953.125 punti</td></tr></tbody></table></div>
+<div class="instruction-example"><p>Se dismetti 25 unità nel Periodo 1, paghi 0.075 × 25² = 46.875 punti. La tua attrezzatura rimanente è di 75 unità e il tuo portafoglio contiene 1000 − 46.875 = 953.125 punti.</p></div>
+<p>Il grafico Attrezzatura nel tempo mostra l'attrezzatura rimanente della tua impresa e la media del gruppo per i periodi completati.</p>
+<p>Nella Sezione 1, la media del gruppo è mostrata solo a titolo informativo.</p>
+<p>Il riepilogo sotto il grafico presenta le stesse informazioni principali in parole e numeri: il numero di unità dismesse, quanti punti hai pagato, l'attrezzatura media rimanente del gruppo e i punti rimanenti nel tuo portafoglio.</p>
+<p>Seleziona “Continua” per passare al periodo successivo.</p>
+</section>
+<section class="instruction-section" data-instruction-panel>
+<h2>Prima delle domande di comprensione</h2>
+<p>Nella pagina seguente risponderai ad alcune domande di comprensione sulle istruzioni della Sezione 1.</p>
+<p>Le domande servono solo a verificare che tu abbia capito. Le risposte non influiscono sui punti del tuo portafoglio o sul tuo pagamento.</p>
+<p>Devi rispondere correttamente a tutte le domande prima di proseguire al Blocco 1.1.</p>
+</section>

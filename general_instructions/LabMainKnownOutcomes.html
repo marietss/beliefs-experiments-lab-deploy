@@ -1,0 +1,10 @@
+<link rel="stylesheet" href="{{ static 'fixed/main-outcomes.css' }}">
+<table class="main-outcome-table">
+    <thead><tr><th scope="col">La tua attrezzatura all'accertamento principale</th><th scope="col">Media del gruppo</th><th scope="col">Risultato</th></tr></thead>
+    <tbody>
+        <tr><td>0</td><td>Qualsiasi valore</td><td>Nessuna sanzione</td></tr>
+        <tr><td>&gt; 0</td><td>&gt; 45</td><td>Nessuna sanzione</td></tr>
+        <tr><td>&gt; 0</td><td>≤ 45</td><td>Sanzione = 175 + 0,5 × attrezzatura rimanente</td></tr>
+    </tbody>
+</table>
+<p><strong>Esempio:</strong> se la media del gruppo è esattamente <strong>45</strong>, la condizione <strong>media &gt; 45</strong> non è soddisfatta. Se la tua impresa ha ancora attrezzatura, si applica la sanzione; se la tua attrezzatura è 0, non si applica alcuna sanzione.</p>
