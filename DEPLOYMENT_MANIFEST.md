@@ -1,7 +1,7 @@
 # Deployment runtime manifest
 
-Authoritative source: `f9b3e446111df5d01cf5fbffb7ca17176031a37e` on `italian-instructions-policy-update`.
-Previous deployment: `1e26a059d10a9ce8b1a8b78c8686340e267e1ec4`.
+Authoritative source: `73cff2fd38bc90492af82559200844aad38aa85d` on `italian-instructions-policy-update`.
+Previous deployment: `3e1877496ab990d15a78334aba2335ff7d2ff7e7`.
 All source files below were read with `git show COMMIT:path`; no uncommitted
 source content, tests, audit material, credentials or treatment schedules were copied.
 
@@ -42,7 +42,7 @@ legacy instruction/practice/Rules/transition assets are excluded.
 
 ## Complete manifest
 
-111 source-exact runtime files and five deployment-specific files (116 total).
+112 source-exact runtime files and five deployment-specific files (117 total).
 
 | File | Provenance |
 |---|---|
@@ -69,6 +69,7 @@ legacy instruction/practice/Rules/transition assets are excluded.
 | `_static/fixed/vendor/chart.umd-4.4.8.js` | exact `f9b3e44` |
 | `_static/global/bless-splash.css` | exact `f9b3e44` |
 | `_static/global/bless.png` | exact `f9b3e44` |
+| `_static/global/payment-receipt-qr.png` | exact `73cff2f` |
 | `_static/messages/charts.js` | exact `f9b3e44` |
 | `_static/policy/charts.js` | exact `f9b3e44` |
 | `_static/survey/survey.css` | exact `f9b3e44` |
@@ -118,7 +119,7 @@ legacy instruction/practice/Rules/transition assets are excluded.
 | `lab_flow.py` | exact `f9b3e44` |
 | `lab_instructions.py` | exact `f9b3e44` |
 | `lab_matching.py` | exact `f9b3e44` |
-| `lab_payment/Payment.html` | exact `f9b3e44` |
+| `lab_payment/Payment.html` | exact `73cff2f` |
 | `lab_payment/__init__.py` | exact `f9b3e44` |
 | `lab_persistence.py` | exact `f9b3e44` |
 | `lab_policy.py` | exact `f9b3e44` |
@@ -165,8 +166,10 @@ legacy instruction/practice/Rules/transition assets are excluded.
 
 ## Delta from previous deployment
 
-29 runtime files updated and two runtime files added; no runtime deletions.
-Both source commits ca2f112 and f9b3e446 are included. Timings are Decision 30s,
-ordinary Result 20s, Main/Final Result 60s with early Continua. Survey standard
-exports contain 20 fields, including city_birth, current_city and optional
-university_status_other; the obsolete country fields are absent.
+Only lab_payment/Payment.html is updated and _static/global/payment-receipt-qr.png
+is added, both copied byte-for-byte from source commit 73cff2f. The supplied QR
+is neither regenerated nor altered. No other runtime file or production setting
+changes. The payment summary uses two columns; hiding it keeps the shared QR and
+receipt instructions visible. Payment arithmetic, selected block and exports are
+unchanged. Tests, source READMEs, audit material and screenshots are not deployed.
+This manifest supersedes the base snapshot provenance in README_DEPLOYMENT.md.

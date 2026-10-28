@@ -1,52 +1,79 @@
 {{ block styles }}
-<link rel="stylesheet" href="{{ static 'global/bless-splash.css' }}?v=1">
 <style>
-    #_otree-title { text-align: center; margin-bottom: 28px; }
-    #earnings-summary .payment-thanks { margin: 20px 0 32px; }
-    #earnings-summary .payment-divider { border: 0; border-top: 1px solid #000; opacity: 1; margin: 24px 0; }
-    #earnings-summary dt { margin-top: 20px; }
-    #earnings-summary dd { margin-bottom: 20px; }
-    #earnings-summary .payment-total { border-top: 1px solid #000; margin-top: 32px; padding-top: 12px; text-align: left; }
+    #_otree-title { text-align: center; font-size: 2rem; margin-bottom: 16px; }
+    #earnings-summary .payment-thanks { text-align: center; margin: 12px 0 22px; }
+    .payment-components { row-gap: 14px; }
+    .payment-components dl { margin: 0; }
+    .payment-components dt { margin-bottom: 4px; }
+    .payment-components dd { margin-bottom: 18px; font-size: 1.1rem; }
+    .payment-divider { border: 0; border-top: 1px solid #000; opacity: 1; margin: 4px 0 14px; }
+    .payment-total { text-align: center; }
+    .payment-total h2 { font-size: 1.3rem; margin-bottom: 6px; }
+    #payment-equation { margin-bottom: 18px; }
+    .payment-calculation { font-size: 1.05rem; }
+    #total-payment { font-size: 2.4rem; margin-left: 8px; white-space: nowrap; }
+    #bless-closing-splash { text-align: center; padding: clamp(20px, 6vh, 54px) 0 22px; }
+    #bless-closing-splash h2 { font-size: clamp(24px, 2.15vw, 30px); line-height: 1.35; }
+    .payment-receipt { border-top: 1px solid #bbb; padding-top: 16px; }
+    .payment-receipt h2 { font-size: 1.35rem; text-align: center; margin-bottom: 16px; }
+    .payment-receipt-content { display: flex; align-items: center; gap: 28px; max-width: 850px; margin: 0 auto; }
+    .payment-receipt-qr { width: 180px; height: auto; flex: 0 0 180px; }
+    .payment-receipt ol { margin: 0; padding-left: 24px; font-size: 1.1rem; line-height: 1.45; }
+    .payment-receipt li { padding-left: 3px; margin-bottom: 8px; }
+    .payment-receipt li:last-child { margin-bottom: 0; }
+    .payment-toggle { text-align: center; margin: 22px 0 12px; }
+    .payment-toggle button { font-size: 1.05rem; padding: 9px 20px; }
+    @media (max-width: 767px) {
+        .payment-receipt-content { flex-direction: column; gap: 16px; }
+        .payment-receipt-qr { flex-basis: auto; }
+        #total-payment { display: block; margin-left: 0; }
+    }
 </style>
 {{ endblock }}
 {{ block title }}Il tuo pagamento per l'esperimento di oggi{{ endblock }}
 {{ block content }}
 <div id="earnings-summary">
-<p class="payment-thanks">Grazie per aver partecipato all'esperimento di oggi!</p>
-<hr class="payment-divider">
-<dl>
-    <dt>Blocco selezionato:</dt><dd id="selected-block">{{ if selected_block == 1 }}1.1{{ elif selected_block == 2 }}1.2{{ elif selected_block == 3 }}1.3{{ elif selected_block == 4 }}2.1{{ elif selected_block == 5 }}2.2{{ elif selected_block == 6 }}2.3{{ elif selected_block == 7 }}3.1{{ elif selected_block == 8 }}3.2{{ elif selected_block == 9 }}3.3{{ endif }}</dd>
-    <dt>Portafoglio alla fine del blocco selezionato:</dt><dd id="selected-wallet">{{ selected_wallet }} punti</dd>
-    <dt>Componente variabile:</dt><dd id="variable-payment">{{ if variable_eur.startswith('-') }}-{{ endif }}€{{ variable_eur.lstrip('-') }}</dd>
-    <dt>Compenso fisso:</dt><dd id="fixed-fee">{{ fixed_fee }}</dd>
-    <div class="payment-total">
-        <dt>Pagamento totale:</dt><dd id="payment-equation">{{ fixed_fee }} {{ if variable_eur.startswith('-') }}-{{ else }}+{{ endif }} €{{ variable_eur.lstrip('-') }} = <span id="total-payment">{{ total_eur }}</span></dd>
+    <p class="payment-thanks">Grazie per aver partecipato all'esperimento di oggi!</p>
+    <div class="row payment-components">
+        <div class="col-md-6">
+            <dl>
+                <dt>Blocco selezionato:</dt><dd id="selected-block">{{ if selected_block == 1 }}1.1{{ elif selected_block == 2 }}1.2{{ elif selected_block == 3 }}1.3{{ elif selected_block == 4 }}2.1{{ elif selected_block == 5 }}2.2{{ elif selected_block == 6 }}2.3{{ elif selected_block == 7 }}3.1{{ elif selected_block == 8 }}3.2{{ elif selected_block == 9 }}3.3{{ endif }}</dd>
+                <dt>Portafoglio alla fine del blocco selezionato:</dt><dd id="selected-wallet">{{ selected_wallet }} punti</dd>
+            </dl>
+        </div>
+        <div class="col-md-6">
+            <dl>
+                <dt>Componente variabile:</dt><dd id="variable-payment">{{ if variable_eur.startswith('-') }}-{{ endif }}€{{ variable_eur.lstrip('-') }}</dd>
+                <dt>Componente fissa:</dt><dd id="fixed-fee">{{ fixed_fee }}</dd>
+            </dl>
+        </div>
     </div>
-</dl>
+    <hr class="payment-divider">
+    <section class="payment-total" aria-labelledby="payment-heading">
+        <h2 id="payment-heading">Pagamento</h2>
+        <p id="payment-equation"><span class="payment-calculation">{{ fixed_fee }} {{ if variable_eur.startswith('-') }}-{{ else }}+{{ endif }} €{{ variable_eur.lstrip('-') }} = </span><strong id="total-payment">{{ total_eur }}</strong></p>
+    </section>
 </div>
 
-<div id="bless-closing-splash" class="bless-welcome" hidden>
-    <div class="row text-center p-3">
-        <div class="col">
-            <h3>Grazie per aver partecipato all'esperimento di oggi!</h3>
-        </div>
-    </div>
-    <div class="row text-center p-3">
-        <div class="col">
-            <img src="{{ static 'global/bless.png' }}" class="align-content-center w-50" alt="BLESS - Università di Bologna" />
-        </div>
-    </div>
-    <div class="row text-center p-3">
-        <div class="col">
-            <h3>Attendi le indicazioni del ricercatore</h3>
-        </div>
-    </div>
+<div id="bless-closing-splash" hidden>
+    <h2>Grazie per aver partecipato all'esperimento di oggi!</h2>
 </div>
 
-<div class="row text-center p-3">
-    <div class="col">
-        <button type="button" id="toggle-earnings-summary" class="btn btn-primary" aria-controls="earnings-summary bless-closing-splash" aria-expanded="true">Nascondi riepilogo pagamento</button>
+<section id="payment-receipt" class="payment-receipt" aria-labelledby="receipt-heading">
+    <h2 id="receipt-heading">Per completare il pagamento</h2>
+    <div class="payment-receipt-content">
+        <img src="{{ static 'global/payment-receipt-qr.png' }}" class="payment-receipt-qr" alt="QR code per compilare la ricevuta" width="180" height="180" />
+        <ol>
+            <li>Scansiona il QR code.</li>
+            <li>Inserisci il codice alfanumerico che ti è stato consegnato.</li>
+            <li>Compila la ricevuta.</li>
+            <li>Dopo aver compilato la ricevuta puoi lasciare il laboratorio. Non è necessario attendere l'e-mail di conferma.</li>
+        </ol>
     </div>
+</section>
+
+<div class="payment-toggle">
+    <button type="button" id="toggle-earnings-summary" class="btn btn-primary" aria-controls="earnings-summary bless-closing-splash" aria-expanded="true">Nascondi riepilogo pagamento</button>
 </div>
 
 <script>
