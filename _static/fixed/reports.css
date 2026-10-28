@@ -1,11 +1,18 @@
 /* Reports only: same range/untouched interaction as Decision. */
-.report-question { margin: 12px 0; }
-.report-question-label { display: block; font-size: 18px; font-weight: 600; line-height: 1.4; }
-.report-question .slider { display: block; width: 100%; margin: 12px 0 6px; }
-.report-selected-value { width: fit-content; margin: 0 auto; padding: 3px 10px; border: 1px solid #d9d9d9; border-radius: 5px; background: white; font-size: 14px; line-height: 18px; }
+.lab-page.expectation-card { width: 100%; max-width: 1240px; box-sizing: border-box; margin: 32px auto; padding: 32px 24px; gap: 0; }
+.expectation-card > p { font-size: 1.05rem; line-height: 1.5; }
+.report-question { margin: 28px 0 38px; }
+.report-question-label { display: block; font-size: 1.2rem; font-weight: 600; line-height: 1.45; text-align: center; }
+.expectation-card .report-question .slider { display: block; width: 100%; max-width: 840px; height: 28px; margin: 18px auto 8px; }
+.report-selected-value { width: fit-content; margin: 0 auto; padding: 6px 14px; border: 1px solid #d9d9d9; border-radius: 5px; background: white; font-size: 1.1rem; line-height: 1.45; }
 .report-slider[data-untouched]::-webkit-slider-thumb { opacity: 0; }
 .report-slider[data-untouched]::-moz-range-thumb { opacity: 0; }
 .report-slider[data-untouched]::-moz-range-progress { background: transparent; }
 
-.report-slider-endpoints { display: flex; justify-content: space-between; margin: 0 0 6px; font-size: 12px; line-height: 1.2; }
+.report-slider-endpoints { display: flex; justify-content: space-between; width: 100%; max-width: 840px; margin: 0 auto 12px; font-size: 14px; line-height: 1.2; }
 .report-slider-endpoints > span { width: 20px; text-align: center; }
+.expectation-card .actions { margin-top: 32px; }
+@media (max-width: 600px) {
+    .lab-page.expectation-card { margin: 20px auto; padding: 20px 12px; }
+    .report-question { margin: 24px 0 30px; }
+}

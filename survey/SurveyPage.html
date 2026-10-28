@@ -1,15 +1,20 @@
 {{ block title }}{{ survey_heading }}{{ endblock }}
-{{ block styles }}<link rel="stylesheet" href="{{ static 'survey/survey.css' }}?v=1">{{ endblock }}
+{{ block styles }}<link rel="stylesheet" href="{{ static 'survey/survey.css' }}?v=lab-monitor-3">{{ endblock }}
 {{ block content }}
-<main class="survey-page">
+<main class="survey-page" data-presentation="{{ survey_presentation }}">
     {{ for paragraph in introduction }}<p>{{ paragraph }}</p>{{ endfor }}
     {{ include 'survey/SurveySliders.html' }}
     {{ for field in other_fields }}
     <section class="survey-question">{{ formfield field.name }}</section>
+    {{ if field.name == 'university_status' }}
+    <section id="university-status-other" class="survey-question" {{ if not status_other_visible }}hidden{{ endif }}>
+        {{ formfield 'university_status_other' }}
+    </section>
+    {{ endif }}
     {{ endfor }}
     <div class="text-center my-4">
         <button type="submit" id="survey-continue" class="otree-btn-next btn btn-primary" {{ if sliders }}disabled{{ endif }}>Continua</button>
     </div>
 </main>
-{{ if sliders }}<script src="{{ static 'survey/survey.js' }}?v=2"></script>{{ endif }}
+<script src="{{ static 'survey/survey.js' }}?v=lab-monitor-3"></script>
 {{ endblock }}

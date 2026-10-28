@@ -1,7 +1,7 @@
 # Deployment runtime manifest
 
-Authoritative source: `4f942176157996146603d0417324659f344d3754` on `italian-instructions-policy-update`.
-Previous deployment: `0976a77ed8aab53b00ff7f81e19d9400c606737b`.
+Authoritative source: `f9b3e446111df5d01cf5fbffb7ca17176031a37e` on `italian-instructions-policy-update`.
+Previous deployment: `1e26a059d10a9ce8b1a8b78c8686340e267e1ec4`.
 All source files below were read with `git show COMMIT:path`; no uncommitted
 source content, tests, audit material, credentials or treatment schedules were copied.
 
@@ -20,13 +20,14 @@ Inactive instruction/practice/review classes remain in exact source controllers 
 are absent from page_sequence. Their unused templates/assets are not runtime roots.
 The two retained legacy CSS directories contain only styles included by active pages.
 `otree/Page.html` and `otree/WaitPage.html` are supplied by pinned oTree 6.0.15.
+The source-exact `_templates/otree/Base_UserFacing.html` participant override hides
+only oTree branding; framework Bootstrap/JavaScript remain provided by oTree.
 
 ## Explicit deployment-only differences
 
 - settings.py retains the existing production-only configuration and guard, mandatory
-  environment secret, EUR, six templates and external JSON loader. Its sole change
-  from the previous deployment settings is use_secure_urls=False for the two Rooms,
-  matching source production behavior. DEV/legacy menus, illustrative threshold
+  environment secret, EUR, six templates and external JSON loader. It is byte-identical to the previous deployment settings, including
+  use_secure_urls=False for both Rooms and the same production safeguards. DEV/legacy menus, illustrative threshold
   schedules and the source legacy fallback secret are intentionally omitted.
 - .gitignore is retained unchanged from the previous deployment.
 - This manifest, README_DEPLOYMENT.md and DEPLOYMENT_PRIVATE_CONFIG.md are deployment
@@ -41,164 +42,131 @@ legacy instruction/practice/Rules/transition assets are excluded.
 
 ## Complete manifest
 
-109 source-exact runtime files and five deployment-specific files (114 total).
+111 source-exact runtime files and five deployment-specific files (116 total).
 
 | File | Provenance |
 |---|---|
-| `.python-version` | exact `4f94217` |
-| `Procfile` | exact `4f94217` |
-| `_rooms/lab_18.txt` | exact `4f94217` |
-| `_rooms/lab_24.txt` | exact `4f94217` |
-| `_static/ambiguity/charts.js` | exact `4f94217` |
-| `_static/endogenous/charts.js` | exact `4f94217` |
-| `_static/fixed/comparable-charts.js` | exact `4f94217` |
-| `_static/fixed/decision-charts.js` | exact `4f94217` |
-| `_static/fixed/decision-interface.css` | exact `4f94217` |
-| `_static/fixed/decision.js` | exact `4f94217` |
-| `_static/fixed/display-numbers.js` | exact `4f94217` |
-| `_static/fixed/equipment-graph.css` | exact `4f94217` |
-| `_static/fixed/equipment-presentation.js` | exact `4f94217` |
-| `_static/fixed/instructions-parity.css` | exact `4f94217` |
-| `_static/fixed/interface.css` | exact `4f94217` |
-| `_static/fixed/parity.css` | exact `4f94217` |
-| `_static/fixed/reports.css` | exact `4f94217` |
-| `_static/fixed/reports.js` | exact `4f94217` |
-| `_static/fixed/vendor/Chart.js-LICENSE.txt` | exact `4f94217` |
-| `_static/fixed/vendor/SOURCE.txt` | exact `4f94217` |
-| `_static/fixed/vendor/chart.umd-4.4.8.js` | exact `4f94217` |
-| `_static/global/bless.png` | exact `4f94217` |
-| `_static/messages/charts.js` | exact `4f94217` |
-| `_static/policy/charts.js` | exact `4f94217` |
-| `_static/survey/survey.css` | exact `4f94217` |
-| `_static/survey/survey.js` | exact `4f94217` |
-| `_templates/lab/AdminSplash.html` | exact `4f94217` |
-| `_templates/lab/BlockSummary.html` | exact `4f94217` |
-| `_templates/lab/ComprehensionPair.html` | exact `4f94217` |
-| `_templates/lab/MainOutcomeNote.html` | exact `4f94217` |
-| `_templates/otree/OutOfRangeNotification.html` | exact `4f94217` |
-| `ambiguity/BlockStart.html` | exact `4f94217` |
-| `ambiguity/ChartScripts.html` | exact `4f94217` |
-| `ambiguity/Decision.html` | exact `4f94217` |
-| `ambiguity/DecisionEquipmentGraph.html` | exact `4f94217` |
-| `ambiguity/EquipmentGraph.html` | exact `4f94217` |
-| `ambiguity/Reports.html` | exact `4f94217` |
-| `ambiguity/Result.html` | exact `4f94217` |
-| `ambiguity/__init__.py` | exact `4f94217` |
-| `ambiguity/presentation.py` | exact `4f94217` |
-| `endogenous/BlockStart.html` | exact `4f94217` |
-| `endogenous/ChartScripts.html` | exact `4f94217` |
-| `endogenous/Decision.html` | exact `4f94217` |
-| `endogenous/DecisionEquipmentGraph.html` | exact `4f94217` |
-| `endogenous/EquipmentGraph.html` | exact `4f94217` |
-| `endogenous/Reports.html` | exact `4f94217` |
-| `endogenous/Result.html` | exact `4f94217` |
-| `endogenous/__init__.py` | exact `4f94217` |
-| `endogenous/presentation.py` | exact `4f94217` |
-| `fixed/BlockStart.html` | exact `4f94217` |
-| `fixed/ChartScripts.html` | exact `4f94217` |
-| `fixed/ComparableStyles.html` | exact `4f94217` |
-| `fixed/Decision.html` | exact `4f94217` |
-| `fixed/DecisionEquipmentGraph.html` | exact `4f94217` |
-| `fixed/EquipmentGraph.html` | exact `4f94217` |
-| `fixed/Reports.html` | exact `4f94217` |
-| `fixed/Result.html` | exact `4f94217` |
-| `fixed/__init__.py` | exact `4f94217` |
-| `fixed/presentation.py` | exact `4f94217` |
-| `general_instructions/LabComparableStyles.html` | exact `4f94217` |
-| `general_instructions/LabReportSliders.html` | exact `4f94217` |
-| `general_instructions/instructions.css` | exact `4f94217` |
-| `instructions_section1/instructions.css` | exact `4f94217` |
-| `lab_cash.py` | exact `4f94217` |
-| `lab_comprehension.py` | exact `4f94217` |
-| `lab_config.py` | exact `4f94217` |
-| `lab_export.py` | exact `4f94217` |
-| `lab_flow.py` | exact `4f94217` |
-| `lab_instructions.py` | exact `4f94217` |
-| `lab_matching.py` | exact `4f94217` |
-| `lab_payment/Payment.html` | exact `4f94217` |
-| `lab_payment/__init__.py` | exact `4f94217` |
-| `lab_persistence.py` | exact `4f94217` |
-| `lab_policy.py` | exact `4f94217` |
-| `lab_presentation.py` | exact `4f94217` |
-| `lab_printed_questions.py` | exact `4f94217` |
-| `lab_production.py` | exact `4f94217` |
-| `lab_reports.py` | exact `4f94217` |
-| `lab_route.py` | exact `4f94217` |
-| `lab_rules.py` | exact `4f94217` |
-| `lab_threshold.py` | exact `4f94217` |
-| `messages/BlockStart.html` | exact `4f94217` |
-| `messages/BlockWait.html` | exact `4f94217` |
-| `messages/ChartScripts.html` | exact `4f94217` |
-| `messages/Decision.html` | exact `4f94217` |
-| `messages/DecisionEquipmentGraph.html` | exact `4f94217` |
-| `messages/EquipmentGraph.html` | exact `4f94217` |
-| `messages/Reports.html` | exact `4f94217` |
-| `messages/Result.html` | exact `4f94217` |
-| `messages/__init__.py` | exact `4f94217` |
-| `messages/presentation.py` | exact `4f94217` |
-| `messages/public_reports.py` | exact `4f94217` |
-| `policy/BlockStart.html` | exact `4f94217` |
-| `policy/BlockWait.html` | exact `4f94217` |
-| `policy/ChartScripts.html` | exact `4f94217` |
-| `policy/Decision.html` | exact `4f94217` |
-| `policy/DecisionEquipmentGraph.html` | exact `4f94217` |
-| `policy/EquipmentGraph.html` | exact `4f94217` |
-| `policy/Reports.html` | exact `4f94217` |
-| `policy/Result.html` | exact `4f94217` |
-| `policy/__init__.py` | exact `4f94217` |
-| `policy/presentation.py` | exact `4f94217` |
-| `policy/settlement.py` | exact `4f94217` |
-| `requirements.txt` | exact `4f94217` |
-| `stage_game_section1/decision.css` | exact `4f94217` |
-| `stage_game_section1/pilot.css` | exact `4f94217` |
-| `survey/SurveyPage.html` | exact `4f94217` |
-| `survey/SurveySliders.html` | exact `4f94217` |
-| `survey/__init__.py` | exact `4f94217` |
-| `settings.py` | production-only configuration described above |
-| `.gitignore` | unchanged deployment exclusions |
-| `DEPLOYMENT_MANIFEST.md` | deployment documentation |
-| `DEPLOYMENT_PRIVATE_CONFIG.md` | private configuration names only |
-| `README_DEPLOYMENT.md` | deployment operation/provenance |
+| `.python-version` | exact `f9b3e44` |
+| `Procfile` | exact `f9b3e44` |
+| `_rooms/lab_18.txt` | exact `f9b3e44` |
+| `_rooms/lab_24.txt` | exact `f9b3e44` |
+| `_static/ambiguity/charts.js` | exact `f9b3e44` |
+| `_static/endogenous/charts.js` | exact `f9b3e44` |
+| `_static/fixed/comparable-charts.js` | exact `f9b3e44` |
+| `_static/fixed/decision-charts.js` | exact `f9b3e44` |
+| `_static/fixed/decision-interface.css` | exact `f9b3e44` |
+| `_static/fixed/decision.js` | exact `f9b3e44` |
+| `_static/fixed/display-numbers.js` | exact `f9b3e44` |
+| `_static/fixed/equipment-graph.css` | exact `f9b3e44` |
+| `_static/fixed/equipment-presentation.js` | exact `f9b3e44` |
+| `_static/fixed/instructions-parity.css` | exact `f9b3e44` |
+| `_static/fixed/interface.css` | exact `f9b3e44` |
+| `_static/fixed/parity.css` | exact `f9b3e44` |
+| `_static/fixed/reports.css` | exact `f9b3e44` |
+| `_static/fixed/reports.js` | exact `f9b3e44` |
+| `_static/fixed/vendor/Chart.js-LICENSE.txt` | exact `f9b3e44` |
+| `_static/fixed/vendor/SOURCE.txt` | exact `f9b3e44` |
+| `_static/fixed/vendor/chart.umd-4.4.8.js` | exact `f9b3e44` |
+| `_static/global/bless-splash.css` | exact `f9b3e44` |
+| `_static/global/bless.png` | exact `f9b3e44` |
+| `_static/messages/charts.js` | exact `f9b3e44` |
+| `_static/policy/charts.js` | exact `f9b3e44` |
+| `_static/survey/survey.css` | exact `f9b3e44` |
+| `_static/survey/survey.js` | exact `f9b3e44` |
+| `_templates/lab/AdminSplash.html` | exact `f9b3e44` |
+| `_templates/lab/BlockSummary.html` | exact `f9b3e44` |
+| `_templates/lab/ComprehensionPair.html` | exact `f9b3e44` |
+| `_templates/lab/MainOutcomeNote.html` | exact `f9b3e44` |
+| `_templates/otree/Base_UserFacing.html` | exact `f9b3e44` |
+| `_templates/otree/OutOfRangeNotification.html` | exact `f9b3e44` |
+| `ambiguity/BlockStart.html` | exact `f9b3e44` |
+| `ambiguity/ChartScripts.html` | exact `f9b3e44` |
+| `ambiguity/Decision.html` | exact `f9b3e44` |
+| `ambiguity/DecisionEquipmentGraph.html` | exact `f9b3e44` |
+| `ambiguity/EquipmentGraph.html` | exact `f9b3e44` |
+| `ambiguity/Reports.html` | exact `f9b3e44` |
+| `ambiguity/Result.html` | exact `f9b3e44` |
+| `ambiguity/__init__.py` | exact `f9b3e44` |
+| `ambiguity/presentation.py` | exact `f9b3e44` |
+| `endogenous/BlockStart.html` | exact `f9b3e44` |
+| `endogenous/ChartScripts.html` | exact `f9b3e44` |
+| `endogenous/Decision.html` | exact `f9b3e44` |
+| `endogenous/DecisionEquipmentGraph.html` | exact `f9b3e44` |
+| `endogenous/EquipmentGraph.html` | exact `f9b3e44` |
+| `endogenous/Reports.html` | exact `f9b3e44` |
+| `endogenous/Result.html` | exact `f9b3e44` |
+| `endogenous/__init__.py` | exact `f9b3e44` |
+| `endogenous/presentation.py` | exact `f9b3e44` |
+| `fixed/BlockStart.html` | exact `f9b3e44` |
+| `fixed/ChartScripts.html` | exact `f9b3e44` |
+| `fixed/ComparableStyles.html` | exact `f9b3e44` |
+| `fixed/Decision.html` | exact `f9b3e44` |
+| `fixed/DecisionEquipmentGraph.html` | exact `f9b3e44` |
+| `fixed/EquipmentGraph.html` | exact `f9b3e44` |
+| `fixed/Reports.html` | exact `f9b3e44` |
+| `fixed/Result.html` | exact `f9b3e44` |
+| `fixed/__init__.py` | exact `f9b3e44` |
+| `fixed/presentation.py` | exact `f9b3e44` |
+| `general_instructions/LabComparableStyles.html` | exact `f9b3e44` |
+| `general_instructions/LabReportSliders.html` | exact `f9b3e44` |
+| `general_instructions/instructions.css` | exact `f9b3e44` |
+| `instructions_section1/instructions.css` | exact `f9b3e44` |
+| `lab_cash.py` | exact `f9b3e44` |
+| `lab_comprehension.py` | exact `f9b3e44` |
+| `lab_config.py` | exact `f9b3e44` |
+| `lab_export.py` | exact `f9b3e44` |
+| `lab_flow.py` | exact `f9b3e44` |
+| `lab_instructions.py` | exact `f9b3e44` |
+| `lab_matching.py` | exact `f9b3e44` |
+| `lab_payment/Payment.html` | exact `f9b3e44` |
+| `lab_payment/__init__.py` | exact `f9b3e44` |
+| `lab_persistence.py` | exact `f9b3e44` |
+| `lab_policy.py` | exact `f9b3e44` |
+| `lab_presentation.py` | exact `f9b3e44` |
+| `lab_printed_questions.py` | exact `f9b3e44` |
+| `lab_production.py` | exact `f9b3e44` |
+| `lab_reports.py` | exact `f9b3e44` |
+| `lab_route.py` | exact `f9b3e44` |
+| `lab_rules.py` | exact `f9b3e44` |
+| `lab_threshold.py` | exact `f9b3e44` |
+| `messages/BlockStart.html` | exact `f9b3e44` |
+| `messages/BlockWait.html` | exact `f9b3e44` |
+| `messages/ChartScripts.html` | exact `f9b3e44` |
+| `messages/Decision.html` | exact `f9b3e44` |
+| `messages/DecisionEquipmentGraph.html` | exact `f9b3e44` |
+| `messages/EquipmentGraph.html` | exact `f9b3e44` |
+| `messages/Reports.html` | exact `f9b3e44` |
+| `messages/Result.html` | exact `f9b3e44` |
+| `messages/__init__.py` | exact `f9b3e44` |
+| `messages/presentation.py` | exact `f9b3e44` |
+| `messages/public_reports.py` | exact `f9b3e44` |
+| `policy/BlockStart.html` | exact `f9b3e44` |
+| `policy/BlockWait.html` | exact `f9b3e44` |
+| `policy/ChartScripts.html` | exact `f9b3e44` |
+| `policy/Decision.html` | exact `f9b3e44` |
+| `policy/DecisionEquipmentGraph.html` | exact `f9b3e44` |
+| `policy/EquipmentGraph.html` | exact `f9b3e44` |
+| `policy/Reports.html` | exact `f9b3e44` |
+| `policy/Result.html` | exact `f9b3e44` |
+| `policy/__init__.py` | exact `f9b3e44` |
+| `policy/presentation.py` | exact `f9b3e44` |
+| `policy/settlement.py` | exact `f9b3e44` |
+| `requirements.txt` | exact `f9b3e44` |
+| `stage_game_section1/decision.css` | exact `f9b3e44` |
+| `stage_game_section1/pilot.css` | exact `f9b3e44` |
+| `survey/SurveyPage.html` | exact `f9b3e44` |
+| `survey/SurveySliders.html` | exact `f9b3e44` |
+| `survey/__init__.py` | exact `f9b3e44` |
+| `settings.py` | deployment-specific; configuration unchanged, provenance documentation updated |
+| `.gitignore` | deployment-specific; configuration unchanged, provenance documentation updated |
+| `DEPLOYMENT_MANIFEST.md` | deployment-specific; configuration unchanged, provenance documentation updated |
+| `DEPLOYMENT_PRIVATE_CONFIG.md` | deployment-specific; configuration unchanged, provenance documentation updated |
+| `README_DEPLOYMENT.md` | deployment-specific; configuration unchanged, provenance documentation updated |
 
-## Removed obsolete deployment files
+## Delta from previous deployment
 
-- `_static/fixed/instructions-parity.js`
-- `_static/fixed/main-outcomes.css`
-- `_static/fixed/practice-interface.css`
-- `_static/fixed/practice.js`
-- `_templates/lab/SectionContinue.html`
-- `ambiguity/BlockEnd.html`
-- `ambiguity/Rules.html`
-- `endogenous/BlockEnd.html`
-- `endogenous/Rules.html`
-- `fixed/BlessReady.html`
-- `fixed/BlessSplash.html`
-- `fixed/BlessSplashBody.html`
-- `fixed/BlockEnd.html`
-- `fixed/Rules.html`
-- `general_instructions/LabCanonicalAmbiguityBody.html`
-- `general_instructions/LabCanonicalCosts.html`
-- `general_instructions/LabCanonicalEndogenousBody.html`
-- `general_instructions/LabCanonicalFixedBody.html`
-- `general_instructions/LabCanonicalKnownMain.html`
-- `general_instructions/LabCanonicalMessagesBody.html`
-- `general_instructions/LabCanonicalPolicyBody.html`
-- `general_instructions/LabCanonicalPracticeBody.html`
-- `general_instructions/LabCanonicalPracticeScripts.html`
-- `general_instructions/LabCanonicalSame.html`
-- `general_instructions/LabCanonicalSectionBody.html`
-- `general_instructions/LabCanonicalSectionReview.html`
-- `general_instructions/LabComparableNavigation.html`
-- `general_instructions/LabGeneralBody.html`
-- `general_instructions/LabMainAmbiguityOutcomes.html`
-- `general_instructions/LabMainKnownOutcomes.html`
-- `general_instructions/LabOverview.html`
-- `general_instructions/LabPlannedMeanExplanation.html`
-- `general_instructions/LabPractice.html`
-- `general_instructions/LabQuiz.html`
-- `general_instructions/LabSection.html`
-- `messages/BlockEnd.html`
-- `messages/Rules.html`
-- `policy/BlockEnd.html`
-- `policy/BranchRules.html`
-- `policy/Rules.html`
+29 runtime files updated and two runtime files added; no runtime deletions.
+Both source commits ca2f112 and f9b3e446 are included. Timings are Decision 30s,
+ordinary Result 20s, Main/Final Result 60s with early Continua. Survey standard
+exports contain 20 fields, including city_birth, current_city and optional
+university_status_other; the obsolete country fields are absent.

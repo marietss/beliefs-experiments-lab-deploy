@@ -1,0 +1,11 @@
+/* Initial/closing BLESS only; block and section gates are unchanged. */
+.bless-welcome { width: 100%; max-width: 1050px; margin: 0 auto; padding-top: clamp(32px, 10vh, 90px); }
+.bless-welcome .row { margin: 0; padding: 14px !important; }
+.bless-welcome h3 { font-size: clamp(23px, 2.15vw, 30px); line-height: 1.35; }
+.bless-welcome img.w-50 { width: min(65%, 620px) !important; max-width: 100%; height: auto; }
+#bless-closing-splash { padding-top: clamp(16px, 5vh, 45px); }
+#bless-closing-splash + .row button { font-size: 1.05rem; padding: 10px 22px; }
+@media (max-width: 768px) {
+    .bless-welcome { padding-top: 30px; }
+    .bless-welcome img.w-50 { width: 80% !important; }
+}

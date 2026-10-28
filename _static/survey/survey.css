@@ -14,3 +14,34 @@
 .survey-range[data-untouched]::-webkit-slider-thumb { opacity: 0; }
 .survey-range[data-untouched]::-moz-range-thumb { opacity: 0; }
 .survey-range[data-untouched]::-moz-range-progress { background: transparent; }
+
+/* Monitor adjustments are scoped so ExperimentFeedback keeps its original layout. */
+.survey-page[data-presentation="welcome"] { max-width: 930px; font-size: 1.1rem; text-align: center; }
+body:has(.survey-page[data-presentation="welcome"]) .otree-body { max-width: 980px; padding-top: clamp(40px, 17vh, 150px); }
+body:has(.survey-page[data-presentation="welcome"]) #_otree-title { font-size: 2.15rem; margin-bottom: 30px; }
+.survey-page[data-presentation="welcome"] p { margin-bottom: 24px; line-height: 1.55; }
+body:has(.survey-page[data-presentation="background"]) .otree-body { max-width: 1040px; }
+.survey-page[data-presentation="background"] { max-width: 960px; }
+.survey-page[data-presentation="background"] .survey-question { margin: 22px 0; }
+.survey-page[data-presentation="background"] label { font-size: 1.1rem; font-weight: 500; }
+.survey-page[data-presentation="background"] input,
+.survey-page[data-presentation="background"] select { max-width: 720px; min-height: 42px; font-size: 1.05rem; }
+.survey-page[data-presentation="preferences"] { max-width: 920px; }
+body:has(.survey-page[data-presentation="preferences"]) .otree-body { max-width: 1000px; }
+.survey-page[data-presentation="preferences"] .survey-question-label { font-size: 19px; }
+.survey-page[data-presentation="preferences"] .survey-endpoints,
+.survey-page[data-presentation="preferences"] .survey-selected { font-size: 15px; }
+@media (max-width: 768px) {
+    body:has(.survey-page[data-presentation="welcome"]) .otree-body { padding-top: 35px; }
+    .survey-page { padding: 0 8px; }
+}
+/* Keep the slightly larger preference labels within a desktop screen. */
+body:has(.survey-page[data-presentation="preferences"]) .otree-body { margin-top: 22px; }
+.survey-page[data-presentation="preferences"] { margin-top: 14px; margin-bottom: 8px; }
+.survey-page[data-presentation="preferences"] > p,
+.survey-page[data-presentation="preferences"] .survey-scale-help { font-size: 15px; line-height: 1.35; margin-bottom: 10px; }
+.survey-page[data-presentation="preferences"] .survey-question { margin: 14px 0; }
+.survey-page[data-presentation="preferences"] .survey-question-label { margin-bottom: 8px; line-height: 1.35; }
+.survey-page[data-presentation="preferences"] .survey-selected { margin: 6px 0 0; }
+.survey-page[data-presentation="preferences"] > .text-center { margin: 16px 0 8px !important; }
+.survey-page[data-presentation="background"] input[type="number"] { max-width: 180px; }

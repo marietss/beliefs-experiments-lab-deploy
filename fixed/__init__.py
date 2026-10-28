@@ -466,7 +466,7 @@ class ReportsWait(WaitPage):
 
 
 class Decision(Page):
-    timeout_seconds = 25
+    timeout_seconds = 30
     form_model = 'player'
     form_fields = ['retirement']
 
@@ -511,7 +511,7 @@ def feedback_context(player):
 class Result(Page):
     @staticmethod
     def get_timeout_seconds(player):
-        return None if rules.is_main_period(player.period) or rules.is_follow_up_period(player.period) else 15
+        return 60 if rules.is_main_period(player.period) or rules.is_follow_up_period(player.period) else 20
 
     before_next_page = staticmethod(flow.result_complete)
     @staticmethod

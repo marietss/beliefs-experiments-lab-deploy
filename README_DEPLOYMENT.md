@@ -2,8 +2,8 @@
 
 Source repository: `/Users/andrea/PycharmProjects/beliefs-experiments-lab`
 Source branch: `italian-instructions-policy-update`
-Authoritative source commit: `4f942176157996146603d0417324659f344d3754`
-Previous deployment commit: `0976a77ed8aab53b00ff7f81e19d9400c606737b`.
+Authoritative source commit: `f9b3e446111df5d01cf5fbffb7ca17176031a37e`
+Previous deployment commit: `1e26a059d10a9ce8b1a8b78c8686340e267e1ec4`.
 
 This repository contains only the runtime closure of the finalized pilot and
 production deployment configuration. See DEPLOYMENT_MANIFEST.md for every file,
@@ -47,8 +47,8 @@ Initial BLESS splash (no form, button or timer; admin Advance slowest participan
 → readiness barrier → Section-1 comprehension (three pairs) → session-wide wait
 → first-block admin splash → block-start barrier → two forecasts → report barrier.
 
-Each block has ten periods: Decision (25 seconds, timeout submits zero) → six-person
-settlement barrier → Result (15 seconds in ordinary periods, manual Continua at
+Each block has ten periods: Decision (30 seconds, timeout submits zero) → six-person
+settlement barrier → Result (20 seconds in ordinary periods; 60-second maximum with early Continua at
 Periods 5 and 10) → group result barrier. After Period 10 the session-wide block
 barrier precedes the anonymous six-firm BlockSummary, then participant Continua.
 
@@ -60,7 +60,7 @@ no long instruction booklet, Practice, or rule-review popup is in the active flo
 
 Routes: fixed → endogenous/ambiguity/messages → corresponding policy → survey
 → lab_payment. There are nine blocks total. The individual survey has six pages,
-19 stored answer fields (including the conditional low-clarity follow-up), no waits
+20 stored answer fields (including the conditional low-clarity follow-up), no waits
 and no effect on payment. The final receipt initially shows earnings and provides
 a reversible hide/show toggle to a closing BLESS splash; it has no submit/Continue.
 
@@ -71,3 +71,8 @@ matching, paid block, exact payment and exports are the source implementation.
 
 The authentic logo exists at `_static/global/bless.png` and is copied from the
 committed source. No replacement/generated logo or GPS PDF is included.
+
+The survey uses city_birth and current_city, plus optional university_status_other
+for Altro. Prepare the updated oTree database schema before collecting pilot data;
+this synchronization does not alter an existing database. Participant oTree
+branding is hidden by the source participant-base template override.

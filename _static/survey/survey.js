@@ -34,6 +34,17 @@
             if (event.key === 'Enter') { event.preventDefault(); choose(); }
         });
     }
+    const status = document.getElementById('id_university_status');
+    const statusOther = document.getElementById('university-status-other');
+    if (status && statusOther) {
+        const updateStatus = () => {
+            const other = status.value === 'Altro';
+            statusOther.hidden = !other;
+            statusOther.querySelector('input').disabled = !other;
+        };
+        status.addEventListener('change', updateStatus);
+        updateStatus();
+    }
     // Retain valid bound values when oTree redisplays another validation error.
     updateButton();
     updateClarityFollowup();

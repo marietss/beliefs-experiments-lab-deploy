@@ -1,8 +1,8 @@
 {{ extends 'otree/Page.html' }}
-{{ block styles }}{{ if not show_logo }}{{ include 'fixed/ComparableStyles.html' }}{{ endif }}{{ endblock }}
+{{ block styles }}{{ if show_logo }}<link rel="stylesheet" href="{{ static 'global/bless-splash.css' }}?v=1">{{ else }}{{ include 'fixed/ComparableStyles.html' }}{{ endif }}{{ endblock }}
 {{ block body_main }}
 {{ if show_logo }}
-<div class="otree-body container"><div class="otree-content">
+<div class="otree-body container bless-welcome"><div class="otree-content">
 <div class="row text-center p-3">
     <div class="col">
         <h3>Benvenuto al Laboratorio BLESS!</h3>

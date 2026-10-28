@@ -1,0 +1,48 @@
+
+{# NOTE: keep this compact so that view-source is friendly for users #}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block head_title %}{% endblock %}</title>
+    {% block internal_styles %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'bootstrap5/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'otree/css/theme2.css' %}">
+        {# oTree 6.0.15 participant base; hide branding only, keep all runtime hooks. #}
+        <style>.powered-by-otree { display: none !important; }</style>
+        {% comment %}
+        this actually belongs in internal_scripts, but we are in the process
+        of deprecating it, so some people's apps might still rely on jQuery being
+        available within the content block.
+        {% endcomment %}
+        <script src="{% static 'otree/js/jquery-3.2.1.min.js' %}"></script>
+    {% endblock %}
+    {% block tab_title_data %}{% endblock %}
+    {# these blocks are for public API #}
+    {% block global_styles %}{% endblock %}
+    {% block app_styles %}{% endblock %}
+    {% block styles %}{% endblock %}
+    <script src="{% static 'otree/js/reconnecting-websocket-iife.min.js' %}"></script>
+    <script>let isDebug = "{% if is_defined('view.is_debug') and view.is_debug %}1{% endif %}";</script>
+    <script src="{% static 'otree/js/common_user_facing.js' %}"></script>
+    {# trial must be before body. because otherwise we would need to put reconnecting-websocket  #}
+    {% block trial %}{% endblock %}
+</head>
+<body>
+{% block body_main %}{% endblock %}
+{% block debug_info %}{% endblock %}
+
+{% block internal_scripts %}
+  <script src="{% static 'otree/js/internet-explorer.js' %}"></script>
+    {% block bootstrap_scripts %}
+    <script src="{% static 'bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
+    {% endblock %}
+
+{% endblock %}
+{% block live %}{% endblock %}
+{# these blocks are for public API #}
+{% block global_scripts %}{% endblock %}
+{% block app_scripts %}{% endblock %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

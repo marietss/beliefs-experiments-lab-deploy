@@ -65,13 +65,14 @@ class Player(BasePlayer):
     gender = models.StringField(label='Con quale genere ti identifichi?',
                                 choices=['Uomo', 'Donna', 'Altro', 'Preferisco non rispondere'])
     age = models.IntegerField(min=18, max=100, label='Quanti anni hai?')
-    country_birth = models.StringField(label='In quale Paese sei nato/a?')
-    country_residence = models.StringField(label='In quale Paese si trova la tua residenza permanente attuale?')
+    city_birth = models.StringField(label='In quale città sei nato/a?')
+    current_city = models.StringField(label='In quale città vivi attualmente?')
     university_affiliation = models.StringField(label='Qual è il tuo corso di studio o il dipartimento/struttura a cui sei affiliato/a?')
     university_status = models.StringField(label='Qual è la tua situazione attuale?', choices=[
         'Laurea triennale', 'Laurea magistrale', 'Laurea magistrale a ciclo unico',
         'Master', 'Dottorato di ricerca', 'Personale docente o ricercatore',
         'Personale tecnico-amministrativo', 'Altro', 'Preferisco non rispondere'])
+    university_status_other = models.StringField(blank=True, label='Se hai selezionato “Altro”, specifica (facoltativo):')
     unibo_time = models.StringField(label="Da quanto tempo studi o lavori a Bologna?", choices=[
         'Questo è il mio primo anno', 'Questo è il mio secondo anno', 'Questo è il mio terzo anno',
         'Questo è il mio quarto anno', 'Da più di quattro anni', 'Preferisco non rispondere'])
@@ -95,14 +96,14 @@ def experiment_changes_error_message(player, value):
         return 'Descrivi brevemente con qualche dettaglio che cosa pensi.'
 
 
-def country_birth_error_message(player, value):
+def city_birth_error_message(player, value):
     if not value.strip():
-        return 'Indica il Paese in cui sei nato/a.'
+        return 'Indica la città in cui sei nato/a.'
 
 
-def country_residence_error_message(player, value):
+def current_city_error_message(player, value):
     if not value.strip():
-        return 'Indica il Paese della tua residenza permanente.'
+        return 'Indica la città in cui vivi attualmente.'
 
 
 def university_affiliation_error_message(player, value):
@@ -121,6 +122,7 @@ class SurveyFormPage(Page):
     form_fields = []
     heading = 'Questionario finale'
     introduction = []
+    presentation = 'feedback'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -134,16 +136,19 @@ class SurveyFormPage(Page):
                 sliders.append(dict(SLIDERS[name], name=name, help=SLIDERS[name].get('help', ''),
                                     answered=answered, value=value if answered else ''))
             else:
-                if name != 'experiment_clarity_improvement':
+                if name not in ('experiment_clarity_improvement', 'university_status_other'):
                     other_fields.append(field)
         clarity = form['experiment_clarity'].data if 'experiment_clarity' in self.form_fields else None
         context.update(survey_heading=self.heading, introduction=self.introduction,
                        sliders=sliders, other_fields=other_fields, ticks=list(range(11)),
+                       survey_presentation=self.presentation,
+                       status_other_visible='university_status' in self.form_fields and form['university_status'].data == 'Altro',
                        clarity_improvement_visible=type(clarity) is int and 0 <= clarity < 5)
         return context
 
 
 class SurveyWelcome(SurveyFormPage):
+    presentation = 'welcome'
     introduction = [
         'Ti chiediamo ora di compilare un breve questionario finale.',
         "Le tue risposte saranno trattate in forma riservata e utilizzate esclusivamente per l'analisi dei dati dell'esperimento.",
@@ -163,23 +168,32 @@ class ExperimentFeedback(SurveyFormPage):
 
 
 class Demographics(SurveyFormPage):
-    heading = 'Alcune informazioni su di te'
-    form_fields = ['gender', 'age', 'country_birth', 'country_residence']
+    heading = 'Alcune informazioni su di te (I)'
+    presentation = 'background'
+    form_fields = ['gender', 'age', 'city_birth', 'current_city']
 
 
 class UniversityBackground(SurveyFormPage):
-    heading = 'La tua esperienza universitaria'
-    form_fields = ['university_affiliation', 'university_status', 'unibo_time', 'previous_experiment_experience']
+    heading = 'Alcune informazioni su di te (II)'
+    presentation = 'background'
+    form_fields = ['university_affiliation', 'university_status', 'university_status_other', 'unibo_time', 'previous_experiment_experience']
+
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        if player.field_maybe_none('university_status') != 'Altro':
+            player.university_status_other = ''
 
 
 class Preferences1(SurveyFormPage):
-    heading = 'Le tue preferenze'
+    heading = 'Le tue preferenze (I)'
+    presentation = 'preferences'
     introduction = ['Ora ti chiederemo della tua volontà di agire in un determinato modo. Per favore, dammi una risposta utilizzando una scala da 0 a 10. 0 significa “per niente disposto/a a farlo” e 10 significa “molto disposto/a a farlo”. Puoi utilizzare qualsiasi numero da 0 a 10.']
     form_fields = ['falk_future', 'falk_risk', 'falk_giving']
 
 
 class Preferences2(SurveyFormPage):
-    heading = 'Le tue preferenze'
+    heading = 'Le tue preferenze (II)'
+    presentation = 'preferences'
     introduction = ['Quanto sono appropriate le seguenti affermazioni per descriverti come persona? Per favore, dammi una risposta utilizzando una scala da 0 a 10. 0 significa “non mi descrive per niente” e 10 significa “mi descrive perfettamente”. Puoi utilizzare qualsiasi numero da 0 a 10.']
     form_fields = ['falk_favour', 'falk_revenge', 'falk_intentions']
 

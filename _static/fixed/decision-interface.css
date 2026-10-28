@@ -45,7 +45,7 @@
 .decision-slider-unavailable {
     left: calc(10px + (100% - 20px) * var(--available-units) / 100);
     right: 10px;
-    background: repeating-linear-gradient(135deg, #c4c4c4 0, #c4c4c4 4px, #e2e2e2 4px, #e2e2e2 8px);
+    background: repeating-linear-gradient(135deg, #858585 0, #858585 4px, #c5c5c5 4px, #c5c5c5 8px);
 }
 .lab-page .decision-slider-scale .slider {
     position: absolute; left: 0; top: 6px; z-index: 1;
@@ -56,3 +56,23 @@
 .decision-slider-endpoints > span { width: 20px; text-align: center; }
 
 .lab-page .decision-control #selected-unit-count { font-size: 35px; line-height: 1; }
+
+/* Only controls grow; chart dimensions and feasibility mapping stay unchanged. */
+.lab-page .decision-control.control-section { width: min(92vw, 900px); max-width: 900px; padding: 4px 12px 6px; }
+.lab-page .decision-control h2 { font-size: 20px; }
+.lab-page .decision-control .decision-summary { margin-top: 8px; padding: 6px 12px; }
+.lab-page .decision-control .decision-summary dt,
+.lab-page .decision-control .decision-summary dd { font-size: 15px; }
+.lab-page .decision-control #selected-unit-count { font-size: 38px; }
+.decision-slider-unavailable { border-left: 2px solid #666; box-sizing: border-box; }
+.decision-slider-scale[style*="--available-units: 100;"] .decision-slider-unavailable { display: none; }
+.lab-page .decision-slider-scale .slider { height: 10px; }
+.decision-slider-rail, .decision-slider-unavailable { height: 10px; }
+
+/* Preserve room for Continue at 768px without shrinking either graph. */
+.lab-page.decision-page .decision-control .selected-units-box { width: 64px; height: 52px; margin-top: -8px; }
+.lab-page.decision-page .decision-control .decision-summary div { padding: 1px 0; }
+.lab-page.decision-page .decision-control h2 { margin-bottom: 4px; padding-bottom: 3px; }
+/* Remove only trailing blank space below the Decision action. */
+.lab-page.decision-page:not(.results-page) { padding-bottom: 0; }
+.otree-body:has(.decision-page:not(.results-page)) > br { display: none; }
