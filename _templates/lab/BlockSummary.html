@@ -1,0 +1,34 @@
+{{ block styles }}
+{{ include 'fixed/ComparableStyles.html' }}
+<style>
+    .block-group-summary .own-outcome > * { background: #fff3b0; font-weight: 700; }
+    .block-group-summary .block-feedback-table { table-layout: fixed; }
+</style>
+{{ endblock }}
+{{ block content }}
+<div class="interstitial-page"><main class="lab-page interstitial-card game-end-card lab-card block-group-summary">
+    <h1 style="text-align: center;">Riepilogo del Blocco {{ summary_section }}.{{ player.local_block }}</h1>
+    <table class="block-feedback-table">
+        <colgroup>
+            <col style="width: 30%;">
+            <col style="width: 40%;">
+            <col style="width: 30%;">
+        </colgroup>
+        <thead><tr>
+            <th scope="col">Azienda</th>
+            <th scope="col">Attrezzatura all'accertamento principale</th>
+            <th scope="col">Portafoglio finale</th>
+        </tr></thead>
+        <tbody>
+            {{ for row in summary_rows }}
+            <tr{{ if row.is_own }} class="own-outcome"{{ endif }}>
+                <th scope="row">{{ row.company }}</th>
+                <td>{{ row.main_equipment }} unità</td>
+                <td>{{ row.points }} punti</td>
+            </tr>
+            {{ endfor }}
+        </tbody>
+    </table>
+    <div class="actions d-flex justify-content-center"><button type="submit" class="otree-btn-next btn btn-primary">Continua</button></div>
+</main></div>
+{{ endblock }}

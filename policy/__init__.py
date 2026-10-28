@@ -22,6 +22,8 @@ from lab_threshold import ThresholdSection
 import lab_rules as rules
 import lab_route
 import lab_instructions as instructions
+import lab_comprehension as comprehension
+import lab_flow as flow
 from . import presentation
 import lab_reports as public_reports
 from lab_persistence import encode_fraction, decode_fraction
@@ -227,6 +229,13 @@ def complete_block(subsession):
     return engine_for(subsession).complete_block(subsession)
 
 
+class SectionSplash(Page):
+    template_name = 'lab/AdminSplash.html'
+    is_displayed = staticmethod(lambda player: player.round_number == 1)
+    vars_for_template = staticmethod(flow.section_splash)
+    error_message = staticmethod(flow.admin_only)
+
+
 class SessionReady(WaitPage):
     wait_for_all_groups = True
     body_text = 'Attendi che tutti i partecipanti della sessione siano pronti.'
@@ -251,13 +260,26 @@ class SectionInstructions(Page):
     vars_for_template = staticmethod(instructions.context)
 
 
-class SectionComprehension(Page):
-    template_name = 'general_instructions/LabQuiz.html'
-    form_model = 'player'
+class SectionComprehension(comprehension.pair_page(1)):
+    pass
+
+
+class SectionComprehension2(comprehension.pair_page(2)):
+    pass
+
+
+class ComprehensionWait(WaitPage):
+    wait_for_all_groups = True
+    body_text = 'Attendi che tutti i partecipanti completino le domande di comprensione.'
     is_displayed = staticmethod(lambda player: player.round_number == 1)
-    get_form_fields = staticmethod(instructions.quiz_fields)
-    vars_for_template = staticmethod(instructions.page_quiz_context)
-    error_message = staticmethod(instructions.check_answers)
+    after_all_players_arrive = staticmethod(flow.comprehension_complete)
+
+
+class FirstBlockSplash(Page):
+    template_name = 'lab/AdminSplash.html'
+    is_displayed = staticmethod(lambda player: player.period == 1 and player.local_block == 1)
+    vars_for_template = staticmethod(flow.first_block_splash)
+    error_message = staticmethod(flow.admin_only)
 
 
 class BlockStart(Page):
@@ -267,12 +289,19 @@ class BlockStart(Page):
 
     @staticmethod
     def is_displayed(player):
-        return player.period == 1
+        return player.period == 1 and player.local_block > 1
 
     @staticmethod
     def before_next_page(player, timeout_happened):
         require_block_ready(player)
         player.block_entered = True
+
+
+class BlockStartWait(WaitPage):
+    wait_for_all_groups = True
+    body_text = 'Attendi che tutti i partecipanti siano pronti per il nuovo blocco.'
+    is_displayed = staticmethod(lambda player: player.period == 1)
+    after_all_players_arrive = staticmethod(flow.start_block)
 
 
 class Reports(Page):
@@ -302,6 +331,7 @@ class ReportsWait(WaitPage):
 
 
 class Decision(Page):
+    timeout_seconds = 25
     form_model = 'player'
     form_fields = ['retirement']
 
@@ -322,6 +352,8 @@ class Decision(Page):
 
     @staticmethod
     def before_next_page(player, timeout_happened):
+        if timeout_happened and not player.decision_submitted:
+            player.retirement = 0
         if player.underlying_branch == 'M':
             public_reports.read(player)  # no partial report disclosure
         if Decision.error_message(player, dict(retirement=player.retirement)):
@@ -347,11 +379,23 @@ def feedback_context(player):
 
 class Result(Page):
     @staticmethod
+    def get_timeout_seconds(player):
+        return None if rules.is_main_period(player.period) or rules.is_follow_up_period(player.period) else 15
+
+    before_next_page = staticmethod(flow.result_complete)
+    @staticmethod
     def vars_for_template(player):
         return feedback_context(player)
 
 
+class ResultWait(WaitPage):
+    body_text = 'Attendi che tutti i manager del tuo gruppo completino il periodo.'
+    is_displayed = staticmethod(lambda player: not rules.is_follow_up_period(player.period))
+    after_all_players_arrive = staticmethod(flow.results_complete)
+
+
 class BlockEnd(Page):
+    template_name = 'lab/BlockSummary.html'
     @staticmethod
     def is_displayed(player):
         return rules.is_follow_up_period(player.period)
@@ -359,7 +403,7 @@ class BlockEnd(Page):
     @staticmethod
     def vars_for_template(player):
         feedback_context(player)
-        return dict(presentation.block_summary(player), **presentation.block_context(player))
+        return flow.block_summary_context(player)
 
     @staticmethod
     def before_next_page(player, timeout_happened):
@@ -379,5 +423,6 @@ class BlockEndWait(WaitPage):
     after_all_players_arrive = staticmethod(complete_block)
 
 
-page_sequence = [SessionReady, SectionComprehension, BlockStart, Reports, ReportsWait, Decision,
-                 PeriodWait, Result, BlockEnd, BlockEndWait]
+page_sequence = [SectionSplash, SessionReady, SectionComprehension, SectionComprehension2, ComprehensionWait,
+                 FirstBlockSplash, BlockStart, BlockStartWait, Reports, ReportsWait, Decision,
+                 PeriodWait, Result, ResultWait, BlockEndWait, BlockEnd]

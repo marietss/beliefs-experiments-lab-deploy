@@ -8,7 +8,6 @@
     <header class="lab-heading page-heading-row">
         <div class="wallet-badge current-points-badge"><span>Il tuo portafoglio:</span><strong id="current-wallet">{{ wallet }} punti</strong></div>
         <h1 class="page-heading">Blocco 3.{{ player.local_block }} · Periodo {{ player.period }} / 10</h1>
-        <button type="button" id="rules-open" class="btn btn-outline-secondary rules-button" aria-haspopup="dialog" aria-controls="rules-dialog">Istruzioni del blocco</button>
     </header>
     <div class="graph-row top-row">
         {{ include 'policy/DecisionEquipmentGraph.html' }}
@@ -27,7 +26,7 @@
         <div class="decision-slider-endpoints" aria-hidden="true"><span>0</span><span>100</span></div>
         <input type="hidden" id="retirement-value" name="retirement" value="0">
         {{ else }}
-        <h2 style="text-align: center;"><label for="retirement-slider">Quanta attrezzatura vuoi dismettere in questo periodo?</label></h2>
+        <h2 style="text-align: center;"><label for="retirement-slider">Quante unità di attrezzatura vuoi dismettere in questo periodo?</label></h2>
         <div class="decision-slider-scale" style="--available-units: {{ equipment }};">
             <span class="decision-slider-rail" aria-hidden="true"></span>
             <span class="decision-slider-unavailable" aria-hidden="true"></span>
@@ -49,13 +48,12 @@
     </div>
     <noscript><p>Per il cursore di dismissione è necessario JavaScript. Avvisa il personale di laboratorio.</p></noscript>
 </div>
-{{ include 'policy/Rules.html' }}
 <script id="lab-chart-config" type="application/json">{{ chart_config_json|safe }}</script>
 <!-- Core controls initialize independently of optional chart rendering. -->
 <script src="{{ static 'fixed/display-numbers.js' }}"></script>
-<script src="{{ static 'fixed/decision.js' }}"></script>
+<script src="{{ static 'fixed/decision.js' }}?v=printed-timing-2"></script>
 <script src="{{ static 'fixed/vendor/chart.umd-4.4.8.js' }}"></script>
-<script src="{{ static 'fixed/equipment-presentation.js' }}?v=anonymous-plans-5"></script>
-<script src="{{ static 'fixed/decision-charts.js' }}?v=short-references-4"></script>
+<script src="{{ static 'fixed/equipment-presentation.js' }}?v=revealed-threshold-bar-11"></script>
+<script src="{{ static 'fixed/decision-charts.js' }}?v=cost-axis-units-5"></script>
 <script src="{{ static 'policy/charts.js' }}"></script>
 {{ endblock }}

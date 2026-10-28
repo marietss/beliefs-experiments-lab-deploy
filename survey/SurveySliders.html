@@ -1,0 +1,21 @@
+{{ for slider in sliders }}
+<section class="survey-question survey-scale" data-survey-scale>
+    <label class="survey-question-label" for="slider-{{ slider.name }}">{{ slider.label }}</label>
+    {{ if slider.help }}<p class="survey-scale-help">{{ slider.help }}</p>{{ endif }}
+    <input type="range" class="form-range survey-range" id="slider-{{ slider.name }}" min="0" max="10" step="1"
+           value="{{ if slider.answered }}{{ slider.value }}{{ else }}0{{ endif }}"
+           {{ if not slider.answered }}data-untouched{{ endif }}
+           aria-valuetext="{{ if slider.answered }}{{ slider.value }}{{ else }}Nessun valore selezionato{{ endif }}"
+           aria-describedby="endpoints-{{ slider.name }} selected-{{ slider.name }} errors-{{ slider.name }}">
+    <div class="survey-ticks" aria-hidden="true">{{ for tick in ticks }}<span>{{ tick }}</span>{{ endfor }}</div>
+    <div class="survey-endpoints" id="endpoints-{{ slider.name }}"><span>{{ slider.endpoints.0 }}</span><span>{{ slider.endpoints.1 }}</span></div>
+    <p class="survey-selected" aria-live="polite">Valore selezionato: <strong id="selected-{{ slider.name }}">{{ if slider.answered }}{{ slider.value }}{{ else }}—{{ endif }}</strong></p>
+    <input type="hidden" id="id_{{ slider.name }}" name="{{ slider.name }}" value="{{ slider.value }}">
+    <div id="errors-{{ slider.name }}">{{ formfield_errors slider.name }}</div>
+    {{ if slider.name == 'experiment_clarity' }}
+    <div id="clarity-improvement" {{ if not clarity_improvement_visible }}hidden{{ endif }}>
+        {{ formfield 'experiment_clarity_improvement' }}
+    </div>
+    {{ endif }}
+</section>
+{{ endfor }}

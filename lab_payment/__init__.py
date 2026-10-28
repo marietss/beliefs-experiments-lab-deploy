@@ -39,7 +39,7 @@ class Player(BasePlayer):
 
 
 def creating_session(subsession):
-    if subsession.session.config['app_sequence'] != lab_route.full_sequence(subsession.session.config['branch']) + ['lab_payment']:
+    if subsession.session.config['app_sequence'] != lab_route.payment_sequence(subsession.session.config['branch']):
         raise ValueError('The laboratory payment app requires the complete payment route.')
     lab_route.validate_route(subsession.session.config, 'lab_payment')
     cash.initialize(subsession.session)

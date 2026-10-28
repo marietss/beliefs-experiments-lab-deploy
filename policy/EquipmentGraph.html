@@ -1,9 +1,5 @@
 <section class="lab-card section graph-section">
     <h2>Attrezzatura nel tempo</h2>
-    {{ if is_ambiguity }}
-        {{ if threshold_revealed }}<p id="revealed-threshold">Soglia effettiva dell'accertamento principale in questo blocco: <strong>{{ threshold }}</strong> unità.</p>
-        {{ else }}<p id="threshold-support">La soglia dell'accertamento principale è un numero intero sconosciuto da {{ support_low }} a {{ support_high }}. Viene rivelata dopo che tutte e sei le decisioni dell'accertamento principale sono state completate.</p>{{ endif }}
-    {{ endif }}
     <div class="chart-box"><canvas id="equipment-chart" role="img" aria-label="La tua attrezzatura e la media effettiva del gruppo di sei partecipanti dopo le decisioni"></canvas></div>
     <p id="chart-unavailable" class="chart-note" hidden>Il grafico non è disponibile. Puoi comunque usare le informazioni e i controlli di questa pagina.</p>
 </section>

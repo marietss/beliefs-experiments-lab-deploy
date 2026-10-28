@@ -1,14 +1,68 @@
-{{ block title }}Il tuo pagamento di laboratorio{{ endblock }}
+{{ block styles }}
+<style>
+    #_otree-title { text-align: center; margin-bottom: 28px; }
+    #earnings-summary .payment-thanks { margin: 20px 0 32px; }
+    #earnings-summary .payment-divider { border: 0; border-top: 1px solid #000; opacity: 1; margin: 24px 0; }
+    #earnings-summary dt { margin-top: 20px; }
+    #earnings-summary dd { margin-bottom: 20px; }
+    #earnings-summary .payment-total { border-top: 1px solid #000; margin-top: 32px; padding-top: 12px; text-align: left; }
+</style>
+{{ endblock }}
+{{ block title }}Il tuo pagamento per l'esperimento di oggi{{ endblock }}
 {{ block content }}
-<p>Grazie. Hai completato tutti e nove i blocchi. Il blocco selezionato esternamente viene ora rivelato qui sotto.</p>
+<div id="earnings-summary">
+<p class="payment-thanks">Grazie per aver partecipato all'esperimento di oggi!</p>
+<hr class="payment-divider">
 <dl>
-    <dt>Blocco selezionato</dt><dd id="selected-block">{{ selected_block }}</dd>
-    <dt>Portafoglio nel blocco selezionato</dt><dd id="selected-wallet">{{ selected_wallet }} punti</dd>
-    <dt>Compenso fisso</dt><dd id="fixed-fee">{{ fixed_fee }}</dd>
-    <dt>Componente variabile (0.01 EUR per punto)</dt><dd id="variable-payment">{{ variable_eur }} EUR</dd>
-    <dt>Pagamento totale</dt><dd id="total-payment">{{ total_eur }}</dd>
+    <dt>Blocco selezionato:</dt><dd id="selected-block">{{ if selected_block == 1 }}1.1{{ elif selected_block == 2 }}1.2{{ elif selected_block == 3 }}1.3{{ elif selected_block == 4 }}2.1{{ elif selected_block == 5 }}2.2{{ elif selected_block == 6 }}2.3{{ elif selected_block == 7 }}3.1{{ elif selected_block == 8 }}3.2{{ elif selected_block == 9 }}3.3{{ endif }}</dd>
+    <dt>Portafoglio alla fine del blocco selezionato:</dt><dd id="selected-wallet">{{ selected_wallet }} punti</dd>
+    <dt>Componente variabile:</dt><dd id="variable-payment">{{ if variable_eur.startswith('-') }}-{{ endif }}€{{ variable_eur.lstrip('-') }}</dd>
+    <dt>Compenso fisso:</dt><dd id="fixed-fee">{{ fixed_fee }}</dd>
+    <div class="payment-total">
+        <dt>Pagamento totale:</dt><dd id="payment-equation">{{ fixed_fee }} {{ if variable_eur.startswith('-') }}-{{ else }}+{{ endif }} €{{ variable_eur.lstrip('-') }} = <span id="total-payment">{{ total_eur }}</span></dd>
+    </div>
 </dl>
-<p>Il totale è pari al compenso fisso di €7.50 più 0.01 euro moltiplicato per il portafoglio del blocco selezionato. Un portafoglio negativo dà una componente variabile negativa. Il totale viene arrotondato una sola volta ai centesimi di euro. Gli importi esattamente a metà centesimo vengono arrotondati allontanandosi da zero.</p>
-<p>Rimani seduto e segui le istruzioni del personale di laboratorio per ricevere il pagamento.</p>
-<p><button class="otree-btn-next btn btn-primary">Continua</button></p>
+</div>
+
+<div id="bless-closing-splash" hidden>
+    <div class="row text-center p-3">
+        <div class="col">
+            <h3>Grazie per aver partecipato all'esperimento di oggi!</h3>
+        </div>
+    </div>
+    <div class="row text-center p-3">
+        <div class="col">
+            <img src="{{ static 'global/bless.png' }}" class="align-content-center w-50" alt="BLESS - Università di Bologna" />
+        </div>
+    </div>
+    <div class="row text-center p-3">
+        <div class="col">
+            <h3>Attendi le indicazioni del ricercatore</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row text-center p-3">
+    <div class="col">
+        <button type="button" id="toggle-earnings-summary" class="btn btn-primary" aria-controls="earnings-summary bless-closing-splash" aria-expanded="true">Nascondi riepilogo pagamento</button>
+    </div>
+</div>
+
+<script>
+(() => {
+    'use strict';
+    const summary = document.getElementById('earnings-summary');
+    const splash = document.getElementById('bless-closing-splash');
+    const title = document.getElementById('_otree-title');
+    const button = document.getElementById('toggle-earnings-summary');
+    button.addEventListener('click', () => {
+        const hideSummary = !summary.hidden;
+        summary.hidden = hideSummary;
+        splash.hidden = !hideSummary;
+        if (title) title.hidden = hideSummary;
+        button.textContent = hideSummary ? 'Mostra riepilogo pagamento' : 'Nascondi riepilogo pagamento';
+        button.setAttribute('aria-expanded', String(!hideSummary));
+    });
+})();
+</script>
 {{ endblock }}

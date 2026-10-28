@@ -35,7 +35,7 @@ def templates():
                  ambiguity_thresholds={}, triplet_id='', recruitment_batch='',
                  T=5, real_world_currency_per_point=0.01, participation_fee=7.50,
                  exchange_rate_text='', completion_code='',
-                 app_sequence=['fixed', BRANCH_APPS[branch], 'policy', 'lab_payment'])
+                 app_sequence=['fixed', BRANCH_APPS[branch], 'policy', 'survey', 'lab_payment'])
             for branch in BRANCH_APPS for size in (18, 24)]
 
 
@@ -63,7 +63,8 @@ def validate_config(config, *, currency='EUR', use_points=True):
         raise ValueError('Lab production route requires EUR payment mode and points.')
     if 'rho_exact' not in result:
         raise ValueError('Production rho requires a consistent canonical rho_exact companion.')
-    configured_rho(result)  # exact companion must agree; never approximate thirds
+    if configured_rho(result) != Fraction(1, 3):
+        raise ValueError('Current production design requires exact Policy rho=1/3.')
     from lab_cash import config_snapshot
     config_snapshot(result)  # unchanged fee/rate contract, including Currency types
     # Reject inconsistent obsolete aliases even though the lab engine ignores them.

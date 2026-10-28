@@ -136,7 +136,7 @@ def export_session(session, *, require_complete=False):
     from otree import settings
     sequence = session.config['app_sequence']
     expected = lab_route.full_sequence(session.config['branch'])
-    if sequence not in (expected, expected + ['lab_payment']):
+    if sequence not in (expected, lab_route.payment_sequence(session.config['branch'])):
         raise ValueError('Normalized lab exports require a full F → branch → policy route.')
     apps = {name: get_models_module(name) for name in expected}
     subs = {name: {ss.round_number: ss for ss in app.Subsession.objects_filter(session=session)} for name, app in apps.items()}

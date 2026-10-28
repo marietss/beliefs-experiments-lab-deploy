@@ -25,6 +25,10 @@ def full_sequence(branch):
     return ['fixed', BRANCH_APPS[branch], 'policy']
 
 
+def payment_sequence(branch):
+    return full_sequence(branch) + ['survey', 'lab_payment']
+
+
 def validate_route(config, app_name):
     """Accept the exact standalone route or exact configured integrated route."""
     from lab_production import is_production, validate_config
@@ -35,7 +39,7 @@ def validate_route(config, app_name):
     if sequence == [app_name]:
         return False
     substantive = full_sequence(config['branch'])
-    if sequence not in (substantive, substantive + ['lab_payment']) or app_name not in sequence:
+    if sequence not in (substantive, payment_sequence(config['branch'])) or app_name not in sequence:
         raise ValueError('Use the exact standalone route or fixed → configured branch app → policy.')
     return True
 

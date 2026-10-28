@@ -1,81 +1,73 @@
-# BLESS laboratory pilot runtime
+# Finalized BLESS pilot runtime
 
-Source: `/Users/andrea/PycharmProjects/beliefs-experiments-lab`  
-Source branch: `lab-conversion`  
-Source commit: `fdfa63e29d342176eb5e23d8babfc48e9583e900`  
-Source tag: `pre-pilot-2026-10-20` (points to that exact commit).
+Source repository: `/Users/andrea/PycharmProjects/beliefs-experiments-lab`
+Source branch: `italian-instructions-policy-update`
+Authoritative source commit: `4f942176157996146603d0417324659f344d3754`
+Previous deployment commit: `0976a77ed8aab53b00ff7f81e19d9400c606737b`.
 
-This is the minimal production runtime plus the explicitly requested pilot flow.
-Develop and test future changes in the full source repository first, then deliberately
-synchronize reviewed changes here. This construction has not run tests or a server.
-Do not treat it as a verified deployment or commit secrets.
+This repository contains only the runtime closure of the finalized pilot and
+production deployment configuration. See DEPLOYMENT_MANIFEST.md for every file,
+its provenance, exclusions and the sole runtime configuration difference.
+Future changes must first be developed/tested in the full source repository,
+then deliberately synchronized here. Never commit secrets or private schedules.
 
-## Runtime and launch
+## Environment and launch
 
-Provision Python **3.12.6** (the existing production guard requires this exact patch),
-oTree **6.0.15**, the requirements-file PostgreSQL driver, a persistent PostgreSQL
-study database, private environment values and external JSON described in
-`DEPLOYMENT_PRIVATE_CONFIG.md`. Requirements are copied unchanged; nothing was installed.
-Use a separate safe database for local inspection, never the collection database.
+Use Python **3.12.6**, **oTree 6.0.15**, the requirements-file **psycopg2** driver
+and persistent PostgreSQL. Provision the private environment and external study
+parameters described in DEPLOYMENT_PRIVATE_CONFIG.md. The startup guard is unchanged.
+No dependency, database or system service is installed or modified by this snapshot.
+Use a separate safe database for local smoke checks, never the collection database.
 
-After privately provisioning all required variables, from this directory:
+After provisioning all private variables, launch from this directory:
 
 ```sh
 OTREE_CONFIG_MODE=production OTREE_LAB_PAYMENTS=1 OTREE_PRODUCTION=1 OTREE_AUTH_LEVEL=STUDY otree prodserver
 ```
 
-`DATABASE_URL`, `OTREE_ADMIN_PASSWORD`, `OTREE_SECRET_KEY` and
-`OTREE_LAB_CONFIG_FILE` must already be exported privately. The Procfile is unchanged:
-`web: otree prodserver`. No in-memory/SQLite fallback or DEV/legacy menu is included.
-Configure server process supervision/restart, HTTPS/access controls, database backups
-and a tested recovery procedure before live collection. No connectivity, persistence,
-backup, supervision or browser checks have been performed by this construction task.
+DATABASE_URL, OTREE_ADMIN_PASSWORD, OTREE_SECRET_KEY and the optional external
+OTREE_LAB_CONFIG_FILE path must already be provisioned privately. Unconfigured
+production templates require parameters through the existing supported creation API.
+The Procfile remains `web: otree prodserver`. There is no DEV/legacy menu or
+in-memory/SQLite production fallback. Configure supervision, HTTPS, database backups
+and recovery on the actual server before collection.
 
-Create the intended six-template session with its exact 18/24 participants. Rooms
-`lab_18` and `lab_24` retain anonymous seat labels and secure URLs. Check attendance
-and all seats before release; no simulated replacements, size downgrades or early starts.
+## Room operation
 
-## Pilot participant sequence
+Open the same common URL on every lab computer: `<server-origin>/room/lab_18/`
+or `<server-origin>/room/lab_24/`. Participants enter their assigned label from
+the retained room file. use_secure_urls=False matches the finalized source; no
+individual link hash is required. Labels still control admission; knowledge of a
+valid label permits using that label, so distribute seat labels appropriately.
+Native admin access remains protected by OTREE_AUTH_LEVEL=STUDY.
 
-* Non-demo: BLESS splash is the existing all-session `fixed.SessionReady` WaitPage.
-* Demo: BLESS page with Continua, then the same initial readiness barrier.
-* Existing standalone F Practice, unchanged UI/mechanics.
-* F comprehension (6 questions / 3 panels), then F blocks 1.1–1.3.
-* After the block-3 all-session barrier: explicit section continuation with Continua.
-* Assigned E (4 / 2), A (6 / 3) or M (6 / 3) comprehension, then blocks 2.1–2.3.
-* After the block-6 all-session barrier: explicit section continuation with Continua.
-* Route-specific Policy comprehension (6 / 3), then blocks 3.1–3.3.
-* Existing final payment/receipt after block 9 and its barrier.
+## Participant flow
 
-Within blocks the original Reports → ReportsWait → Decision → PeriodWait → Result
-sequence is retained; BlockStart and BlockEnd are minimal participant-clicked pages,
-followed by the unchanged all-session BlockEndWait. Reports occur at the original
-block-start timing. Gameplay Rules remain available. Long General/Section instruction
-pages and General quiz are not in the active page sequence. Quiz review dependencies
-remain available; question wording, answers, feedback, scoring and counters are unchanged.
+Initial BLESS splash (no form, button or timer; admin Advance slowest participant(s))
+→ readiness barrier → Section-1 comprehension (three pairs) → session-wide wait
+→ first-block admin splash → block-start barrier → two forecasts → report barrier.
 
-**Initial release is attendance-driven, not experimenter-controlled:** for non-demo
-sessions the BLESS WaitPage automatically releases when every configured participant
-reaches the existing readiness barrier. There is no administrator release switch and
-no new controller. Arrange entry accordingly. After substantive sections, all participants
-first pass the original all-session boundary synchronization, then stay on a normal
-page without a timeout until they deliberately click Continua. The experimenter gives
-verbal permission; the software does not enforce that verbal instruction.
+Each block has ten periods: Decision (25 seconds, timeout submits zero) → six-person
+settlement barrier → Result (15 seconds in ordinary periods, manual Continua at
+Periods 5 and 10) → group result barrier. After Period 10 the session-wide block
+barrier precedes the anonymous six-firm BlockSummary, then participant Continua.
 
-## Treatment/data preservation
+Blocks 2/3 in each section use a normal block-start Continua followed by a
+session-wide barrier before forecasts. New Sections 2/3 have an admin instruction-
+waiting splash, two comprehension pairs, a session-wide comprehension barrier,
+and a first-block admin splash. Paper instructions remain the source of rules;
+no long instruction booklet, Practice, or rule-review popup is in the active flow.
 
-Exact arithmetic, reports, matching/handoffs, period and block barriers, thresholds,
-fines, redistribution, paid-block selection, payment and eleven `lab_export_v1`
-datasets retain their tagged implementations. M/P(M) still disclose all six anonymous
-Report-1 values and their anonymous mean; identities and Report 2 remain private.
-Only participant-flow wrappers, minimal transition templates, splash and the
-production-only settings selection differ. Payment, graphs and Italian gameplay UI
-are not replaced with historical versions. Preserve the database and export after
-completion before any cleanup.
+Routes: fixed → endogenous/ambiguity/messages → corresponding policy → survey
+→ lab_payment. There are nine blocks total. The individual survey has six pages,
+19 stored answer fields (including the conditional low-clarity follow-up), no waits
+and no effect on payment. The final receipt initially shows earnings and provides
+a reversible hide/show toggle to a closing BLESS splash; it has no submit/Continue.
 
-## BLESS logo
+M/P(M) display exactly the source's six anonymous Report-1 plans and their mean.
+Report 2 and identities remain private. A reveals only the current settled Main
+threshold; future thresholds remain external/private. Costs, fines, transfers,
+matching, paid block, exact payment and exports are the source implementation.
 
-Exact runtime path: `_static/global/bless.png`. Present: copied the original untracked source PNG (not part of the tag); SHA-256 `bd94c0e7b64c8d150585ad50b38931c78b56ed0acd6e38eba533c5540eca3ae6`.
-No generated or substitute logo is used.
-
-See `DEPLOYMENT_MANIFEST.md` for the complete runtime allowlist and intentional deviations.
+The authentic logo exists at `_static/global/bless.png` and is copied from the
+committed source. No replacement/generated logo or GPS PDF is included.

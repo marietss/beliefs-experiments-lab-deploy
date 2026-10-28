@@ -1,11 +1,11 @@
-{{ block styles }}{{ include 'fixed/ComparableStyles.html' }}<link rel="stylesheet" href="{{ static 'fixed/equipment-graph.css' }}?v=section-reference-3">{{ endblock }}
+{{ block styles }}{{ include 'fixed/ComparableStyles.html' }}<link rel="stylesheet" href="{{ static 'fixed/equipment-graph.css' }}?v=result-values-together-9">{{ endblock }}
 {{ block content }}
 <div class="lab-page decision-page results-page">
     <header class="lab-heading page-heading-row">
         <h1 class="page-heading" style="grid-column: 2;">Blocco 3.{{ player.local_block }} · Periodo {{ player.period }} / 10</h1>
     </header>
     {{ include 'policy/EquipmentGraph.html' }}
-    <section class="lab-card section control-section result-summary-card {{ if player.period == 5 or player.period == 10 }}result-check-card{{ endif }} {{ if player.period == 10 }}follow-up{{ endif }}">
+    <section class="lab-card section control-section result-summary-card {{ if player.period == 5 or player.period == 10 }}result-check-card{{ endif }} {{ if player.period == 5 }}policy-main-result{{ endif }} {{ if player.period == 10 }}follow-up{{ endif }}">
         <h2>{{ if player.period == 5 }}Accertamento principale — Periodo 5{{ elif player.period == 10 }}Esito dell'accertamento finale{{ else }}I tuoi risultati{{ endif }}</h2>
         <dl class="result-summary {{ if player.period == 5 or player.period == 10 }}check-result-summary{{ endif }}">
             <div><dt>Attrezzatura prima della decisione</dt><dd>{{ player.start_equipment }} unità</dd></div>
@@ -25,7 +25,7 @@
             <div><dt>Destinatari con attrezzatura zero</dt><dd id="recipient-count">{{ recipient_count }}</dd></div>
             <div><dt>Importo effettivamente redistribuito</dt><dd id="redistributed-pool">{{ redistributed_pool }} punti</dd></div>
             <div><dt>Hai diritto a ricevere un trasferimento</dt><dd id="policy-recipient">{{ if is_policy_recipient }}Sì{{ else }}No{{ endif }}</dd></div>
-            <div><dt>Il tuo trasferimento</dt><dd id="own-transfer">{{ own_transfer }} punti</dd></div>
+            <div class="policy-centered-outcome policy-outcome-divider"><dt>Il tuo trasferimento</dt><dd id="own-transfer">{{ own_transfer }} punti</dd></div>
 
             {{ endif }}
             {{ if player.period == 10 }}
@@ -34,17 +34,17 @@
             <div><dt>Attrezzatura dismessa automaticamente</dt><dd id="forced-retirement">{{ player.forced_retirement }} unità</dd></div>
             <div><dt>Costo della dismissione automatica</dt><dd id="forced-cost">{{ forced_retirement_cost }} punti</dd></div>
             {{ endif }}
-            <div><dt>{{ if player.period == 10 }}Attrezzatura finale{{ else }}La tua attrezzatura alla fine di questo periodo{{ endif }}</dt><dd id="final-equipment">{{ player.final_equipment }} unità</dd></div>
+            <div{{ if player.period == 10 }} class="final-equipment-row"{{ elif player.period == 5 }} class="policy-centered-outcome"{{ endif }}><dt>{{ if player.period == 10 }}Attrezzatura finale{{ else }}La tua attrezzatura alla fine di questo periodo{{ endif }}</dt><dd id="final-equipment">{{ player.final_equipment }} unità</dd></div>
             {{ if player.period != 5 and player.period != 10 }}
             <div class="wallet-result"><dt>{{ if player.period == 10 }}Portafoglio finale del blocco{{ elif player.period == 5 }}Portafoglio dopo il costo di questo periodo, la sanzione all'accertamento principale e il trasferimento{{ else }}Il tuo portafoglio{{ endif }}</dt><dd id="settled-wallet">{{ wallet_after }} punti</dd></div>
             {{ endif }}
         </dl>
-        {{ if player.period == 5 }}{{ if recipient_count == 0 }}<p id="no-recipients">Non ci sono destinatari idonei con attrezzatura zero. Non è stato redistribuito nulla.</p>{{ endif }}<p class="chart-note">L'uguaglianza non soddisfa l'obiettivo. Le sanzioni si applicano quando la media del gruppo è {{ threshold }} o meno; i partecipanti con attrezzatura zero sono esenti.</p>{{ endif }}
+        {{ if player.period == 5 }}{{ include 'lab/MainOutcomeNote.html' }}{{ if recipient_count == 0 }}<p id="no-recipients">Non ci sono destinatari idonei con attrezzatura zero. Non è stato redistribuito nulla.</p>{{ endif }}{{ endif }}
         {{ if player.period == 5 or player.period == 10 }}
         <p class="check-wallet-result"><strong>Il tuo portafoglio:</strong> <span id="settled-wallet">{{ wallet_after }} punti</span></p>
         {{ endif }}
     </section>
-    <div class="actions actions-row"><p><button class="otree-btn-next btn btn-primary">Continua</button></p></div>
+    <div class="actions actions-row"><button type="submit" class="otree-btn-next btn btn-primary">Continua</button></div>
 </div>
 <script id="lab-chart-config" type="application/json">{{ chart_config_json|safe }}</script>
 {{ include 'policy/ChartScripts.html' }}

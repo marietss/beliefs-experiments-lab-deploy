@@ -1,196 +1,204 @@
-# Deployment manifest
+# Deployment runtime manifest
 
-Source commit `fdfa63e29d342176eb5e23d8babfc48e9583e900`, tag `pre-pilot-2026-10-20`.
-Files are read from the tagged Git objects, not copied indiscriminately from the
-working tree. The sole source-working-tree exception is the authentic supplied
-BLESS logo. Present: copied the original untracked source PNG (not part of the tag); SHA-256 `bd94c0e7b64c8d150585ad50b38931c78b56ed0acd6e38eba533c5540eca3ae6`.
+Authoritative source: `4f942176157996146603d0417324659f344d3754` on `italian-instructions-policy-update`.
+Previous deployment: `0976a77ed8aab53b00ff7f81e19d9400c606737b`.
+All source files below were read with `git show COMMIT:path`; no uncommitted
+source content, tests, audit material, credentials or treatment schedules were copied.
 
-## Included runtime roles
+## Runtime roles
 
-* `fixed/`, `endogenous/`, `ambiguity/`, `messages/`, `policy/`, `lab_payment/`:
-  active app models/controllers, presentation/settlement helpers, gameplay templates,
-  Rules, receipt and pilot transitions. App `tests.py` files are excluded.
-* Root `lab_*.py` allowlist below: exact rules, persistence, matching, routes,
-  reports, thresholds, policy, presentation, comprehension, cash, production guards
-  and runtime custom exports. `lab_bot_checks.py` is excluded.
-* `general_instructions/`: template dependencies of Practice/comprehension and
-  retained instruction Page classes; no legacy Python app is included. Long pages
-  are inactive; quiz review dependencies remain accessible.
-* `stage_game_section1/` and `instructions_section1/`: only legacy CSS included by
-  active templates, not old experiment apps or screenshots.
-* `_templates/`: Italian framework notification and section-continuation template.
-* `_static/`: statically referenced local CSS/JS and Chart.js 4.4.8 with license/source
-  attribution; authentic BLESS PNG. No remote asset dependency is introduced.
-* `_rooms/`: exact anonymous 18/24-seat room files.
-* `requirements.txt`, `.python-version`, `Procfile`, `.gitignore`, `settings.py`:
-  original runtime pins/command, production-only menu and private environment handling.
+- Seven active apps: fixed, endogenous, ambiguity, messages, policy, survey, lab_payment.
+- Python import closure: exact rules, configuration validation, matching, persistence,
+  reports, presentation, paired comprehension, printed-question bank, flow gates,
+  cash accounting and runtime exports.
+- Active-page template/include closure, including shared AdminSplash,
+  ComprehensionPair, BlockSummary, MainOutcomeNote and the framework end notice.
+- Referenced local CSS/JS, BLESS PNG, Chart.js distribution and its license/source note.
+- Original requirements, Python version, Procfile and both participant-label files.
 
-## Intentional pilot differences
+Inactive instruction/practice/review classes remain in exact source controllers but
+are absent from page_sequence. Their unused templates/assets are not runtime roots.
+The two retained legacy CSS directories contain only styles included by active pages.
+`otree/Page.html` and `otree/WaitPage.html` are supplied by pinned oTree 6.0.15.
 
-Only five substantive app `__init__.py` files receive page-sequence changes; fixed
-also gets the splash wrapper on the unchanged readiness callback. Fixed reuses the
-existing standalone `LabPractice`; all SectionInstructions and General overview/quiz
-pages are inactive. Source/branch sections get a participant-clicked continuation
-after the original final BlockEndWait. BlockStart/BlockEnd templates are minimal.
-No experimental engine, export/payment implementation, quiz logic or chart assets
-are modified. Settings retain the source production values/guards while omitting
-DEV/legacy configuration lists and the old literal fallback secret. External study
-parameters remain mandatory before session creation, without illustrative A values.
+## Explicit deployment-only differences
 
-## Excluded categories
+- settings.py retains the existing production-only configuration and guard, mandatory
+  environment secret, EUR, six templates and external JSON loader. Its sole change
+  from the previous deployment settings is use_secure_urls=False for the two Rooms,
+  matching source production behavior. DEV/legacy menus, illustrative threshold
+  schedules and the source legacy fallback secret are intentionally omitted.
+- .gitignore is retained unchanged from the previous deployment.
+- This manifest, README_DEPLOYMENT.md and DEPLOYMENT_PRIVATE_CONFIG.md are deployment
+  documentation. No experimental implementation is customized for deployment.
 
-All unit/browser/UI/bot tests, `lab_bot_checks.py`, source audit/review/restoration
-reports, screenshots, audit directories and outputs, temporary files, logs, caches,
-IDE metadata, local databases, credentials/private JSON, legacy online Python apps,
-unused chart scripts, and Git history of the development repository. In particular:
-`coordination_audit_output/`, `timing_audit_output/`, `test_simulated_environment.py`.
-No source files were edited. No tests, staging, commits, pushes or installations run.
+## Exclusions
 
-## Exact runtime file allowlist
+All test_*.py, app tests.py (including survey/tests.py), survey/README.md,
+lab_bot_checks.py, audit directories, review reports, screenshots, logs, caches,
+IDE files, databases, .env files, credentials, private JSON, the GPS PDF and unused
+legacy instruction/practice/Rules/transition assets are excluded.
+
+## Complete manifest
+
+109 source-exact runtime files and five deployment-specific files (114 total).
 
 | File | Provenance |
 |---|---|
-| `.gitignore` | pilot-only change |
-| `.python-version` | exact tagged copy |
-| `DEPLOYMENT_PRIVATE_CONFIG.md` | new pilot file |
-| `Procfile` | exact tagged copy |
-| `README_DEPLOYMENT.md` | new pilot file |
-| `_rooms/lab_18.txt` | exact tagged copy |
-| `_rooms/lab_24.txt` | exact tagged copy |
-| `_static/ambiguity/charts.js` | exact tagged copy |
-| `_static/endogenous/charts.js` | exact tagged copy |
-| `_static/fixed/comparable-charts.js` | exact tagged copy |
-| `_static/fixed/decision-charts.js` | exact tagged copy |
-| `_static/fixed/decision-interface.css` | exact tagged copy |
-| `_static/fixed/decision.js` | exact tagged copy |
-| `_static/fixed/display-numbers.js` | exact tagged copy |
-| `_static/fixed/equipment-graph.css` | exact tagged copy |
-| `_static/fixed/equipment-presentation.js` | exact tagged copy |
-| `_static/fixed/instructions-parity.css` | exact tagged copy |
-| `_static/fixed/instructions-parity.js` | exact tagged copy |
-| `_static/fixed/interface.css` | exact tagged copy |
-| `_static/fixed/main-outcomes.css` | exact tagged copy |
-| `_static/fixed/parity.css` | exact tagged copy |
-| `_static/fixed/practice-interface.css` | exact tagged copy |
-| `_static/fixed/practice.js` | exact tagged copy |
-| `_static/fixed/reports.css` | exact tagged copy |
-| `_static/fixed/reports.js` | exact tagged copy |
-| `_static/fixed/vendor/Chart.js-LICENSE.txt` | exact tagged copy |
-| `_static/fixed/vendor/SOURCE.txt` | exact tagged copy |
-| `_static/fixed/vendor/chart.umd-4.4.8.js` | exact tagged copy |
-| `_static/global/bless.png` | original untracked logo (documented exception) |
-| `_static/messages/charts.js` | exact tagged copy |
-| `_static/policy/charts.js` | exact tagged copy |
-| `_templates/lab/SectionContinue.html` | new pilot file |
-| `_templates/otree/OutOfRangeNotification.html` | exact tagged copy |
-| `ambiguity/BlockEnd.html` | pilot-only change |
-| `ambiguity/BlockStart.html` | pilot-only change |
-| `ambiguity/ChartScripts.html` | exact tagged copy |
-| `ambiguity/Decision.html` | exact tagged copy |
-| `ambiguity/DecisionEquipmentGraph.html` | exact tagged copy |
-| `ambiguity/EquipmentGraph.html` | exact tagged copy |
-| `ambiguity/Reports.html` | exact tagged copy |
-| `ambiguity/Result.html` | exact tagged copy |
-| `ambiguity/Rules.html` | exact tagged copy |
-| `ambiguity/__init__.py` | pilot-only change |
-| `ambiguity/presentation.py` | exact tagged copy |
-| `endogenous/BlockEnd.html` | pilot-only change |
-| `endogenous/BlockStart.html` | pilot-only change |
-| `endogenous/ChartScripts.html` | exact tagged copy |
-| `endogenous/Decision.html` | exact tagged copy |
-| `endogenous/DecisionEquipmentGraph.html` | exact tagged copy |
-| `endogenous/EquipmentGraph.html` | exact tagged copy |
-| `endogenous/Reports.html` | exact tagged copy |
-| `endogenous/Result.html` | exact tagged copy |
-| `endogenous/Rules.html` | exact tagged copy |
-| `endogenous/__init__.py` | pilot-only change |
-| `endogenous/presentation.py` | exact tagged copy |
-| `fixed/BlessReady.html` | new pilot file |
-| `fixed/BlessSplash.html` | new pilot file |
-| `fixed/BlessSplashBody.html` | new pilot file |
-| `fixed/BlockEnd.html` | pilot-only change |
-| `fixed/BlockStart.html` | pilot-only change |
-| `fixed/ChartScripts.html` | exact tagged copy |
-| `fixed/ComparableStyles.html` | exact tagged copy |
-| `fixed/Decision.html` | exact tagged copy |
-| `fixed/DecisionEquipmentGraph.html` | exact tagged copy |
-| `fixed/EquipmentGraph.html` | exact tagged copy |
-| `fixed/Reports.html` | exact tagged copy |
-| `fixed/Result.html` | exact tagged copy |
-| `fixed/Rules.html` | exact tagged copy |
-| `fixed/__init__.py` | pilot-only change |
-| `fixed/presentation.py` | exact tagged copy |
-| `general_instructions/LabCanonicalAmbiguityBody.html` | exact tagged copy |
-| `general_instructions/LabCanonicalCosts.html` | exact tagged copy |
-| `general_instructions/LabCanonicalEndogenousBody.html` | exact tagged copy |
-| `general_instructions/LabCanonicalFixedBody.html` | exact tagged copy |
-| `general_instructions/LabCanonicalKnownMain.html` | exact tagged copy |
-| `general_instructions/LabCanonicalMessagesBody.html` | exact tagged copy |
-| `general_instructions/LabCanonicalPolicyBody.html` | exact tagged copy |
-| `general_instructions/LabCanonicalPracticeBody.html` | exact tagged copy |
-| `general_instructions/LabCanonicalPracticeScripts.html` | exact tagged copy |
-| `general_instructions/LabCanonicalSame.html` | exact tagged copy |
-| `general_instructions/LabCanonicalSectionBody.html` | exact tagged copy |
-| `general_instructions/LabCanonicalSectionReview.html` | exact tagged copy |
-| `general_instructions/LabComparableNavigation.html` | exact tagged copy |
-| `general_instructions/LabComparableStyles.html` | exact tagged copy |
-| `general_instructions/LabGeneralBody.html` | exact tagged copy |
-| `general_instructions/LabMainAmbiguityOutcomes.html` | exact tagged copy |
-| `general_instructions/LabMainKnownOutcomes.html` | exact tagged copy |
-| `general_instructions/LabOverview.html` | exact tagged copy |
-| `general_instructions/LabPlannedMeanExplanation.html` | exact tagged copy |
-| `general_instructions/LabPractice.html` | exact tagged copy |
-| `general_instructions/LabQuiz.html` | exact tagged copy |
-| `general_instructions/LabReportSliders.html` | exact tagged copy |
-| `general_instructions/LabSection.html` | exact tagged copy |
-| `general_instructions/instructions.css` | exact tagged copy |
-| `instructions_section1/instructions.css` | exact tagged copy |
-| `lab_cash.py` | exact tagged copy |
-| `lab_config.py` | exact tagged copy |
-| `lab_export.py` | exact tagged copy |
-| `lab_instructions.py` | exact tagged copy |
-| `lab_matching.py` | exact tagged copy |
-| `lab_payment/Payment.html` | exact tagged copy |
-| `lab_payment/__init__.py` | exact tagged copy |
-| `lab_persistence.py` | exact tagged copy |
-| `lab_policy.py` | exact tagged copy |
-| `lab_presentation.py` | exact tagged copy |
-| `lab_production.py` | exact tagged copy |
-| `lab_reports.py` | exact tagged copy |
-| `lab_route.py` | exact tagged copy |
-| `lab_rules.py` | exact tagged copy |
-| `lab_threshold.py` | exact tagged copy |
-| `messages/BlockEnd.html` | pilot-only change |
-| `messages/BlockStart.html` | pilot-only change |
-| `messages/BlockWait.html` | exact tagged copy |
-| `messages/ChartScripts.html` | exact tagged copy |
-| `messages/Decision.html` | exact tagged copy |
-| `messages/DecisionEquipmentGraph.html` | exact tagged copy |
-| `messages/EquipmentGraph.html` | exact tagged copy |
-| `messages/Reports.html` | exact tagged copy |
-| `messages/Result.html` | exact tagged copy |
-| `messages/Rules.html` | exact tagged copy |
-| `messages/__init__.py` | pilot-only change |
-| `messages/presentation.py` | exact tagged copy |
-| `messages/public_reports.py` | exact tagged copy |
-| `policy/BlockEnd.html` | pilot-only change |
-| `policy/BlockStart.html` | pilot-only change |
-| `policy/BlockWait.html` | exact tagged copy |
-| `policy/BranchRules.html` | exact tagged copy |
-| `policy/ChartScripts.html` | exact tagged copy |
-| `policy/Decision.html` | exact tagged copy |
-| `policy/DecisionEquipmentGraph.html` | exact tagged copy |
-| `policy/EquipmentGraph.html` | exact tagged copy |
-| `policy/Reports.html` | exact tagged copy |
-| `policy/Result.html` | exact tagged copy |
-| `policy/Rules.html` | exact tagged copy |
-| `policy/__init__.py` | pilot-only change |
-| `policy/presentation.py` | exact tagged copy |
-| `policy/settlement.py` | exact tagged copy |
-| `requirements.txt` | exact tagged copy |
-| `settings.py` | pilot-only change |
-| `stage_game_section1/decision.css` | exact tagged copy |
-| `stage_game_section1/pilot.css` | exact tagged copy |
+| `.python-version` | exact `4f94217` |
+| `Procfile` | exact `4f94217` |
+| `_rooms/lab_18.txt` | exact `4f94217` |
+| `_rooms/lab_24.txt` | exact `4f94217` |
+| `_static/ambiguity/charts.js` | exact `4f94217` |
+| `_static/endogenous/charts.js` | exact `4f94217` |
+| `_static/fixed/comparable-charts.js` | exact `4f94217` |
+| `_static/fixed/decision-charts.js` | exact `4f94217` |
+| `_static/fixed/decision-interface.css` | exact `4f94217` |
+| `_static/fixed/decision.js` | exact `4f94217` |
+| `_static/fixed/display-numbers.js` | exact `4f94217` |
+| `_static/fixed/equipment-graph.css` | exact `4f94217` |
+| `_static/fixed/equipment-presentation.js` | exact `4f94217` |
+| `_static/fixed/instructions-parity.css` | exact `4f94217` |
+| `_static/fixed/interface.css` | exact `4f94217` |
+| `_static/fixed/parity.css` | exact `4f94217` |
+| `_static/fixed/reports.css` | exact `4f94217` |
+| `_static/fixed/reports.js` | exact `4f94217` |
+| `_static/fixed/vendor/Chart.js-LICENSE.txt` | exact `4f94217` |
+| `_static/fixed/vendor/SOURCE.txt` | exact `4f94217` |
+| `_static/fixed/vendor/chart.umd-4.4.8.js` | exact `4f94217` |
+| `_static/global/bless.png` | exact `4f94217` |
+| `_static/messages/charts.js` | exact `4f94217` |
+| `_static/policy/charts.js` | exact `4f94217` |
+| `_static/survey/survey.css` | exact `4f94217` |
+| `_static/survey/survey.js` | exact `4f94217` |
+| `_templates/lab/AdminSplash.html` | exact `4f94217` |
+| `_templates/lab/BlockSummary.html` | exact `4f94217` |
+| `_templates/lab/ComprehensionPair.html` | exact `4f94217` |
+| `_templates/lab/MainOutcomeNote.html` | exact `4f94217` |
+| `_templates/otree/OutOfRangeNotification.html` | exact `4f94217` |
+| `ambiguity/BlockStart.html` | exact `4f94217` |
+| `ambiguity/ChartScripts.html` | exact `4f94217` |
+| `ambiguity/Decision.html` | exact `4f94217` |
+| `ambiguity/DecisionEquipmentGraph.html` | exact `4f94217` |
+| `ambiguity/EquipmentGraph.html` | exact `4f94217` |
+| `ambiguity/Reports.html` | exact `4f94217` |
+| `ambiguity/Result.html` | exact `4f94217` |
+| `ambiguity/__init__.py` | exact `4f94217` |
+| `ambiguity/presentation.py` | exact `4f94217` |
+| `endogenous/BlockStart.html` | exact `4f94217` |
+| `endogenous/ChartScripts.html` | exact `4f94217` |
+| `endogenous/Decision.html` | exact `4f94217` |
+| `endogenous/DecisionEquipmentGraph.html` | exact `4f94217` |
+| `endogenous/EquipmentGraph.html` | exact `4f94217` |
+| `endogenous/Reports.html` | exact `4f94217` |
+| `endogenous/Result.html` | exact `4f94217` |
+| `endogenous/__init__.py` | exact `4f94217` |
+| `endogenous/presentation.py` | exact `4f94217` |
+| `fixed/BlockStart.html` | exact `4f94217` |
+| `fixed/ChartScripts.html` | exact `4f94217` |
+| `fixed/ComparableStyles.html` | exact `4f94217` |
+| `fixed/Decision.html` | exact `4f94217` |
+| `fixed/DecisionEquipmentGraph.html` | exact `4f94217` |
+| `fixed/EquipmentGraph.html` | exact `4f94217` |
+| `fixed/Reports.html` | exact `4f94217` |
+| `fixed/Result.html` | exact `4f94217` |
+| `fixed/__init__.py` | exact `4f94217` |
+| `fixed/presentation.py` | exact `4f94217` |
+| `general_instructions/LabComparableStyles.html` | exact `4f94217` |
+| `general_instructions/LabReportSliders.html` | exact `4f94217` |
+| `general_instructions/instructions.css` | exact `4f94217` |
+| `instructions_section1/instructions.css` | exact `4f94217` |
+| `lab_cash.py` | exact `4f94217` |
+| `lab_comprehension.py` | exact `4f94217` |
+| `lab_config.py` | exact `4f94217` |
+| `lab_export.py` | exact `4f94217` |
+| `lab_flow.py` | exact `4f94217` |
+| `lab_instructions.py` | exact `4f94217` |
+| `lab_matching.py` | exact `4f94217` |
+| `lab_payment/Payment.html` | exact `4f94217` |
+| `lab_payment/__init__.py` | exact `4f94217` |
+| `lab_persistence.py` | exact `4f94217` |
+| `lab_policy.py` | exact `4f94217` |
+| `lab_presentation.py` | exact `4f94217` |
+| `lab_printed_questions.py` | exact `4f94217` |
+| `lab_production.py` | exact `4f94217` |
+| `lab_reports.py` | exact `4f94217` |
+| `lab_route.py` | exact `4f94217` |
+| `lab_rules.py` | exact `4f94217` |
+| `lab_threshold.py` | exact `4f94217` |
+| `messages/BlockStart.html` | exact `4f94217` |
+| `messages/BlockWait.html` | exact `4f94217` |
+| `messages/ChartScripts.html` | exact `4f94217` |
+| `messages/Decision.html` | exact `4f94217` |
+| `messages/DecisionEquipmentGraph.html` | exact `4f94217` |
+| `messages/EquipmentGraph.html` | exact `4f94217` |
+| `messages/Reports.html` | exact `4f94217` |
+| `messages/Result.html` | exact `4f94217` |
+| `messages/__init__.py` | exact `4f94217` |
+| `messages/presentation.py` | exact `4f94217` |
+| `messages/public_reports.py` | exact `4f94217` |
+| `policy/BlockStart.html` | exact `4f94217` |
+| `policy/BlockWait.html` | exact `4f94217` |
+| `policy/ChartScripts.html` | exact `4f94217` |
+| `policy/Decision.html` | exact `4f94217` |
+| `policy/DecisionEquipmentGraph.html` | exact `4f94217` |
+| `policy/EquipmentGraph.html` | exact `4f94217` |
+| `policy/Reports.html` | exact `4f94217` |
+| `policy/Result.html` | exact `4f94217` |
+| `policy/__init__.py` | exact `4f94217` |
+| `policy/presentation.py` | exact `4f94217` |
+| `policy/settlement.py` | exact `4f94217` |
+| `requirements.txt` | exact `4f94217` |
+| `stage_game_section1/decision.css` | exact `4f94217` |
+| `stage_game_section1/pilot.css` | exact `4f94217` |
+| `survey/SurveyPage.html` | exact `4f94217` |
+| `survey/SurveySliders.html` | exact `4f94217` |
+| `survey/__init__.py` | exact `4f94217` |
+| `settings.py` | production-only configuration described above |
+| `.gitignore` | unchanged deployment exclusions |
+| `DEPLOYMENT_MANIFEST.md` | deployment documentation |
+| `DEPLOYMENT_PRIVATE_CONFIG.md` | private configuration names only |
+| `README_DEPLOYMENT.md` | deployment operation/provenance |
 
-`DEPLOYMENT_MANIFEST.md` is the new manifest itself. The two other deployment documents
-are included in the table. This is a construction/provenance record, not a test report.
+## Removed obsolete deployment files
+
+- `_static/fixed/instructions-parity.js`
+- `_static/fixed/main-outcomes.css`
+- `_static/fixed/practice-interface.css`
+- `_static/fixed/practice.js`
+- `_templates/lab/SectionContinue.html`
+- `ambiguity/BlockEnd.html`
+- `ambiguity/Rules.html`
+- `endogenous/BlockEnd.html`
+- `endogenous/Rules.html`
+- `fixed/BlessReady.html`
+- `fixed/BlessSplash.html`
+- `fixed/BlessSplashBody.html`
+- `fixed/BlockEnd.html`
+- `fixed/Rules.html`
+- `general_instructions/LabCanonicalAmbiguityBody.html`
+- `general_instructions/LabCanonicalCosts.html`
+- `general_instructions/LabCanonicalEndogenousBody.html`
+- `general_instructions/LabCanonicalFixedBody.html`
+- `general_instructions/LabCanonicalKnownMain.html`
+- `general_instructions/LabCanonicalMessagesBody.html`
+- `general_instructions/LabCanonicalPolicyBody.html`
+- `general_instructions/LabCanonicalPracticeBody.html`
+- `general_instructions/LabCanonicalPracticeScripts.html`
+- `general_instructions/LabCanonicalSame.html`
+- `general_instructions/LabCanonicalSectionBody.html`
+- `general_instructions/LabCanonicalSectionReview.html`
+- `general_instructions/LabComparableNavigation.html`
+- `general_instructions/LabGeneralBody.html`
+- `general_instructions/LabMainAmbiguityOutcomes.html`
+- `general_instructions/LabMainKnownOutcomes.html`
+- `general_instructions/LabOverview.html`
+- `general_instructions/LabPlannedMeanExplanation.html`
+- `general_instructions/LabPractice.html`
+- `general_instructions/LabQuiz.html`
+- `general_instructions/LabSection.html`
+- `messages/BlockEnd.html`
+- `messages/Rules.html`
+- `policy/BlockEnd.html`
+- `policy/BranchRules.html`
+- `policy/Rules.html`

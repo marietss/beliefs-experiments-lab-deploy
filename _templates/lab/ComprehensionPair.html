@@ -1,0 +1,14 @@
+{{ block styles }}{{ include 'general_instructions/LabComparableStyles.html' }}{{ endblock }}
+{{ block content }}
+<div class="instruction-page"><main class="instruction-card comprehension-card">
+<h1>Sezione {{ instruction_section }} — Domande di comprensione</h1>
+<p class="instruction-progress">Domande {{ question_first }}–{{ question_last }} di {{ question_total }}</p>
+{{ for feedback in feedbacks }}<p class="alert alert-danger" role="alert">{{ feedback }}</p>{{ endfor }}
+{{ for question in questions }}
+<fieldset><legend style="font-size:1.1rem">{{ question.prompt }}</legend>
+{{ for value, label in question.options }}<label style="display:block;margin:0.7rem 0" for="{{ question.field }}-{{ value }}"><input type="radio" id="{{ question.field }}-{{ value }}" name="{{ question.field }}" value="{{ value }}" {{ if question.selected == value }}checked{{ endif }}> {{ label }}</label>{{ endfor }}
+</fieldset>
+{{ endfor }}
+<div class="d-flex justify-content-center"><button type="submit" class="otree-btn-next btn btn-primary">Verifica le risposte</button></div>
+</main></div>
+{{ endblock }}

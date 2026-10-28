@@ -1,0 +1,16 @@
+#_otree-title { text-align: center; }
+.survey-page { max-width: 880px; margin: 24px auto; }
+.survey-page .survey-question { margin: 28px 0; }
+.survey-question-label { display: block; font-size: 18px; font-weight: 600; margin-bottom: 14px; }
+.survey-scale-help { margin-bottom: 16px; }
+.survey-page textarea { min-height: 110px; }
+.survey-ticks, .survey-endpoints { display: flex; justify-content: space-between; gap: 6px; }
+.survey-ticks { font-size: 14px; }
+.survey-ticks span { min-width: 16px; text-align: center; }
+.survey-endpoints { margin-top: 6px; font-size: 14px; }
+.survey-endpoints span { max-width: 46%; }
+.survey-endpoints span:last-child { text-align: right; }
+.survey-selected { margin-top: 10px; text-align: center; }
+.survey-range[data-untouched]::-webkit-slider-thumb { opacity: 0; }
+.survey-range[data-untouched]::-moz-range-thumb { opacity: 0; }
+.survey-range[data-untouched]::-moz-range-progress { background: transparent; }

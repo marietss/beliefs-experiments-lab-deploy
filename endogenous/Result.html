@@ -1,4 +1,4 @@
-{{ block styles }}{{ include 'fixed/ComparableStyles.html' }}<link rel="stylesheet" href="{{ static 'fixed/equipment-graph.css' }}?v=section-reference-3">{{ endblock }}
+{{ block styles }}{{ include 'fixed/ComparableStyles.html' }}<link rel="stylesheet" href="{{ static 'fixed/equipment-graph.css' }}?v=result-values-together-9">{{ endblock }}
 {{ block content }}
 <div class="lab-page decision-page results-page">
     <header class="lab-heading page-heading-row">
@@ -18,20 +18,20 @@
             <div><dt>Media del gruppo strettamente maggiore di {{ threshold }}?</dt><dd id="target-satisfied">{{ if target_satisfied }}Sì{{ else }}No{{ endif }}</dd></div>
             <div><dt>Applicazione della sanzione all'accertamento principale al gruppo</dt><dd id="main-enforcement">{{ if main_enforcement_applied }}Sì{{ else }}No{{ endif }}</dd></div>
             <div><dt>Sanzione all'accertamento principale applicata a te</dt><dd id="main-applied">{{ if main_fine_applied }}Sì{{ else }}No{{ endif }}</dd></div>
-            <div><dt>Sanzione all'accertamento principale</dt><dd id="main-fine">{{ main_fine }} punti</dd></div>
+            <div><dt>La tua sanzione all'accertamento principale</dt><dd id="main-fine">{{ main_fine }} punti</dd></div>
             {{ endif }}
             {{ if player.period == 10 }}
             <div><dt>Sanzione all'accertamento finale applicata a te</dt><dd>{{ if follow_up_fine_applied }}Sì{{ else }}No{{ endif }}</dd></div>
-            <div><dt>Sanzione di 275 punti</dt><dd id="follow-up-fine">{{ follow_up_fine }} punti</dd></div>
-            <div><dt>Attrezzatura dismessa automaticamente fino a 0</dt><dd id="forced-retirement">{{ player.forced_retirement }} unità</dd></div>
+            <div><dt>La tua sanzione all'accertamento finale</dt><dd id="follow-up-fine">{{ follow_up_fine }} punti</dd></div>
+            <div><dt>Attrezzatura dismessa automaticamente</dt><dd id="forced-retirement">{{ player.forced_retirement }} unità</dd></div>
             <div><dt>Costo della dismissione automatica</dt><dd id="forced-cost">{{ forced_retirement_cost }} punti</dd></div>
             {{ endif }}
-            <div><dt>{{ if player.period == 10 }}Attrezzatura finale{{ else }}La tua attrezzatura alla fine di questo periodo{{ endif }}</dt><dd id="final-equipment">{{ player.final_equipment }} unità</dd></div>
+            <div{{ if player.period == 10 }} class="final-equipment-row"{{ endif }}><dt>{{ if player.period == 10 }}Attrezzatura finale{{ else }}La tua attrezzatura alla fine di questo periodo{{ endif }}</dt><dd id="final-equipment">{{ player.final_equipment }} unità</dd></div>
             {{ if player.period != 5 and player.period != 10 }}
             <div class="wallet-result"><dt>{{ if player.period == 10 }}Portafoglio alla fine del blocco{{ else }}Il tuo portafoglio{{ endif }}</dt><dd id="settled-wallet">{{ wallet_after }} punti</dd></div>
             {{ endif }}
         </dl>
-        {{ if player.period == 5 }}<div class="chart-note">{{ if target_satisfied }}<p>L'attrezzatura media del gruppo è maggiore di {{ threshold }} unità.</p><p>Non viene applicata alcuna sanzione.</p>{{ else }}<p>L'attrezzatura media del gruppo è uguale o inferiore a {{ threshold }} unità.</p>{{ if main_fine_applied }}<p>{{ main_fine }} punti vengono sottratti dal tuo portafoglio.</p>{{ else }}<p>Non viene applicata alcuna sanzione.</p>{{ endif }}{{ endif }}</div>{{ endif }}
+        {{ if player.period == 5 }}{{ include 'lab/MainOutcomeNote.html' }}{{ endif }}
         {{ if player.period == 5 or player.period == 10 }}
         <p class="check-wallet-result"><strong>Il tuo portafoglio:</strong> <span id="settled-wallet">{{ wallet_after }} punti</span></p>
         {{ endif }}

@@ -6,10 +6,22 @@
 
 /* Assessment results stand apart from ordinary two-column period summaries. */
 .results-page > .result-check-card { width: min(94vw, 1040px); max-width: 1040px; }
+.results-page > .result-summary-card.policy-main-result {
+    width: min(92vw, 960px) !important;
+    max-width: 960px !important;
+}
 .check-result-summary > div { min-width: 0; }
+.policy-main-result .policy-centered-outcome { grid-column: 1 / -1; text-align: center; }
+.results-page .policy-main-result .policy-outcome-divider { border-top: 1px solid #000; margin-top: 10px; padding-top: 12px; }
+.results-page .final-equipment-row { grid-column: 1 / -1; text-align: center; }
+.results-page .final-equipment-row dt,
+.results-page .final-equipment-row dd { display: inline; margin: 0; }
+.results-page .final-equipment-row dt::after { content: " = "; }
+.results-page .result-summary dd { display: inline-block; white-space: nowrap; }
 .lab-page .check-wallet-result { margin: 16px 0 4px; text-align: center; font-size: 18px; }
 @media (min-width: 801px) {
     .lab-page .check-result-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .lab-page .policy-main-result .check-result-summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 .lab-page .result-check-card { padding: 16px 22px; }

@@ -42,12 +42,10 @@
         confirm.disabled = false;
     }
     confirm.closest('form').addEventListener('submit', event => {
-        if (slider && selected === null) {
+        const timedOut = confirm.closest('form').querySelector('input[name="timeout_happened"][value="1"]');
+        if (slider && selected === null && !timedOut) {
             event.preventDefault();
             slider.focus();
         }
     });
-    const dialog = document.getElementById('rules-dialog');
-    document.getElementById('rules-open').addEventListener('click', () => dialog.showModal());
-    document.getElementById('rules-close').addEventListener('click', () => dialog.close());
 })();

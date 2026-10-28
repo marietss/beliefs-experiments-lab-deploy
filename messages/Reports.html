@@ -1,10 +1,9 @@
-{{ block styles }}<link rel="stylesheet" href="{{ static 'fixed/interface.css' }}"><link rel="stylesheet" href="{{ static 'fixed/reports.css' }}">{{ endblock }}
+{{ block styles }}{{ include 'fixed/ComparableStyles.html' }}<link rel="stylesheet" href="{{ static 'fixed/reports.css' }}">{{ endblock }}
 {{ block content }}
-<div class="lab-page transition lab-card">
+<div class="lab-page expectation-card">
     <h1>Blocco 2.{{ player.local_block }}</h1>
     <p><i>Prima della prima decisione di questo blocco, rispondi a queste due domande:</i></p>
-    <p>Per favore, rispondi a queste due domande utilizzando lo slider. Le tue risposte non influiscono sul tuo portafoglio.</p>
-    <p id="report-disclosure">La tua risposta alla domanda 1 contribuisce in forma anonima alla media dell'attrezzatura pianificata dichiarata per l'accertamento principale. Dopo che tutti e sei i membri avranno inviato le risposte, questa media sarà mostrata al gruppo per tutto il blocco. Le sei risposte alla domanda 1 saranno mostrate come punti grigi anonimi al Periodo 5, senza indicare le identità. La tua risposta alla domanda 2 rimane privata.</p>
+    <p id="report-disclosure">Dopo che tutti i manager hanno fornito le due previsioni, il grafico mostra i sei valori individuali della prima previsione, rappresentati da piccoli quadratini grigi, senza indicare a quale manager appartengano, e la media dei sei valori, rappresentata da un quadratino viola più grande. Tutti i quadratini sono posizionati in corrispondenza del Periodo 5. La seconda previsione rimane privata e non viene mostrata agli altri partecipanti.</p>
     {{ include 'general_instructions/LabReportSliders.html' }}
 </div>
 <script src="{{ static 'fixed/reports.js' }}"></script>

@@ -8,7 +8,7 @@ if CONFIG_MODE != 'production':
 validate_runtime(environ)
 SESSION_CONFIGS = load_templates(environ.get('OTREE_LAB_CONFIG_FILE'))
 ROOMS = [dict(name=f'lab_{size}', display_name=f'Laboratory — {size} seats',
-              participant_label_file=f'_rooms/lab_{size}.txt', use_secure_urls=True)
+              participant_label_file=f'_rooms/lab_{size}.txt', use_secure_urls=False)
          for size in (18, 24)]
 SESSION_CONFIG_DEFAULTS = dict(T=5, real_world_currency_per_point=0.01,
                                participation_fee=7.50, doc='Laboratory production')

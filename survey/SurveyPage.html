@@ -1,0 +1,15 @@
+{{ block title }}{{ survey_heading }}{{ endblock }}
+{{ block styles }}<link rel="stylesheet" href="{{ static 'survey/survey.css' }}?v=1">{{ endblock }}
+{{ block content }}
+<main class="survey-page">
+    {{ for paragraph in introduction }}<p>{{ paragraph }}</p>{{ endfor }}
+    {{ include 'survey/SurveySliders.html' }}
+    {{ for field in other_fields }}
+    <section class="survey-question">{{ formfield field.name }}</section>
+    {{ endfor }}
+    <div class="text-center my-4">
+        <button type="submit" id="survey-continue" class="otree-btn-next btn btn-primary" {{ if sliders }}disabled{{ endif }}>Continua</button>
+    </div>
+</main>
+{{ if sliders }}<script src="{{ static 'survey/survey.js' }}?v=2"></script>{{ endif }}
+{{ endblock }}

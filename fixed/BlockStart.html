@@ -1,7 +1,11 @@
 {{ block styles }}{{ include 'fixed/ComparableStyles.html' }}{{ endblock }}
 {{ block content }}
 <div class="interstitial-page"><div class="lab-page interstitial-card lab-card" style="text-align: center;">
-    <p>Sei stato assegnato a un nuovo gruppo.</p>
+    <h1>Blocco 1.{{ player.local_block }}</h1>
+    {{ if player.local_block > 1 }}
+    <p>Sei stato assegnato ad un nuovo gruppo.</p>
+    <p>Premi continua per iniziare il nuovo blocco</p>
+    {{ endif }}
     <div class="actions"><button type="submit" class="otree-btn-next btn btn-primary">Continua</button></div>
 </div></div>
 {{ endblock }}

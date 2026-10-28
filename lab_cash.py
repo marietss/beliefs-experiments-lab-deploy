@@ -151,7 +151,7 @@ def finalize(player):
     """Finalize at the terminal payment stage, after the Block-9 session barrier."""
     import lab_route
     session, participant = player.session, player.participant
-    if session.config['app_sequence'] != lab_route.full_sequence(session.config['branch']) + ['lab_payment']:
+    if session.config['app_sequence'] != lab_route.payment_sequence(session.config['branch']):
         raise ValueError('Final lab payment requires the complete laboratory payment route.')
     checked_config(session)
     if not lab_route.block_subsession(session, 9, last=True).block_barrier_complete:

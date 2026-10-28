@@ -6,7 +6,7 @@
     try {
         const config = JSON.parse(document.getElementById('lab-chart-config').textContent);
         const prepareCost = cost => {
-            cost.config.options.scales.x.title.text = 'Attrezzatura';
+            cost.config.options.scales.x.title.text = 'Unità di attrezzatura';
             cost.config.options.scales.y.title.text = 'Costo';
             cost.config.options.scales.x.min = 0;
             cost.config.options.scales.x.max = 100;

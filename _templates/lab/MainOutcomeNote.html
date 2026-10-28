@@ -1,0 +1,13 @@
+<div class="chart-note text-center">
+    {{ if target_satisfied }}
+    <p>L'attrezzatura media del gruppo è maggiore di {{ threshold }} unità.</p>
+    <p>Non viene applicata alcuna sanzione.</p>
+    {{ else }}
+    <p>L'attrezzatura media del gruppo è uguale o inferiore a {{ threshold }} unità.</p>
+    {{ if main_fine_applied }}
+    <p>{{ main_fine }} punti vengono sottratti dal tuo portafoglio.</p>
+    {{ else }}
+    <p>Non viene applicata alcuna sanzione.</p>
+    {{ endif }}
+    {{ endif }}
+</div>
