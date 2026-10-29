@@ -30,10 +30,10 @@
     }
 </style>
 {{ endblock }}
-{{ block title }}Il tuo pagamento per l'esperimento di oggi{{ endblock }}
+{{ block title }}Il tuo pagamento per lo studio di oggi{{ endblock }}
 {{ block content }}
 <div id="earnings-summary">
-    <p class="payment-thanks">Grazie per aver partecipato all'esperimento di oggi!</p>
+    <p class="payment-thanks">Grazie per aver partecipato allo studio di oggi!</p>
     <div class="row payment-components">
         <div class="col-md-6">
             <dl>
@@ -43,24 +43,25 @@
         </div>
         <div class="col-md-6">
             <dl>
-                <dt>Componente variabile:</dt><dd id="variable-payment">{{ if variable_eur.startswith('-') }}-{{ endif }}€{{ variable_eur.lstrip('-') }}</dd>
                 <dt>Componente fissa:</dt><dd id="fixed-fee">{{ fixed_fee }}</dd>
+                <dt>Componente variabile: <span class="fw-normal">(punti nel portafoglio × 0.01)</span></dt><dd id="variable-payment">{{ if variable_eur.startswith('-') }}-{{ endif }}€{{ variable_eur.lstrip('-') }}</dd>
+                <dt>Task individuale:</dt><dd id="bucket-payment">{{ bucket_eur }}</dd>
             </dl>
         </div>
     </div>
     <hr class="payment-divider">
     <section class="payment-total" aria-labelledby="payment-heading">
         <h2 id="payment-heading">Pagamento</h2>
-        <p id="payment-equation"><span class="payment-calculation">{{ fixed_fee }} {{ if variable_eur.startswith('-') }}-{{ else }}+{{ endif }} €{{ variable_eur.lstrip('-') }} = </span><strong id="total-payment">{{ total_eur }}</strong></p>
+        <p id="payment-equation"><span class="payment-calculation">{{ fixed_fee }} {{ if variable_eur.startswith('-') }}-{{ else }}+{{ endif }} €{{ variable_eur.lstrip('-') }} + {{ bucket_eur }} = </span><strong id="total-payment">{{ total_eur }}</strong></p>
     </section>
 </div>
 
 <div id="bless-closing-splash" hidden>
-    <h2>Grazie per aver partecipato all'esperimento di oggi!</h2>
+    <h2>Grazie per aver partecipato allo studio di oggi!</h2>
 </div>
 
 <section id="payment-receipt" class="payment-receipt" aria-labelledby="receipt-heading">
-    <h2 id="receipt-heading">Per completare il pagamento</h2>
+    <h2 id="receipt-heading">Per ricevere il pagamento</h2>
     <div class="payment-receipt-content">
         <img src="{{ static 'global/payment-receipt-qr.png' }}" class="payment-receipt-qr" alt="QR code per compilare la ricevuta" width="180" height="180" />
         <ol>

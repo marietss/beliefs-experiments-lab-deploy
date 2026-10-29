@@ -1,0 +1,16 @@
+{{ block title }}Distribuisci le palline tra i due contenitori.{{ endblock }}
+{{ block styles }}<link rel="stylesheet" href="{{ static 'bucket/bucket.css' }}?v=bucket-readability-1">{{ endblock }}
+{{ block content }}
+<main class="bucket-task">
+<p class="bucket-rule">La regola è mettere le palline nel contenitore blu.</p>
+<div class="bucket-status"><span>Tempo rimanente: <strong id="bucket-clock">05:00</strong></span><span>Palline rimanenti: <strong id="balls-remaining">50</strong></span></div>
+<div class="bucket-arena">
+<section class="bucket-column"><h2>Blu</h2><p>€0,05 per pallina</p><div class="bucket-vessel blue" data-bucket="blue" aria-label="Contenitore blu"><div class="placed-balls" id="blue-balls"></div></div><p id="blue-summary">Blu: 0 palline — €0,00</p></section>
+<div class="bucket-source"><button type="button" id="active-ball" aria-label="Trascina la pallina nel contenitore scelto" disabled></button><span id="bucket-connection" role="status">Connessione…</span></div>
+<section class="bucket-column"><h2>Giallo</h2><p>€0,10 per pallina</p><div class="bucket-vessel yellow" data-bucket="yellow" aria-label="Contenitore giallo"><div class="placed-balls" id="yellow-balls"></div></div><p id="yellow-summary">Giallo: 0 palline — €0,00</p></section>
+</div>
+<p class="bucket-current">Guadagno attuale: <strong id="bucket-earnings">€0,00</strong></p>
+<noscript>Per svolgere questo task è necessario JavaScript. Avvisa il ricercatore.</noscript>
+</main>
+{{ endblock }}
+{{ block scripts }}<script src="{{ static 'bucket/bucket.js' }}?v=ball-pointer-1"></script>{{ endblock }}

@@ -26,9 +26,9 @@ class Group(BaseGroup):
 WILLING_ENDPOINTS = ('Per niente disposto/a a farlo', 'Molto disposto/a a farlo')
 DESCRIBE_ENDPOINTS = ('Non mi descrive per niente', 'Mi descrive perfettamente')
 SLIDERS = {
-    'experiment_liking': dict(label='Quanto ti è piaciuto partecipare a questo esperimento?',
+    'experiment_liking': dict(label='Quanto ti è piaciuto partecipare a questo studio?',
                               endpoints=('Per nulla', 'Moltissimo')),
-    'experiment_clarity': dict(label="Quanto ti sono sembrate chiare le istruzioni e le schermate dell'esperimento?",
+    'experiment_clarity': dict(label="Quanto ti sono sembrate chiare le istruzioni e le schermate dello studio?",
                                endpoints=('Per nulla chiare', 'Del tutto chiare')),
     'falk_future': dict(label='Quanto sei disposto/a a rinunciare a qualcosa da cui trai beneficio oggi per beneficiarne maggiormente in futuro?',
                         endpoints=WILLING_ENDPOINTS),
@@ -60,8 +60,8 @@ class Player(BasePlayer):
     experiment_clarity_improvement = models.LongStringField(blank=True, label='Come miglioreresti le istruzioni per renderle più chiare?')
     # Empty text is checked by the exact minimum-length validator below, rather
     # than the generic blank validator. Both responses remain mandatory.
-    experiment_perceived_purpose = models.LongStringField(blank=True, label="Secondo te, qual era l'oggetto principale dell'esperimento? Descrivilo brevemente con parole tue.")
-    experiment_changes = models.LongStringField(blank=True, label="C'è qualcosa che cambieresti per rendere l'esperimento più chiaro o più semplice da svolgere? Se non cambieresti nulla, spiegane brevemente il motivo.")
+    experiment_perceived_purpose = models.LongStringField(blank=True, label="Secondo te, qual era l'oggetto principale delle prime tre sezioni di questo studio? Descrivilo brevemente con parole tue.")
+    experiment_changes = models.LongStringField(blank=True, label="C'è qualcosa che cambieresti per rendere lo studio più chiaro o più semplice da svolgere? Se non cambieresti nulla, spiegane brevemente il motivo.")
     gender = models.StringField(label='Con quale genere ti identifichi?',
                                 choices=['Uomo', 'Donna', 'Altro', 'Preferisco non rispondere'])
     age = models.IntegerField(min=18, max=100, label='Quanti anni hai?')
@@ -76,7 +76,7 @@ class Player(BasePlayer):
     unibo_time = models.StringField(label="Da quanto tempo studi o lavori a Bologna?", choices=[
         'Questo è il mio primo anno', 'Questo è il mio secondo anno', 'Questo è il mio terzo anno',
         'Questo è il mio quarto anno', 'Da più di quattro anni', 'Preferisco non rispondere'])
-    previous_experiment_experience = models.StringField(label='Prima di oggi, quante volte avevi già partecipato a un esperimento economico in laboratorio o online?', choices=[
+    previous_experiment_experience = models.StringField(label='Prima di oggi, quante volte avevi già partecipato ad uno studio nel laboratorio BLESS o online?', choices=[
         'Mai', '1 volta', '2–5 volte', 'Più di 5 volte', 'Non ricordo / Preferisco non rispondere'])
     falk_future = scale('falk_future')
     falk_risk = scale('falk_risk')
@@ -88,12 +88,12 @@ class Player(BasePlayer):
 
 def experiment_perceived_purpose_error_message(player, value):
     if non_whitespace_length(value) < 20:
-        return "Descrivi brevemente con qualche dettaglio che cosa pensi studiasse l'esperimento."
+        return "La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più quello che, secondo te, era l'oggetto principale delle prime tre sezioni."
 
 
 def experiment_changes_error_message(player, value):
     if non_whitespace_length(value) < 20:
-        return 'Descrivi brevemente con qualche dettaglio che cosa pensi.'
+        return "La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più cosa cambieresti oppure, se per te è tutto chiaro, dicci cosa ti è piaciuto di più."
 
 
 def city_birth_error_message(player, value):
@@ -151,20 +151,21 @@ class SurveyWelcome(SurveyFormPage):
     presentation = 'welcome'
     introduction = [
         'Ti chiediamo ora di compilare un breve questionario finale.',
-        "Le tue risposte saranno trattate in forma riservata e utilizzate esclusivamente per l'analisi dei dati dell'esperimento.",
+        'Nelle domande a risposta aperta, scrivi una breve risposta con parole tue.',
+        "Le tue risposte saranno trattate in forma riservata e utilizzate esclusivamente per l'analisi dei dati dello studio.",
         'Le risposte al questionario non influiranno sul tuo pagamento.',
     ]
 
 
 class ExperimentFeedback(SurveyFormPage):
-    heading = "La tua esperienza nell'esperimento"
+    heading = 'La tua esperienza nello studio'
     form_fields = ['experiment_liking', 'experiment_clarity', 'experiment_clarity_improvement', 'experiment_perceived_purpose', 'experiment_changes']
 
     @staticmethod
     def error_message(player, values):
         clarity = values.get('experiment_clarity')
         if type(clarity) is int and 0 <= clarity < 5 and non_whitespace_length(values.get('experiment_clarity_improvement')) < 5:
-            return {'experiment_clarity_improvement': 'Descrivi brevemente come renderesti più chiare le istruzioni.'}
+            return {'experiment_clarity_improvement': "La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più come renderesti più chiare le istruzioni."}
 
 
 class Demographics(SurveyFormPage):

@@ -10,7 +10,7 @@ def admin_only(player, values):
 
 
 def initial_splash(player):
-    return dict(splash_title='Esperimento', splash_message='L’esperimento inizierà a breve.', show_logo=True)
+    return dict(splash_title='Studio', splash_message='Lo studio inizierà a breve.', show_logo=True)
 
 
 def section_splash(player):

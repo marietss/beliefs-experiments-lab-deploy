@@ -24,7 +24,7 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     RECORD_FIELDS = ('paid_block', 'selected_wallet', 'conversion', 'fixed_fee',
-                     'variable_eur', 'pre_round_eur', 'final_eur_cents',
+                     'variable_eur', 'bucket_payoff_cents', 'pre_round_eur', 'final_eur_cents',
                      'admin_payoff_points', 'rounding')
     finalized = models.BooleanField(initial=False)
     paid_block = models.IntegerField(blank=True)
@@ -32,6 +32,7 @@ class Player(BasePlayer):
     conversion = models.LongStringField(initial='', blank=True)
     fixed_fee = models.LongStringField(initial='', blank=True)
     variable_eur = models.LongStringField(initial='', blank=True)
+    bucket_payoff_cents = models.IntegerField(initial=0)
     pre_round_eur = models.LongStringField(initial='', blank=True)
     final_eur_cents = models.IntegerField(blank=True)
     admin_payoff_points = models.IntegerField(blank=True)
@@ -54,6 +55,7 @@ class Payment(Page):
             selected_wallet=points(decode_fraction(record['selected_wallet'])),
             fixed_fee=cash.cash_display(750),
             variable_eur=points(decode_fraction(record['variable_eur'])),
+            bucket_eur=cash.cash_display(record['bucket_payoff_cents']),
             total_eur=cash.cash_display(record['final_eur_cents']),
         )
 

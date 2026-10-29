@@ -26,7 +26,7 @@ def full_sequence(branch):
 
 
 def payment_sequence(branch):
-    return full_sequence(branch) + ['survey', 'lab_payment']
+    return full_sequence(branch) + ['bucket', 'survey', 'lab_payment']
 
 
 def validate_route(config, app_name):

@@ -35,7 +35,7 @@ def templates():
                  ambiguity_thresholds={}, triplet_id='', recruitment_batch='',
                  T=5, real_world_currency_per_point=0.01, participation_fee=7.50,
                  exchange_rate_text='', completion_code='',
-                 app_sequence=['fixed', BRANCH_APPS[branch], 'policy', 'survey', 'lab_payment'])
+                 app_sequence=['fixed', BRANCH_APPS[branch], 'policy', 'bucket', 'survey', 'lab_payment'])
             for branch in BRANCH_APPS for size in (18, 24)]
 
 

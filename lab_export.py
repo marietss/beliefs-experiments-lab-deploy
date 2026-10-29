@@ -43,7 +43,7 @@ HEADERS = {
         'final_equipment', 'final_block_wallet', 'settlement_complete', 'feedback_submitted', 'block_barrier_complete'),
     'ledger': BASE + ('participant_code', 'global_block', 'final_block_wallet', 'ledger_version'),
     'payment': BASE + ('participant_code', 'finalized', 'paid_block', 'selected_wallet', 'conversion', 'fixed_fee',
-        'variable_eur', 'pre_round_eur', 'final_eur_cents', 'final_eur', 'rounding', 'currency',
+        'variable_eur', 'bucket_payoff_cents', 'pre_round_eur', 'final_eur_cents', 'final_eur', 'rounding', 'currency',
         'admin_payoff_points', 'admin_payoff_stored', 'admin_cash_eur'),
 }
 KEYS = {
@@ -110,6 +110,9 @@ def _payment_row(player, base):
     if (record['paid_block'] != player.session.vars[lab_cash.CONFIG_KEY]['paid_block']
             or any(record[k] != player.session.vars[lab_cash.CONFIG_KEY][k] for k in ('conversion', 'fixed_fee', 'rounding', 'currency'))):
         raise ValueError('Payment record disagrees with configured payment snapshot.')
+    import bucket
+    if record['bucket_payoff_cents'] != bucket.payment_bonus(pp):
+        raise ValueError('Payment bucket component disagrees with completed task.')
     cents = record['final_eur_cents']
     if type(cents) is not int:
         raise ValueError('Final payment cents must be a strict integer.')
@@ -119,7 +122,7 @@ def _payment_row(player, base):
         raise ValueError('Stored admin payment disagrees with finalized payment.')
     row.update({key: record[key] for key in (
         'finalized', 'paid_block', 'selected_wallet', 'conversion', 'fixed_fee', 'variable_eur',
-        'pre_round_eur', 'final_eur_cents', 'rounding', 'currency', 'admin_payoff_points')})
+        'bucket_payoff_cents', 'pre_round_eur', 'final_eur_cents', 'rounding', 'currency', 'admin_payoff_points')})
     row.update(final_eur=_cash_text(cents), admin_payoff_stored=encode_fraction(admin_points),
                admin_cash_eur=encode_fraction(admin_cash))
     return row

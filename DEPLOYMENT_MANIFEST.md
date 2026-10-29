@@ -173,3 +173,9 @@ changes. The payment summary uses two columns; hiding it keeps the shared QR and
 receipt instructions visible. Payment arithmetic, selected block and exports are
 unchanged. Tests, source READMEs, audit material and screenshots are not deployed.
 This manifest supersedes the base snapshot provenance in README_DEPLOYMENT.md.
+
+## Bucket release candidate
+
+Source: e485d679e535d0dffaec8e40018b3fbfe0bc6b3e; rollback: a4567fdc4f156163805ca84fa8207d3a79fd5f07.
+
+Runtime updates: `bucket/__init__.py`, `bucket/BucketInstructions.html`, `bucket/BucketTask.html`, `bucket/BucketComplete.html`, `_static/bucket/bucket.css`, `_static/bucket/bucket.js`, `lab_cash.py`, `lab_export.py`, `lab_payment/Payment.html`, `lab_payment/__init__.py`, `lab_production.py`, `lab_route.py`, `survey/__init__.py`, `lab_flow.py`, `_templates/lab/AdminSplash.html`. Production-only `settings.py` remains unchanged; route configuration comes from `lab_production.py`.

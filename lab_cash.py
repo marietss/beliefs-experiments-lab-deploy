@@ -57,18 +57,21 @@ def euro_cents(amount):
     return -rounded if amount < 0 else rounded
 
 
-def calculate_payment(wallets, paid_block, *, rate=RATE, fee=FEE):
+def calculate_payment(wallets, paid_block, *, rate=RATE, fee=FEE, bucket_payoff_cents=0):
     key = _block(paid_block)
     wallets = validate_wallets(wallets, complete=True)
     if encode_fraction(rate) != encode_fraction(RATE) or encode_fraction(fee) != encode_fraction(FEE):
         raise ValueError('Lab payment requires conversion 0.01 and fixed fee 7.50.')
     wallet = decode_fraction(wallets[key])
     variable = wallet * rate
-    total = fee + variable
+    if type(bucket_payoff_cents) is not int or not 0 <= bucket_payoff_cents <= 500:
+        raise ValueError('Invalid bucket bonus in integer cents.')
+    total = fee + variable + Fraction(bucket_payoff_cents, 100)
     cents = euro_cents(total)
     return dict(version=1, finalized=True, paid_block=paid_block,
                 selected_wallet=encode_fraction(wallet), conversion=encode_fraction(rate),
                 fixed_fee=encode_fraction(fee), variable_eur=encode_fraction(variable),
+                bucket_payoff_cents=bucket_payoff_cents,
                 pre_round_eur=encode_fraction(total), final_eur_cents=cents,
                 admin_payoff_points=cents - 750, currency='EUR', rounding=ROUNDING)
 
@@ -156,7 +159,10 @@ def finalize(player):
     checked_config(session)
     if not lab_route.block_subsession(session, 9, last=True).block_barrier_complete:
         raise ValueError('Final payment is unavailable before the Block-9 session barrier.')
-    record = calculate_payment(participant.vars.get(WALLETS_KEY, {}), session.config['paid_block'])
+    import bucket
+    bonus = bucket.payment_bonus(participant)
+    record = calculate_payment(participant.vars.get(WALLETS_KEY, {}), session.config['paid_block'],
+                               bucket_payoff_cents=bonus)
     expected_cash = Decimal(record['final_eur_cents']) / 100
     from otree.api import cu
     if Decimal(session._get_payoff_plus_participation_fee(cu(record['admin_payoff_points']))) != expected_cash:
