@@ -1,0 +1,19 @@
+<div class="instruction-section"><h2>Cost of Retiring Equipment</h2>
+<p><strong>Retiring</strong> your firm’s equipment has a <strong>cost</strong>. That cost is <strong>deducted from your budget</strong>.</p>
+            <p>The cost is the same for all participants. It depends on how many units of equipment you retire in each period. During the study, the Decision Screen shows the exact cost for the amount you select. You do not need to calculate it yourself.</p>
+            <p>The cost of retiring a given number of units is <strong>the same</strong> in every period.</p>
+            <div class="instruction-example">
+                <p><strong>Example:</strong></p>
+                <p>Retiring 50 units costs 250 points, whether you do so in Period 1, Period 2, or any other period.</p>
+            </div>
+            <p><strong>Retiring the same total number of units costs more if it is done in a single period rather than spread across several periods.</strong></p>
+            <div class="instruction-example">
+                <p><strong>Example:</strong></p>
+                <p>Retiring 50 units in a single period costs 250 points.</p>
+                <p>Retiring 50 units across two periods costs 125 points. This is because retiring 25 units in one period costs 62.5 points. Hence, retiring 50 units in two different periods costs 62.5 + 62.5 = 125 points.<br/> It is more convenient to spread retirement across more periods than concentrating it in fewer periods.</p>
+            </div>
+            <p>The cost is deducted from your budget after you select “<strong>Confirm</strong>” and all six group members have submitted their decisions.</p>
+            
+<p>Cost = <strong>0.10 × units retired²</strong>, calculated separately for each period.</p>
+<table><thead><tr><th>Units retired this period</th><th>Cost in points</th></tr></thead><tbody>{{ for example in cost_examples }}<tr><td>{{ example.retirement }}</td><td>{{ example.cost }}</td></tr>{{ endfor }}</tbody></table>
+<p>Retiring 10 units now and 10 in a later period costs {{ split_cost }} points in total, rather than 40 points for retiring 20 at once.</p></div>

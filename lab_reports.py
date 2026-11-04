@@ -12,6 +12,26 @@ from lab_persistence import encode_fraction, decode_fraction
 import lab_rules as rules
 
 
+def submit(player, timeout_happened):
+    """Finalize this block's two reports once; an unsubmitted timeout means 0/0."""
+    app = player.subsession.get_folder_name()
+    public = app == 'messages' or (app == 'policy' and player.underlying_branch == 'M')
+    if player.reports_submitted:
+        if public and not timeout_happened:
+            lock(player)  # retain the existing fail-closed manual replay validation
+        return
+    if timeout_happened:
+        player.expected_own_equipment_main = 0
+        player.expected_group_average_main = 0
+    values = (player.expected_own_equipment_main, player.expected_group_average_main)
+    if any(type(value) is not int or not 0 <= value <= 100 for value in values):
+        raise ValueError('Both reports must be integers from 0 through 100.')
+    if public:
+        lock(player)
+    else:
+        player.reports_submitted = True
+
+
 def lock(player):
     values = (player.expected_own_equipment_main, player.expected_group_average_main)
     if any(type(v) is not int or not 0 <= v <= 100 for v in values):

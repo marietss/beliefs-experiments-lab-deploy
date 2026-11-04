@@ -1,0 +1,6 @@
+<h2>Retirement costs</h2>
+<p>In each period, <strong>voluntary cost = 0.10 × units retired²</strong>. Costs are calculated separately for that period's retirement, not cumulative retirement.</p>
+<table class="table"><thead><tr><th scope="col">Units retired in one period</th><th scope="col">Cost in points</th></tr></thead><tbody>
+{{ for example in cost_examples }}<tr><td>{{ example.retirement }}</td><td>{{ example.cost }}</td></tr>{{ endfor }}
+</tbody></table>
+<p>Retiring 10 in one period and 10 later costs <strong>{{ split_cost }} points in total</strong>: 10 + 10. Retiring 20 at once costs 40 points.</p>

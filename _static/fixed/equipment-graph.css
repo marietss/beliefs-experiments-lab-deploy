@@ -37,3 +37,11 @@
 .results-page .check-wallet-result { font-size: 20px; }
 .results-page .wallet-result { font-size: 17px; padding-top: 8px; }
 .results-page .wallet-result dt, .results-page .wallet-result dd { font-size: 17px; }
+
+@media (min-width: 801px) {
+    .lab-page .check-result-summary { display: flex; flex-wrap: wrap; justify-content: center; }
+    .lab-page .check-result-summary > div { flex: 0 0 calc((100% - 2 * 24px) / 3); }
+    .lab-page .policy-main-result .check-result-summary > div { flex-basis: calc((100% - 3 * 24px) / 4); }
+    .lab-page .check-result-summary > .final-equipment-row,
+    .lab-page .policy-main-result .check-result-summary > .policy-centered-outcome { flex-basis: 100%; }
+}

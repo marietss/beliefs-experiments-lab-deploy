@@ -21,13 +21,13 @@ ROUNDS_PER_APP = 30
 TOTAL_BLOCKS = 9
 MAIN_CHECK_PERIOD = T
 FOLLOW_UP_PERIOD = PERIODS_PER_BLOCK
-COST_FACTOR = Fraction(75, 1000)
-KNOWN_THRESHOLD = 45
-AMBIGUITY_THRESHOLD_LOW = 40
-AMBIGUITY_THRESHOLD_HIGH = 50
+COST_FACTOR = Fraction(1, 10)
+KNOWN_THRESHOLD = 40
+AMBIGUITY_THRESHOLD_LOW = 33
+AMBIGUITY_THRESHOLD_HIGH = 47
 MAIN_FINE_BASE = Fraction(175)
 MAIN_FINE_PER_UNIT = Fraction(1, 2)
-FOLLOW_UP_FINE = Fraction(275)
+FOLLOW_UP_FINE = Fraction(75)
 
 
 def _integer_in_range(value, name: str, minimum: int, maximum: int) -> int:
@@ -107,8 +107,8 @@ def main_enforcement_applies(
 ) -> bool:
     """Whether Main enforcement is active, separately from own zero exemption.
 
-    F always enforces and needs no group total/threshold. E/M use fixed 45.
-    A requires an externally supplied integer threshold in 40–50. For E/M/A,
+    F always enforces and needs no group total/threshold. E/M use fixed 40.
+    A requires an externally supplied integer threshold in 33–47. For E/M/A,
     pass the sum of all SIX post-voluntary Main equipment levels, not a mean
     or a rounded display value. Equality triggers enforcement. A supplied total
     is validated even for F, but does not affect its enforcement condition.

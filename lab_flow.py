@@ -1,4 +1,4 @@
-"""Printed-instruction page gates; no economics, rematching or report disclosure."""
+"""Shared lab page gates; economic rules remain in treatment settlement helpers."""
 from otree.common import get_models_module
 import lab_rules as rules
 
@@ -79,3 +79,30 @@ def block_summary_context(player):
     app = player.subsession.get_folder_name()
     return dict(summary_section=1 if app == 'fixed' else 3 if app == 'policy' else 2,
                 summary_rows=rows)
+
+
+def submit_reports(player, timeout_happened):
+    from lab_reports import submit
+    get_models_module(player.subsession.get_folder_name()).require_block_ready(player)
+    submit(player, timeout_happened)
+
+
+def main_check_complete(subsession):
+    """Settle each unchanged group only after the native whole-session P5 wait.
+
+    Validate the complete configured cohort before any economic writes. Existing
+    per-group settlement supplies exact arithmetic and idempotent replay checks;
+    oTree commits this wait callback as one request transaction.
+    """
+    players = subsession.get_players()
+    groups = subsession.get_groups()
+    size = subsession.session.config['lab_session_size']
+    if size not in (18, 24) or len(players) != size:
+        raise ValueError('Main Check requires every configured session participant.')
+    if not all(rules.is_main_period(p.period) and p.decision_submitted for p in players):
+        raise ValueError('All session participants must finish their Period-5 decisions.')
+    if len(groups) * rules.GROUP_SIZE != size or any(len(g.get_players()) != rules.GROUP_SIZE for g in groups):
+        raise ValueError('Main Check requires intact six-person groups.')
+    app = get_models_module(subsession.get_folder_name())
+    for group in groups:
+        app.settle_period(group)

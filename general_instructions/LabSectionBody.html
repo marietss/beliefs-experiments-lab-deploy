@@ -1,0 +1,40 @@
+<p>This section contains three blocks of 10 periods. Each starts with 100 equipment units and a separate 1000-point wallet. Your group of six remains together within a block and is rematched between blocks.</p>
+{{ if is_policy }}
+<p>The underlying Main rule and report information from the preceding section continue unchanged. <strong>The new feature is policy redistribution at the Main Check.</strong> Voluntary costs and the Follow-up rule do not change.</p>
+{{ endif }}
+<h2>Main Check: after period 5</h2>
+{{ if is_fixed }}
+<p>Every participant with positive equipment after their period-5 voluntary decision pays <strong>175 + 0.5 × their own equipment</strong>. At zero, the Main fine is zero. For example, 50 units means a 200-point Main fine.</p>
+<p>The six-person group average is shown for information. <strong>It does not determine your Main fine in the Fixed section.</strong> There is no group threshold in this section.</p>
+{{ else }}
+<p>The Main group average uses all six participants' equipment, including your own, after all period-5 voluntary decisions.</p>
+{{ if is_ambiguity }}
+<p>The threshold is an integer from <strong>33 through 47</strong>. You do not know this block's realized threshold before the Main Check. No probability distribution over these values is provided. It is revealed only after all six participants have completed their period-5 decisions.</p>
+<p>The target succeeds only when the actual group average is <strong>strictly greater than the realized threshold</strong>. Equality does not satisfy the target.</p>
+{{ else }}
+<p>The known threshold is <strong>40</strong>. The target succeeds only when the actual group average is <strong>strictly greater than 40</strong>. Exactly 40 fails; an average below 40 also fails.</p>
+{{ endif }}
+<p>If the target succeeds, nobody pays a Main fine. Otherwise, Main enforcement applies: each participant with positive equipment pays <strong>175 + 0.5 × own equipment</strong>. A participant with zero equipment always pays zero. At 50 units, the fine when enforcement applies is 200 points.</p>
+{{ endif }}
+<h2>Two starting reports</h2>
+<p>Before period 1 in every block, submit exactly two whole numbers from 0 to 100:</p>
+<ol><li>Your planned equipment at the Main Check.</li><li>Your expected group-average equipment at the Main Check, including you in the six-person average.</li></ol>
+<p>These reports are unincentivised: there is no payment for accuracy, and reports do not directly enter wallet calculations.</p>
+{{ if is_messages }}
+<p><strong>Report 1 contributes anonymously to the public group report average.</strong> After all six members submit both reports, the average of report 1 alone is shown to all six throughout the block. Individual reports are not revealed. <strong>Report 2 remains private</strong> and is not included in this public average.</p>
+<p>The display is labelled “Average reported planned Main-Check equipment”. It describes reported plans, not actual realized equipment. The public group report average does not mechanically change fines, transfers or payoffs.</p>
+{{ else }}
+<p>Both reports remain private; neither report is publicly disclosed.</p>
+{{ endif }}
+{{ if is_policy }}
+<h2>Policy redistribution</h2>
+<p>After Main enforcement is determined, the six participants' <strong>actual Main fines</strong> are added to a group fine pool. Only these actual Main fines enter the pool: voluntary costs, Follow-up fines and automatic-retirement costs do not.</p>
+<p>Eligible recipients are participants whose equipment is exactly zero <strong>immediately after their period-5 voluntary decision</strong>. If there is at least one eligible recipient, <strong>{{ policy_share }} of the fine pool</strong> is redistributed equally among them. Other participants receive no transfer. If no participant is eligible, actual redistribution is zero. If the fine pool is zero, all transfers are zero.</p>
+<p>Fine payers pay their ordinary Main fine <strong>once</strong>. Redistribution comes from those already-paid fines; there is no additional charge. Any transfer is added to its recipient's wallet.</p>
+<p>Example: two participants have zero equipment and the other four each have 40. The group average is below the threshold, so each positive-equipment participant pays 195. The actual fine pool is <strong>{{ example_pool }} points</strong>. With the configured share of {{ policy_share }}, <strong>{{ example_redistribution }} points</strong> are redistributed and each of the two recipients receives <strong>{{ example_transfer }} points</strong>. Example amounts are rounded for readability if needed; actual accounting uses unrounded amounts.</p>
+{{ endif }}
+<h2>Follow-up: after period 10</h2>
+<p>After your period-10 voluntary decision, if your equipment is zero, there is no Follow-up fine, forced retirement or forced-retirement cost.</p>
+<p>If equipment is positive, you pay a <strong>75-point Follow-up fine</strong>. All remaining equipment is automatically retired, costing <strong>0.10 × remaining equipment²</strong>. Final equipment becomes zero. This automatic cost is separate from the cost of your voluntary decision.</p>
+{{ if is_policy }}<p>Follow-up fines and automatic-retirement costs never create a policy pool or another transfer.</p>{{ endif }}
+<p>Your final wallet for each block remains visible in your own block summary. The next block starts independently with 100 equipment units and a 1000-point wallet.</p>

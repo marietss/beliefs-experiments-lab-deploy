@@ -53,7 +53,7 @@ class Payment(Page):
         return dict(
             selected_block=record['paid_block'],
             selected_wallet=points(decode_fraction(record['selected_wallet'])),
-            fixed_fee=cash.cash_display(750),
+            fixed_fee=cash.cash_display(cash.euro_cents(decode_fraction(record['fixed_fee']))),
             variable_eur=points(decode_fraction(record['variable_eur'])),
             bucket_eur=cash.cash_display(record['bucket_payoff_cents']),
             total_eur=cash.cash_display(record['final_eur_cents']),

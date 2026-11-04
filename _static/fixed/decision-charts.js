@@ -12,7 +12,7 @@
             cost.config.options.scales.x.max = 100;
             cost.config.options.scales.x.ticks = {stepSize: 10, maxRotation: 0};
             cost.config.options.scales.y.min = 0;
-            cost.config.options.scales.y.max = 800;
+            cost.config.options.scales.y.max = config.costMilliPoints * 100 * 100 / 1000;
             cost.config.options.scales.y.ticks = {stepSize: 100};
             // Full unchanged cost function; unavailable choices have no tooltip.
             cost.data.datasets[0].segment = {

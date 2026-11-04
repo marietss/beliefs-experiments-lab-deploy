@@ -16,3 +16,9 @@
     .lab-page.expectation-card { margin: 20px auto; padding: 20px 12px; }
     .report-question { margin: 24px 0 30px; }
 }
+
+/* Distinguish the two existing questions without adding another control. */
+.report-question + .report-question { margin-top: 46px; padding-top: 28px; border-top: 1px solid #d6d6d6; }
+@media (max-width: 600px) {
+    .report-question + .report-question { margin-top: 32px; padding-top: 24px; }
+}

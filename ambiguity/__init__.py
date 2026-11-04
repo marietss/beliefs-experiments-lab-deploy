@@ -217,6 +217,7 @@ class FirstBlockSplash(Page):
 
 
 class BlockStart(Page):
+    timeout_seconds = 60
     @staticmethod
     def vars_for_template(player):
         return presentation.support_context()
@@ -239,6 +240,7 @@ class BlockStartWait(WaitPage):
 
 
 class Reports(Page):
+    timeout_seconds = 120
     form_model = 'player'
     form_fields = ['expected_own_equipment_main', 'expected_group_average_main']
 
@@ -246,10 +248,7 @@ class Reports(Page):
     def is_displayed(player):
         return player.period == 1
 
-    @staticmethod
-    def before_next_page(player, timeout_happened):
-        require_block_ready(player)
-        player.reports_submitted = True
+    before_next_page = staticmethod(flow.submit_reports)
 
 
 class ReportsWait(WaitPage):
@@ -294,7 +293,15 @@ class Decision(Page):
 
 
 class PeriodWait(WaitPage):
+    is_displayed = staticmethod(lambda player: not rules.is_main_period(player.period))
     after_all_players_arrive = staticmethod(settle_period)
+
+
+class MainCheckWait(WaitPage):
+    wait_for_all_groups = True
+    body_text = 'Attendi che tutti i partecipanti completino le decisioni del Periodo 5.'
+    is_displayed = staticmethod(lambda player: rules.is_main_period(player.period))
+    after_all_players_arrive = staticmethod(flow.main_check_complete)
 
 
 def feedback_context(player):
@@ -321,6 +328,7 @@ class ResultWait(WaitPage):
 
 
 class BlockEnd(Page):
+    timeout_seconds = 60
     template_name = 'lab/BlockSummary.html'
     @staticmethod
     def is_displayed(player):
@@ -349,4 +357,4 @@ class BlockEndWait(WaitPage):
 
 page_sequence = [SectionSplash, SessionReady, SectionComprehension, SectionComprehension2, ComprehensionWait,
                  FirstBlockSplash, BlockStart, BlockStartWait, Reports, ReportsWait, Decision,
-                 PeriodWait, Result, ResultWait, BlockEndWait, BlockEnd]
+                 PeriodWait, MainCheckWait, Result, ResultWait, BlockEndWait, BlockEnd]

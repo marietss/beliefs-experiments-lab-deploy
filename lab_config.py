@@ -4,6 +4,7 @@ This module has no oTree dependencies and is not wired into session creation.
 """
 
 from collections.abc import Mapping
+from lab_rules import AMBIGUITY_THRESHOLD_LOW, AMBIGUITY_THRESHOLD_HIGH
 from decimal import Decimal
 from fractions import Fraction
 from math import isfinite
@@ -71,10 +72,10 @@ def validate_lab_config(config: Mapping) -> dict:
             raise ValueError(
                 'ambiguity_thresholds for A must have exactly string keys 4 through 9.'
             )
-        if any(type(value) is not int or not 40 <= value <= 50
+        if any(type(value) is not int or not AMBIGUITY_THRESHOLD_LOW <= value <= AMBIGUITY_THRESHOLD_HIGH
                for value in thresholds.values()):
             raise ValueError(
-                'ambiguity_thresholds values must be integers from 40 through 50.'
+                f'ambiguity_thresholds values must be integers from {AMBIGUITY_THRESHOLD_LOW} through {AMBIGUITY_THRESHOLD_HIGH}.'
             )
     elif thresholds:
         raise ValueError('ambiguity_thresholds must be empty or omitted for E/M.')

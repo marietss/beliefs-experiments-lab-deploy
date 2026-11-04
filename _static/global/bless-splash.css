@@ -9,3 +9,13 @@
     .bless-welcome { padding-top: 30px; }
     .bless-welcome img.w-50 { width: 80% !important; }
 }
+
+/* Initial landing only; the final payment/receipt presentation stays unchanged. */
+.bless-initial { min-height: 88vh; display: flex; align-items: center; justify-content: center; padding: 28px 12px 6vh; }
+.bless-initial > .otree-content { width: 100%; }
+.bless-initial h3 { font-size: clamp(25px, 2.4vw, 33px); }
+.bless-initial img.w-50 { width: min(69%, 650px) !important; }
+@media (max-width: 768px) {
+    .bless-initial { min-height: 80vh; padding: 24px 12px; }
+    .bless-initial img.w-50 { width: 85% !important; }
+}

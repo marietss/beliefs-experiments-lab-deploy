@@ -19,7 +19,7 @@ from lab_policy import configured_rho
 from lab_persistence import encode_fraction
 import lab_rules as rules
 
-DESIGN_VERSION = 'lab_design_v1'
+DESIGN_VERSION = 'lab_design_recalibration_20261104'
 RUNTIME_PYTHON = (3, 12, 6)
 PRODUCTION_KEY = 'lab_production_config_v1'
 BRANCH_APPS = {'E': 'endogenous', 'A': 'ambiguity', 'M': 'messages'}
@@ -33,7 +33,7 @@ def templates():
                  lab_session_size=size, num_demo_participants=size, branch=branch,
                  paid_block=None, matching_seed=None, rho=1/3, rho_exact='1/3',
                  ambiguity_thresholds={}, triplet_id='', recruitment_batch='',
-                 T=5, real_world_currency_per_point=0.01, participation_fee=7.50,
+                 T=5, real_world_currency_per_point=0.01, participation_fee=8.00,
                  exchange_rate_text='', completion_code='',
                  app_sequence=['fixed', BRANCH_APPS[branch], 'policy', 'bucket', 'survey', 'lab_payment'])
             for branch in BRANCH_APPS for size in (18, 24)]
@@ -63,8 +63,7 @@ def validate_config(config, *, currency='EUR', use_points=True):
         raise ValueError('Lab production route requires EUR payment mode and points.')
     if 'rho_exact' not in result:
         raise ValueError('Production rho requires a consistent canonical rho_exact companion.')
-    if configured_rho(result) != Fraction(1, 3):
-        raise ValueError('Current production design requires exact Policy rho=1/3.')
+    configured_rho(result)  # validate the configured share, without fixing it to the default
     from lab_cash import config_snapshot
     config_snapshot(result)  # unchanged fee/rate contract, including Currency types
     # Reject inconsistent obsolete aliases even though the lab engine ignores them.
@@ -72,10 +71,10 @@ def validate_config(config, *, currency='EUR', use_points=True):
                      W0=1000, starting_points=1000, starting_wallet=1000, T=5,
                      periods_per_block=10, blocks_per_section=3, total_blocks=9,
                      rounds_per_app=30, main_check_period=5, follow_up_period=10,
-                     players_per_group=6, group_size=6, cost_factor=Fraction(3,40),
-                     threshold=45, comparison_value=45, final_penalty_points=275,
+                     players_per_group=6, group_size=6, cost_factor=Fraction(1,10),
+                     threshold=40, comparison_value=40, final_penalty_points=75,
                      main_fine_base=175, main_fine_per_unit=Fraction(1,2),
-                     follow_up_fine=275, ambiguity_threshold_low=40, ambiguity_threshold_high=50,
+                     follow_up_fine=75, ambiguity_threshold_low=33, ambiguity_threshold_high=47,
                      section1_num_blocks=3, section2_num_blocks=3, section3_num_blocks=3)
     for key, expected_value in constants.items():
         if key in result:
@@ -89,7 +88,7 @@ def validate_config(config, *, currency='EUR', use_points=True):
         rules.AMBIGUITY_THRESHOLD_LOW,rules.AMBIGUITY_THRESHOLD_HIGH,rules.FOLLOW_UP_FINE,
         rules.MAIN_FINE_BASE,rules.MAIN_FINE_PER_UNIT,rules.ROUNDS_PER_APP,
         rules.MAIN_CHECK_PERIOD,rules.FOLLOW_UP_PERIOD) != (
-            100,1000,5,10,3,9,6,Fraction(3,40),45,40,50,275,175,Fraction(1,2),30,5,10):
+            100,1000,5,10,3,9,6,Fraction(1,10),40,33,47,75,175,Fraction(1,2),30,5,10):
         raise ValueError('Executable laboratory constants differ from the production design version.')
     for key in ('triplet_id','recruitment_batch'):
         if not isinstance(result.get(key,''),str):

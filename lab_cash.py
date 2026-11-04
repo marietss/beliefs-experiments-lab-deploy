@@ -2,7 +2,7 @@
 
 The ledger and payment record use canonical n/d strings, never Currency or
 floats. Final cash is rounded once, half away from zero (decimal HALF_UP).
-oTree receives *cash-settlement equivalent points*: final cents minus 750.
+oTree receives *cash-settlement equivalent points*: final cents minus the fixed fee in cents.
 Those integer points reproduce the rounded total through oTree's float-based
 0.01 conversion without quantizing the selected experimental wallet first.
 They are explicitly distinct from the exact selected wallet retained here.
@@ -19,7 +19,7 @@ CONFIG_KEY = 'lab_payment_config_v1'
 PAYMENT_KEY = 'lab_final_payment_v1'
 ROUNDING = 'EUR-cent-HALF_UP-v1'
 RATE = Fraction(1, 100)
-FEE = Fraction(15, 2)
+FEE = Fraction(8)
 BLOCK_KEYS = frozenset(str(b) for b in range(1, 10))
 
 
@@ -61,7 +61,7 @@ def calculate_payment(wallets, paid_block, *, rate=RATE, fee=FEE, bucket_payoff_
     key = _block(paid_block)
     wallets = validate_wallets(wallets, complete=True)
     if encode_fraction(rate) != encode_fraction(RATE) or encode_fraction(fee) != encode_fraction(FEE):
-        raise ValueError('Lab payment requires conversion 0.01 and fixed fee 7.50.')
+        raise ValueError('Lab payment requires conversion 0.01 and fixed fee 8.00.')
     wallet = decode_fraction(wallets[key])
     variable = wallet * rate
     if type(bucket_payoff_cents) is not int or not 0 <= bucket_payoff_cents <= 500:
@@ -73,7 +73,7 @@ def calculate_payment(wallets, paid_block, *, rate=RATE, fee=FEE, bucket_payoff_
                 fixed_fee=encode_fraction(fee), variable_eur=encode_fraction(variable),
                 bucket_payoff_cents=bucket_payoff_cents,
                 pre_round_eur=encode_fraction(total), final_eur_cents=cents,
-                admin_payoff_points=cents - 750, currency='EUR', rounding=ROUNDING)
+                admin_payoff_points=cents - euro_cents(FEE), currency='EUR', rounding=ROUNDING)
 
 
 def _configured_number(value):
@@ -93,7 +93,7 @@ def config_snapshot(config):
     rate = _configured_number(config.get('real_world_currency_per_point'))
     fee = _configured_number(config.get('participation_fee'))
     if rate != RATE or fee != FEE:
-        raise ValueError('Lab payment requires conversion 0.01 and fixed fee 7.50.')
+        raise ValueError('Lab payment requires conversion 0.01 and fixed fee 8.00.')
     return dict(version=1, paid_block=config['paid_block'], conversion=encode_fraction(rate),
                 fixed_fee=encode_fraction(fee), currency='EUR', rounding=ROUNDING)
 
