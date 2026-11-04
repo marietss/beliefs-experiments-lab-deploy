@@ -42,7 +42,6 @@ class PlayerBot(Bot):
             assert presentation.outcome_context(p)['threshold'] == k
         yield Result
         if p.period == 10:
-            yield BlockEnd
             remaining = 100 - initial_retirement
             main = Fraction(175) + Fraction(remaining, 2) if p.local_block != 1 and remaining else 0
             expected = 1000 - Fraction(1, 10) * (initial_retirement ** 2 + remaining ** 2) - main - (75 if remaining else 0)

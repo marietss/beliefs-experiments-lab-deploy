@@ -63,10 +63,10 @@ class PrintedFlowTests(unittest.TestCase):
                 for name in s.config['app_sequence'][:3]:
                     app=lab_route._app(name);p=app.Subsession.objects_get(session=s,round_number=1).get_players()[0]
                     names=[page.__name__ for page in app.page_sequence]
-                    self.assertEqual(names,[('ExperimentSplash' if name=='fixed' else 'SectionSplash'),'SessionReady','SectionComprehension','SectionComprehension2',*(['SectionComprehension3'] if name=='fixed' else []),'ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait','BlockEnd'])
+                    self.assertEqual(names,[('ExperimentSplash' if name=='fixed' else 'SectionSplash'),'SessionReady','SectionComprehension','SectionComprehension2',*(['SectionComprehension3'] if name=='fixed' else []),'ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait'])
                     self.assertEqual(len(instructions.questions(p)),6 if name=='fixed' else 4)
                     self.assertEqual(app.SectionComprehension.get_form_fields(p),['comprehension_1','comprehension_2'])
-                    self.assertEqual(app.Decision.timeout_seconds,30)
+                    self.assertEqual(app.Decision.get_timeout_seconds(p),40)
                     for period, seconds in ((1,20),(5,60),(10,60)):
                         self.assertEqual(app.Result.get_timeout_seconds(p.in_round(period)),seconds)
                     for page in [app.ComprehensionWait,app.BlockStartWait,app.MainCheckWait,app.BlockEndWait]:self.assertTrue(page.wait_for_all_groups)
@@ -107,7 +107,7 @@ class PrintedFlowTests(unittest.TestCase):
                 self.assertIsNone(getattr(page,'timeout_seconds',None))
                 self.assertIsNone(getattr(page,'form_model',None))
                 self.assertFalse(getattr(page,'form_fields',[]))
-        self.assertNotIn('instruction-review',Path('general_instructions/LabQuiz.html').read_text())
+        self.assertNotIn('instruction-review',Path('_templates/lab/ComprehensionPair.html').read_text())
 
     def test_timeout_zero_and_result_invariance_in_all_apps_and_policy_branches(self):
         import importlib

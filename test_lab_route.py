@@ -10,7 +10,6 @@ from otree.database import db
 from otree.session import create_session, SESSION_CONFIGS_DICT
 from lab_matching import select_matching
 from lab_persistence import decode_fraction
-from lab_bot_checks import assert_participant_finished
 import lab_route as route
 import lab_reports
 import fixed
@@ -130,6 +129,7 @@ class IntegratedCoverageTests(unittest.TestCase):
     def tearDown(self):db.rollback()
 
     def test_nine_blocks_both_group_counts_determinism_resets_economics_and_exact_coverage(self):
+        from lab_bot_checks import assert_participant_finished
         for branch,size in [('E',18),('A',24),('M',18)]:
             with patch('lab_route.select_matching',wraps=select_matching) as select:
                 session=make_session(branch,size);ready(session)

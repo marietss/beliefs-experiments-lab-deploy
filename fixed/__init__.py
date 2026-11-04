@@ -465,7 +465,9 @@ class ReportsWait(WaitPage):
 
 
 class Decision(Page):
-    timeout_seconds = 30
+    @staticmethod
+    def get_timeout_seconds(player):
+        return 40 if player.period == 1 else 30
     form_model = 'player'
     form_fields = ['retirement']
 
@@ -562,4 +564,4 @@ class BlockEndWait(WaitPage):
 
 page_sequence = [ExperimentSplash, SessionReady, SectionComprehension, SectionComprehension2, SectionComprehension3, ComprehensionWait,
                  FirstBlockSplash, BlockStart, BlockStartWait, Reports, ReportsWait, Decision,
-                 PeriodWait, MainCheckWait, Result, ResultWait, BlockEndWait, BlockEnd]
+                 PeriodWait, MainCheckWait, Result, ResultWait, BlockEndWait]

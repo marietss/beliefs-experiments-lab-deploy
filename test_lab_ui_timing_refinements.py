@@ -190,7 +190,8 @@ class RefinementTests(unittest.TestCase):
                 last=self.post(end_responses[-1][1])
                 self.assertTrue(end.block_barrier_complete)
                 self.assertTrue(helpers.subsession(session,11).grouping_installed)
-                self.assertIn('Altra azienda',last.text)
+                self.assertNotIn('Riepilogo del Blocco',last.text)
+                self.assertEqual(end.get_players()[-1].participant._current_page_name, 'BlockStart')
                 self.assertEqual(member_matrix(5),identities)
                 self.assertNotEqual(member_matrix(11),identities)
                 db.rollback()
@@ -198,12 +199,12 @@ class RefinementTests(unittest.TestCase):
     def test_session_main_barrier_18_all_environments(self): self.check_barrier(18)
     def test_session_main_barrier_24_all_environments(self): self.check_barrier(24)
 
-    def test_block_start_end_early_and_timeout(self):
+    def test_block_start_early_and_timeout_without_block_summary(self):
         for app, helpers, branch in environments():
             session=helpers.make_session(branch) if branch else helpers.make_session()
             helpers.ready(session)
             helpers.finish_block(session,1)
-            for page,round_number in [(app.BlockEnd,10),(app.BlockStart,11)]:
+            for page,round_number in [(app.BlockStart,11)]:
                 self.assertEqual(page.timeout_seconds,60)
                 for timeout,p in zip((False,True),helpers.subsession(session,round_number).get_players()[:2]):
                     response=self.open_page(p,page)

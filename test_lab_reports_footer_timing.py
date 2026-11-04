@@ -211,7 +211,8 @@ class PilotRefinementTests(unittest.TestCase):
 
     def test_native_timeouts_early_continue_and_economic_invariance(self):
         for app, helpers, branch in environments():
-            self.assertEqual(app.Decision.timeout_seconds,30)
+            self.assertEqual(app.Decision.get_timeout_seconds(SimpleNamespace(period=1)),40)
+            self.assertEqual(app.Decision.get_timeout_seconds(SimpleNamespace(period=2)),30)
             for period in range(1,11):
                 self.assertEqual(app.Result.get_timeout_seconds(SimpleNamespace(period=period)),60 if period in (5,10) else 20)
             if app.__name__ not in ('fixed','ambiguity','messages','policy') or app.__name__=='policy' and branch!='M':
@@ -222,7 +223,7 @@ class PilotRefinementTests(unittest.TestCase):
             helpers.reports(group)
             player = group.get_players()[0]
             response = self.open_page(player,app.Decision)
-            self.assertIn('var remainingTimeoutSeconds = 30',response.text)
+            self.assertIn('var remainingTimeoutSeconds = 40',response.text)
             pp = player.participant;pp._timeout_expiration_time=time.time()-1;pp._timeout_page_index=pp._index_in_pages;db.commit()
             result = self.client.post(str(response.url),data={'retirement':'','timeout_happened':'1'},allow_redirects=True)
             db.expire_all();self.assertEqual(result.status_code,200)

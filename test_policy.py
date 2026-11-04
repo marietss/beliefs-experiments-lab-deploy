@@ -388,7 +388,7 @@ class PolicyBackendTests(unittest.TestCase):
                 self.assertTrue(subsession(session,30).block_barrier_complete)
 
     def test_waitpages_and_unfinished_session_cannot_rematch(self):
-        self.assertEqual([p.__name__ for p in policy.page_sequence],['SectionSplash','SessionReady','SectionComprehension','SectionComprehension2','ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait','BlockEnd'])
+        self.assertEqual([p.__name__ for p in policy.page_sequence],['SectionSplash','SessionReady','SectionComprehension','SectionComprehension2','ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait'])
         for page in (policy.SessionReady,policy.ComprehensionWait,policy.BlockStartWait,policy.ReportsWait,policy.PeriodWait,policy.MainCheckWait,policy.ResultWait,policy.BlockEndWait):
             self.assertTrue(issubclass(page,WaitPage))
         self.assertTrue(policy.SessionReady.wait_for_all_groups and policy.BlockEndWait.wait_for_all_groups)

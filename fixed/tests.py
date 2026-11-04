@@ -36,7 +36,6 @@ class PlayerBot(Bot):
         assert decode_fraction(p.group_mean) == Fraction(p.group.equipment_total, 6)
         yield Result
         if p.period == 10:
-            yield BlockEnd
             assert p.final_equipment == 0
             assert decode_fraction(p.final_block_wallet) == (
                 Fraction(0) if mode == 0 else Fraction('-279.7') if mode == 1 else Fraction(-300)

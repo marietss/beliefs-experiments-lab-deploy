@@ -44,7 +44,6 @@ class PlayerBot(Bot):
                 assert p.group.equipment_total == 240
         yield Result
         if p.period == 10:
-            yield BlockEnd
             assert p.final_equipment == 0
             expected = (-75 if p.local_block == 1 else Fraction(210) if p.local_block == 2
                         else 0 if p.id_in_group == 1 else 210)

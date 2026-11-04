@@ -117,8 +117,7 @@ class CrossAppHTTPTests(unittest.TestCase):
                     dest_ids={r:[g.id for g in destination.in_round(r).get_groups()] for r in range(1,11)}
                     for code in participants:
                         refresh(code)
-                        self.assertIn('Altra azienda',responses[code].text)
-                        post(code)  # Existing individual BlockEnd summary after the session barrier.
+                        self.assertNotIn('Riepilogo del Blocco',responses[code].text)
                         self.assertNotIn(wait_page_http_header,responses[code].headers)
                         self.assertEqual(participants[code]._current_app_name,destination.get_folder_name())
                         self.assertEqual(participants[code]._round_number,1)

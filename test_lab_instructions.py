@@ -199,7 +199,7 @@ class LabInstructionTests(unittest.TestCase):
                 names=[page.__name__ for page in app.page_sequence]
                 self.assertLess(names.index('SectionComprehension'),names.index('BlockStart'))
                 substantive=[n for n in names if n not in ('SectionInstructions','SectionComprehension','LabOverview','LabPractice','GeneralComprehension')]
-                self.assertEqual(substantive,['ExperimentSplash' if app is fixed else 'SectionSplash','SessionReady','SectionComprehension2',*(['SectionComprehension3'] if app is fixed else []),'ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait','BlockEnd'])
+                self.assertEqual(substantive,['ExperimentSplash' if app is fixed else 'SectionSplash','SessionReady','SectionComprehension2',*(['SectionComprehension3'] if app is fixed else []),'ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait'])
                 for page in (app.SectionInstructions,app.SectionComprehension):
                     self.assertTrue(page.is_displayed(p))
                     self.assertFalse(page.is_displayed(p.in_round(11)))
