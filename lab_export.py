@@ -20,6 +20,9 @@ BASE = ('schema_version', 'session_code')
 BLOCK = BASE + ('global_block', 'section', 'local_block', 'treatment', 'underlying_branch', 'is_policy', 'app_name')
 PERSON = BLOCK + ('participant_code', 'group_id')
 HEADERS = {
+    'comprehension': BASE + ('participant_code', 'app_name', 'section', 'treatment', 'underlying_branch',
+        'question_id', 'question_field', 'response', 'question_errors',
+        'comprehension_errors', 'comprehension_attempts', 'comprehension_passed'),
     'session': BASE + ('config_name', 'configured_size', 'branch', 'rho', 'matching_seed', 'matching_seed_type',
         'matching_version', 'paid_block', 'conversion', 'fixed_fee', 'rounding', 'ambiguity_thresholds_json',
         'app_sequence_json', 'payment_configured', 'server_currency', 'lab_payment_mode_active',
@@ -47,6 +50,7 @@ HEADERS = {
         'admin_payoff_points', 'admin_payoff_stored', 'admin_cash_eur'),
 }
 KEYS = {
+    'comprehension': ('session_code', 'participant_code', 'app_name', 'question_id'),
     'session': ('session_code',),
     'membership': ('session_code', 'participant_code', 'global_block'),
     'group_period': ('session_code', 'group_id', 'period'),
@@ -128,6 +132,31 @@ def _payment_row(player, base):
     return row
 
 
+def _comprehension_rows(session, by_round):
+    """Read active first-round question identities and stored process measures.
+
+    The canonical bank is only an allowlist/ID map. No scoring, shuffling or
+    counter updates occur here. A missing JSON entry means no recorded errors;
+    unanswered responses remain exactly as stored, with app status alongside.
+    """
+    from lab_printed_questions import PRINTED_QUESTIONS
+    sections = {'fixed': 'F', 'endogenous': 'E', 'ambiguity': 'A', 'messages': 'M', 'policy': 'P'}
+    for name, rounds in by_round.items():
+        for player in rounds[1]:
+            meta = _block_metadata(session, player.global_block, name)
+            counts = json.loads(player.comprehension_question_errors or '{}')
+            for index, question in enumerate(PRINTED_QUESTIONS[sections[name]], 1):
+                field = f'comprehension_{index}'
+                yield dict(schema_version=SCHEMA, session_code=session.code,
+                    participant_code=player.participant.code, app_name=name,
+                    section=meta['section'], treatment=meta['treatment'], underlying_branch=meta['underlying_branch'],
+                    question_id=question['id'], question_field=field,
+                    response=player.field_maybe_none(field), question_errors=counts.get(question['id'], 0),
+                    comprehension_errors=player.comprehension_errors,
+                    comprehension_attempts=player.comprehension_attempts,
+                    comprehension_passed=player.comprehension_passed)
+
+
 def export_session(session, *, require_complete=False):
     """Return all tables as ordered lists of dicts; never modify any model/vars.
 
@@ -158,6 +187,7 @@ def export_session(session, *, require_complete=False):
         by_round[name] = rounds
     if set(participants) != set(people):
         raise ValueError('Export participant identities disagree with matching snapshot.')
+    bundle['comprehension'] = list(_comprehension_rows(session, by_round))
     completion_wallets = {}
     for block in range(1, 10):
         if str(block) not in state['matrices']:
@@ -307,7 +337,8 @@ def export_session(session, *, require_complete=False):
         app_sequence_json=_json(sequence), payment_configured=payment_config is not None,
         server_currency=settings.REAL_WORLD_CURRENCY_CODE,
         lab_payment_mode_active=settings.REAL_WORLD_CURRENCY_CODE=='EUR', complete=not issues,
-        coverage_issues_json=_json(issues), observed_counts_json=_json({k:len(v) for k,v in bundle.items() if k!='session'})))
+        coverage_issues_json=_json(issues), # Preserve the pre-existing v1 table-count metadata unchanged.
+        observed_counts_json=_json({k:len(v) for k,v in bundle.items() if k not in ('session','comprehension')})))
     if require_complete and issues:
         raise ValueError('Incomplete laboratory session: ' + '; '.join(issues))
     return bundle

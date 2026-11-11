@@ -95,7 +95,7 @@ class ExportReconstructionTests(unittest.TestCase):
             self.assertTrue(tables['session'][0]['complete'])
             expected={'session':1,'membership':9*n,'period':90*n,'group_period':90*n//6,
                 'reports':9*n,'messages':6*n//6 if branch=='M' else 0,'main_group':9*n//6,
-                'main':9*n,'completion':9*n,'ledger':9*n,'payment':n}
+                'main':9*n,'completion':9*n,'ledger':9*n,'payment':n,'comprehension':14*n}
             self.assertEqual({k:len(v) for k,v in tables.items()},expected)
             self.assertEqual(len(tables['period']),1620 if n==18 else 2160)
             for table,rows in tables.items():
@@ -107,6 +107,103 @@ class ExportReconstructionTests(unittest.TestCase):
                 self.assertEqual(row['app_round'],((b-1)%3)*10+p)
                 self.assertEqual(row['treatment'],'F' if b<4 else branch if b<7 else f'P({branch})')
                 self.assertEqual(row['section'],('F','Z','P(Z)')[(b-1)//3])
+
+    def test_comprehension_stored_identities_errors_and_existing_tables_unchanged(self):
+        import lab_comprehension
+        import lab_instructions
+        for (branch,size),session in self.sessions.items():
+            with self.subTest(branch=branch,size=size):
+                for app_name in session.config['app_sequence'][:3]:
+                    app=lab_route._app(app_name)
+                    players=list(app.Player.objects_filter(session=session,round_number=1))
+                    for person_index,p in enumerate(players[:2]):
+                        questions=lab_instructions.questions(p)
+                        for pair in range(1,len(questions)//2+1):
+                            rows=lab_comprehension.pair_questions(p,pair)
+                            correct={q['field']:q['correct'] for q in rows}
+                            if person_index==0 and pair==1:
+                                wrong=dict(correct)
+                                wrong[rows[0]['field']]=next(key for key,_ in rows[0]['options'] if key!=rows[0]['correct'])
+                                for _ in range(2):lab_comprehension.record_submission(p,wrong,pair)
+                            self.assertFalse(lab_comprehension.record_submission(p,correct,pair))
+                            lab_comprehension.accept_pair(p,pair)
+                        # Unused slots / historical JSON keys must never leak.
+                        for i in range(len(questions)+1,10):setattr(p,f'comprehension_{i}','INACTIVE')
+                        counts=json.loads(p.comprehension_question_errors)
+                        p.comprehension_question_errors=json.dumps(dict(counts,inactive_legacy_question=99))
+                before=database_snapshot(session)
+                tables=export.export_session(session,require_complete=True)
+                self.assertEqual(before,database_snapshot(session))
+                self.assertEqual({k:v for k,v in tables.items() if k!='comprehension'},
+                                 {k:v for k,v in self.bundles[(branch,size)].items() if k!='comprehension'})
+                by_key={(r['participant_code'],r['app_name'],r['question_field']):r for r in tables['comprehension']}
+                for app_name in session.config['app_sequence'][:3]:
+                    app=lab_route._app(app_name)
+                    for person_index,p in enumerate(list(app.Player.objects_filter(session=session,round_number=1))[:2]):
+                        questions=lab_instructions.questions(p)
+                        for index,q in enumerate(questions):
+                            row=by_key[(p.participant.code,app_name,q['field'])]
+                            self.assertEqual(row['question_id'],q['id'])
+                            self.assertEqual(row['response'],p.field_maybe_none(q['field']))
+                            self.assertEqual(row['response'],q['correct'])
+                            self.assertEqual(row['question_errors'],2 if person_index==0 and index==0 else 0)
+                            for field in ('comprehension_errors','comprehension_attempts','comprehension_passed'):
+                                self.assertEqual(row[field],getattr(p,field))
+                            self.assertEqual(row['comprehension_errors'],2 if person_index==0 else 0)
+                            self.assertEqual(row['comprehension_attempts'],len(questions)//2+(2 if person_index==0 else 0))
+                            self.assertTrue(row['comprehension_passed'])
+                rows=tables['comprehension']
+                self.assertEqual(Counter(r['participant_code'] for r in rows),{p.code:14 for p in session.get_participants()})
+                expected_treatments={'F',branch,f'P({branch})'}
+                self.assertEqual({r['treatment'] for r in rows},expected_treatments)
+                if branch=='M':
+                    self.assertEqual({r['app_name'] for r in rows},{'fixed','messages','policy'})
+                    self.assertNotIn('S',{r['treatment'] for r in rows})
+                self.assertFalse(any('general_' in str(r) or 'INACTIVE' in str(r) or 'inactive_legacy_question' in str(r) for r in rows))
+                data=io.StringIO()
+                custom_export_app('lab_payment',data,session_code=session.code,function_name='custom_export_comprehension')
+                parsed=list(csv.DictReader(io.StringIO(data.getvalue())))
+                self.assertEqual(len(parsed),14*size)
+                self.assertTrue(any(r['question_errors']=='2' for r in parsed))
+                db.rollback()
+
+    def test_comprehension_blank_failed_answers_and_header_allowlist(self):
+        import lab_comprehension
+        import lab_instructions
+        session=self.sessions[('M',18)]
+        app=lab_route._app('fixed')
+        p=app.Player.objects_filter(session=session,round_number=1).first()
+        before=self.bundles[('M',18)]['comprehension']
+        self.assertTrue(all(r['response']=='' and r['question_errors']==0 and
+            r['comprehension_attempts']==0 and not r['comprehension_passed'] for r in before))
+        questions=lab_comprehension.pair_questions(p,1)
+        wrong_key=next(key for key,_ in questions[0]['options'] if key!=questions[0]['correct'])
+        lab_comprehension.record_submission(p,{questions[0]['field']:wrong_key,questions[1]['field']:questions[1]['correct']},1)
+        order=lab_instructions.questions(p)
+        row=next(r for r in export.export_session(session)['comprehension'] if
+            r['participant_code']==p.participant.code and r['app_name']=='fixed' and r['question_id']==questions[0]['id'])
+        self.assertEqual(row['response'],wrong_key)
+        self.assertEqual(row['question_errors'],1)
+        self.assertEqual(row['comprehension_errors'],1)
+        self.assertEqual(row['comprehension_attempts'],1)
+        self.assertFalse(row['comprehension_passed'])
+        self.assertEqual(lab_instructions.questions(p),order)
+        self.assertEqual(export.HEADERS['comprehension'],('schema_version','session_code','participant_code',
+            'app_name','section','treatment','underlying_branch','question_id','question_field','response',
+            'question_errors','comprehension_errors','comprehension_attempts','comprehension_passed'))
+        for row in export.export_session(session)['comprehension']:
+            slot=int(row['question_field'].split('_')[1])
+            self.assertLessEqual(slot,6 if row['app_name']=='fixed' else 4)
+            self.assertNotIn('survey',row['app_name'])
+
+    def test_pre_existing_normalized_header_contract_unchanged(self):
+        import hashlib
+        legacy={k:v for k,v in export.HEADERS.items() if k!='comprehension'}
+        self.assertEqual(hashlib.sha256(json.dumps(legacy,sort_keys=True).encode()).hexdigest(),'e8837c29a0282b89802ae2bc0a86991073ccc5e322b7e087ebeda34e7ae558fe')
+        for tables in self.bundles.values():
+            counts=json.loads(tables['session'][0]['observed_counts_json'])
+            self.assertNotIn('comprehension',counts)
+            self.assertEqual(counts,{k:len(v) for k,v in tables.items() if k not in ('session','comprehension')})
 
     def test_independent_cost_equipment_group_totals_and_wallet_audit(self):
         for tables in self.bundles.values():
@@ -278,7 +375,7 @@ class ExportReconstructionTests(unittest.TestCase):
                     self.assertEqual(dest[field],'' if value is None else str(int(value)) if type(value)is bool else str(value))
         with tempfile.TemporaryDirectory(prefix='lab-export-csv-') as temp:
             export.write_csvs(tables,temp)
-            self.assertEqual(len(list(Path(temp).glob('*.csv'))),11)
+            self.assertEqual(len(list(Path(temp).glob('*.csv'))),12)
             for table in export.HEADERS:
                 with (Path(temp)/f'{export.SCHEMA}_{table}.csv').open(newline='') as fp:rows=list(csv.DictReader(fp))
                 self.assertEqual(len(rows),len(tables[table]))

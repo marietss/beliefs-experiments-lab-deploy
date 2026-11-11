@@ -170,7 +170,7 @@ After the session:
 - Verify every participant has nine exact ledger entries, finalized EUR payment,
   and admin totals agreeing with receipts. Payment remains €8.00 + 0.01 × selected
   wallet, final cent rounding only, with signed wallets and no floor/cap.
-- Download the eleven normalized `lab_export_v1` exports and the standard wide
+- Download the twelve normalized `lab_export_v1` exports and the standard wide
   oTree export. Preserve database backups, exports and the exact study configuration
   securely. Never reset/delete the database merely to prepare the next session.
 
@@ -179,8 +179,12 @@ After the session:
 `lab_design_version=lab_design_v1` and optional study-set fields are stored in
 session.config and the immutable `lab_production_config_v1` server snapshot.
 They flow into **existing standard oTree wide-export** `session.config.*` columns;
-join these by session.code to the existing normalized session table. The eleven
-`lab_export_v1` tables/headers and their semantics are unchanged. That table retains
+join these by session.code to the existing normalized session table. The eleven pre-existing
+`lab_export_v1` tables/headers and their semantics are unchanged. The additional
+`comprehension` table contains 14 rows per participant (F 6 + branch 4 + Policy 4),
+using stored response identities and per-question JSON error counts, plus the
+stored app-level errors, attempts and passed flag. Unanswered responses stay as
+stored; missing question-error entries mean zero recorded errors. The session table retains
 actual production config_name, seed, rho, A map, matching version and payment settings.
 No study metadata is supplied to participant templates.
 

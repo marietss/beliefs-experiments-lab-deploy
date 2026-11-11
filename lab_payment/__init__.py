@@ -118,3 +118,8 @@ def custom_export_ledger(players):
 def custom_export_payment(players):
     from lab_export import custom_rows
     yield from custom_rows(players, 'payment')
+
+
+def custom_export_comprehension(players):
+    from lab_export import custom_rows
+    yield from custom_rows(players, 'comprehension')

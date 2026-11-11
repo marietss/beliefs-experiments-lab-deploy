@@ -131,7 +131,7 @@ class SurveyTests(unittest.TestCase):
         self.assertIn('SurveyWelcome/',str(response.url))
         self.post()
         self.assertIn('ExperimentFeedback/', str(self.response.url))
-        self.assertIn("Secondo te, qual era l'oggetto principale delle prime tre sezioni di questo studio? Descrivilo brevemente con parole tue.", self.response.text)
+        self.assertIn("Secondo te, qual era l'obiettivo delle prime tre sezioni di questo studio? Descrivilo brevemente con parole tue.", self.response.text)
         self.assertNotIn('data-survey-scale',self.response.text)
         self.assertNotIn('name="experiment_liking"',self.response.text)
         self.assertNotIn('name="experiment_clarity"',self.response.text)
