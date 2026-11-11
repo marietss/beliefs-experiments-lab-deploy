@@ -5,7 +5,8 @@ The source hash identifies the original document, not the revised wording.
 
 Only question paragraphs/options/feedback are reproduced, never the booklet.
 Bullet glyphs are formatting; feedback excludes its editorial introductory label.
-Option order is deliberately varied and fixed; no runtime randomisation.
+The canonical option keys are fixed; lab_instructions shuffles their display
+order separately for each participant while retaining these scoring identities.
 """
 
 SOURCE_DOCUMENT = 'Istruzioni_lab_261026_chiarezza_impaginazione.docx'

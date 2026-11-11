@@ -330,7 +330,7 @@ class ResultWait(WaitPage):
 
 
 class BlockEnd(Page):
-    timeout_seconds = 60
+    timeout_seconds = 30
     template_name = 'lab/BlockSummary.html'
     @staticmethod
     def is_displayed(player):

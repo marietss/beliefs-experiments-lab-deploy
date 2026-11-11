@@ -8,7 +8,9 @@ missing answers, and question_errors records counts per stable question ID.
 Only an allowlisted display context is returned, never session/config objects.
 """
 from fractions import Fraction
+import hashlib
 import json
+import random
 
 from lab_policy import configured_rho
 from lab_config import DEFAULT_RHO
@@ -51,6 +53,22 @@ def context(player):
     )
 
 
+def shuffled_questions(player, rows, namespace):
+    """Stable participant-specific display order; option keys/scoring never change.
+
+    Use a private RNG, independent of matching/economic random state. The seed
+    depends only on persisted participant identity, app and stable question ID,
+    so GET reloads, retries and validation produce exactly the same order.
+    """
+    app = player.subsession.get_folder_name()
+    for row in rows:
+        seed = hashlib.sha256(
+            f"lab-options-v1:{player.participant.code}:{app}:{namespace}:{row['id']}".encode()
+        ).digest()
+        random.Random(seed).shuffle(row['options'])
+    return rows
+
+
 def questions(player, *, general=False):
     q = question
     if general:
@@ -81,13 +99,13 @@ def questions(player, *, general=False):
                 wrong = iter([mean_display(rho * 720 / 2 + 720), mean_display(rho * 720 / 2 + 1440)])
                 rows[2]['options'] = [(key, f"{transfer if key == rows[2]['correct'] else next(wrong)} punti.") for key, _ in rows[2]['options']]
                 rows[2]['feedback'] = f'Il fondo è 4 × 180 = 720 punti. Il {share}, pari a {mean_display(rho * 720)} punti, è diviso tra due manager: {transfer} punti ciascuno.'
-        return rows
+        return shuffled_questions(player, rows, 'comprehension')
     prefix = 'general' if general else 'comprehension'
     for i, row in enumerate(result, 1):
         if i % 2 == 0:
             row['options'] = [('a', row['options'][1][1]), ('b', row['options'][0][1])]
             row['correct'] = 'b'
-    return [dict(row, field=f'{prefix}_{i}') for i, row in enumerate(result, 1)]
+    return shuffled_questions(player, [dict(row, field=f'{prefix}_{i}') for i, row in enumerate(result, 1)], prefix)
 
 
 def quiz_fields(player, *, general=False):

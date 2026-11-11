@@ -26,10 +26,6 @@ class Group(BaseGroup):
 WILLING_ENDPOINTS = ('Per niente disposto/a a farlo', 'Molto disposto/a a farlo')
 DESCRIBE_ENDPOINTS = ('Non mi descrive per niente', 'Mi descrive perfettamente')
 SLIDERS = {
-    'experiment_liking': dict(label='Quanto ti è piaciuto partecipare a questo studio?',
-                              endpoints=('Per nulla', 'Moltissimo')),
-    'experiment_clarity': dict(label="Quanto ti sono sembrate chiare le istruzioni e le schermate dello studio?",
-                               endpoints=('Per nulla chiare', 'Del tutto chiare')),
     'falk_future': dict(label='Quanto sei disposto/a a rinunciare a qualcosa da cui trai beneficio oggi per beneficiarne maggiormente in futuro?',
                         endpoints=WILLING_ENDPOINTS),
     'falk_risk': dict(label='In generale, quanto sei disposto/a o non disposto/a a correre dei rischi?',
@@ -55,8 +51,6 @@ def non_whitespace_length(value):
 
 
 class Player(BasePlayer):
-    experiment_liking = scale('experiment_liking')
-    experiment_clarity = scale('experiment_clarity')
     experiment_clarity_improvement = models.LongStringField(blank=True)
     # Legacy optional response columns are retained for existing data only.
     # Empty text is checked by the exact minimum-length validator below, rather
@@ -64,7 +58,7 @@ class Player(BasePlayer):
     experiment_perceived_purpose = models.LongStringField(blank=True, label="Secondo te, qual era l'oggetto principale delle prime tre sezioni di questo studio? Descrivilo brevemente con parole tue.")
     experiment_changes = models.LongStringField(blank=True)
     strategy_description = models.LongStringField(blank=True, label='Descrivi come hai deciso quante unità di equipaggiamento ritirare in ciascun periodo.')
-    strategy_change = models.LongStringField(blank=True, label='La tua strategia è cambiata durante l’esperimento? Spiega che cosa è cambiato e che cosa ti ha portato a cambiare strategia. Se il tuo approccio non è cambiato, indicalo.')
+    strategy_change = models.LongStringField(blank=True, label='Le tue decisioni sono cambiate durante l’esperimento? Spiega che cosa è cambiato e che cosa ti ha portato a cambiare la quantità di equipaggiamento ritirata in ciascun periodo. Se il tuo approccio non è cambiato, indicalo.')
     information_used = models.LongStringField(blank=True, label='Quali informazioni, se ce ne sono state, hai utilizzato per prendere le tue decisioni di ritiro? Spiega in che modo hanno influenzato le tue decisioni.')
     gender = models.StringField(label='Con quale genere ti identifichi?',
                                 choices=['Uomo', 'Donna', 'Altro', 'Preferisco non rispondere'])
@@ -98,7 +92,10 @@ def substantive_answer_error_message(player, value):
 experiment_perceived_purpose_error_message = substantive_answer_error_message
 strategy_description_error_message = substantive_answer_error_message
 strategy_change_error_message = substantive_answer_error_message
-information_used_error_message = substantive_answer_error_message
+def information_used_error_message(player, value):
+    if non_whitespace_length(value) < 5:
+        return 'Per favore, descrivi la tua risposta con qualche parola in più.'
+
 
 
 def city_birth_error_message(player, value):
@@ -143,12 +140,10 @@ class SurveyFormPage(Page):
             else:
                 if name not in ('experiment_clarity_improvement', 'university_status_other'):
                     other_fields.append(field)
-        clarity = form['experiment_clarity'].data if 'experiment_clarity' in self.form_fields else None
         context.update(survey_heading=self.heading, introduction=self.introduction,
                        sliders=sliders, other_fields=other_fields, ticks=list(range(11)),
                        survey_presentation=self.presentation,
-                       status_other_visible='university_status' in self.form_fields and form['university_status'].data == 'Altro',
-                       clarity_improvement_visible=type(clarity) is int and 0 <= clarity < 5)
+                       status_other_visible='university_status' in self.form_fields and form['university_status'].data == 'Altro')
         return context
 
 
@@ -164,7 +159,7 @@ class SurveyWelcome(SurveyFormPage):
 
 class ExperimentFeedback(SurveyFormPage):
     heading = 'La tua esperienza nello studio'
-    form_fields = ['experiment_liking', 'experiment_clarity', 'experiment_perceived_purpose', 'strategy_description', 'strategy_change', 'information_used']
+    form_fields = ['experiment_perceived_purpose', 'strategy_description', 'strategy_change', 'information_used']
 
 class Demographics(SurveyFormPage):
     heading = 'Alcune informazioni su di te (I)'
@@ -187,7 +182,7 @@ class Preferences1(SurveyFormPage):
     heading = 'Le tue preferenze (I)'
     presentation = 'preferences'
     introduction = ['Ora ti chiederemo della tua volontà di agire in un determinato modo. Per favore, dammi una risposta utilizzando una scala da 0 a 10. 0 significa “per niente disposto/a a farlo” e 10 significa “molto disposto/a a farlo”. Puoi utilizzare qualsiasi numero da 0 a 10.']
-    form_fields = ['falk_future', 'falk_risk', 'falk_giving']
+    form_fields = ['falk_future', 'falk_giving', 'falk_risk']
 
 
 class Preferences2(SurveyFormPage):

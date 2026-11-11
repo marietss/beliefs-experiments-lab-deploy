@@ -70,7 +70,7 @@ def block_summary_context(player):
         if not peer.period_settled or not peer.group.settlement_complete:
             raise ValueError('Block feedback requires settled Final outcomes.')
         if peer.id != player.id:
-            rows.append(dict(manager=len(rows), points=points(decode_fraction(peer.final_block_wallet))))
+            rows.append(dict(manager=len(rows) + 1, points=points(decode_fraction(peer.final_block_wallet))))
     app = player.subsession.get_folder_name()
     branch = player.underlying_branch if app == 'policy' else None
     maximum = 1100 if branch == 'A' else 1095 if app == 'policy' else 800 if app == 'fixed' else 900

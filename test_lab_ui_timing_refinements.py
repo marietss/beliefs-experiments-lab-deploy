@@ -236,7 +236,7 @@ class RefinementTests(unittest.TestCase):
             p=helpers.subsession(session).get_players()[0]
             qs=lab_instructions.questions(p)
             self.assertEqual(''.join(q['correct'] for q in qs),expected[app.__name__])
-            for q in qs:self.assertEqual([key for key,_ in q['options']],list('abc'[:len(q['options'])]))
+            for q in qs:self.assertCountEqual([key for key,_ in q['options']],list('abc'[:len(q['options'])]))
             self.assertLessEqual(sum(q['correct']=='a' for q in qs),2)
             if app.__name__=='policy':
                 session.config['rho']=0.5;session.config['rho_exact']='1/2'

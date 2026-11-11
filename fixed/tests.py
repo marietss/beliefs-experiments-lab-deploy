@@ -14,7 +14,7 @@ class PlayerBot(Bot):
         if p.round_number == 1:
             yield Submission(ExperimentSplash, timeout_happened=True, check_html=False)
             yield Submission(PracticeDecision, timeout_happened=True, check_html=False)
-            yield PracticeComplete
+            yield Submission(PracticeComplete, timeout_happened=True, check_html=False)
             for page in (SectionComprehension, SectionComprehension2, SectionComprehension3):
                 yield SubmissionMustFail(page, {})
                 answers = instructions.correct_answers(p)

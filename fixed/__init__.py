@@ -374,7 +374,7 @@ class SessionReady(WaitPage):
 
 class PracticeDecision(Page):
     template_name = 'fixed/Decision.html'
-    timeout_seconds = 90
+    timeout_seconds = 60
     is_displayed = staticmethod(lambda player: player.round_number == 1)
 
     @staticmethod
@@ -390,6 +390,7 @@ class PracticeDecision(Page):
 class PracticeComplete(Page):
     template_name = 'fixed/PracticeComplete.html'
     is_displayed = staticmethod(lambda player: player.round_number == 1)
+    error_message = staticmethod(flow.admin_only)
 
 
 class LabOverview(Page):
@@ -555,7 +556,7 @@ class ResultWait(WaitPage):
 
 
 class BlockEnd(Page):
-    timeout_seconds = 60
+    timeout_seconds = 30
     template_name = 'lab/BlockSummary.html'
     @staticmethod
     def is_displayed(player):

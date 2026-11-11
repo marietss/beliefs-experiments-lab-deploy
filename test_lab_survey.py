@@ -25,7 +25,6 @@ import test_messages_browser as browser_harness
 
 
 ANSWERS = dict(
-    experiment_liking=0, experiment_clarity=10,
     experiment_perceived_purpose="Lo studio riguarda le decisioni di dismissione e il comportamento delle imprese in un gruppo.",
     strategy_description="Ho ripartito le dismissioni tra i periodi per ridurre il costo quadratico.",
     strategy_change="Ho mantenuto lo stesso approccio durante tutte le sezioni dello studio.",
@@ -33,22 +32,43 @@ ANSWERS = dict(
     gender='Preferisco non rispondere', age=24, city_birth='Bologna', current_city='Bologna',
     university_affiliation='Economia', university_status='Laurea magistrale', university_status_other='',
     unibo_time='Preferisco non rispondere', previous_experiment_experience='Non ricordo / Preferisco non rispondere',
-    falk_future=0, falk_risk=5, falk_giving=10,
+    falk_future=0, falk_giving=10, falk_risk=5,
     falk_favour=10, falk_revenge=0, falk_intentions=5,
 )
 
 
 class SurveyTests(unittest.TestCase):
-    def test_all_four_open_answers_require_twenty_non_whitespace_characters(self):
-        player = self.start(make_production_session())
-        self.post()
-        for field in ('experiment_perceived_purpose', 'strategy_description', 'strategy_change', 'information_used'):
-            for bad in ('', ' \t\n'*30, 'a '*19):
-                self.post({**self.answer(survey.ExperimentFeedback), field:bad})
-                self.assertIn('ExperimentFeedback/', str(self.response.url))
-                self.assertIn('Per favore, descrivi la tua risposta con qualche parola in più.', self.response.text)
-        self.post({**self.answer(survey.ExperimentFeedback), 'experiment_clarity':0})
-        self.assertIn('Demographics/', str(self.response.url))
+    def test_open_answers_use_twenty_twenty_twenty_five_non_whitespace_characters(self):
+        player=self.start(make_production_session());self.post()
+        for field, minimum in [('experiment_perceived_purpose',20),('strategy_description',20),('strategy_change',20),('information_used',5)]:
+            for bad in ('', ' \t\n'*30, 'a '*(minimum-1)):
+                self.post({**self.answer(survey.ExperimentFeedback),field:bad})
+                self.assertIn('ExperimentFeedback/',str(self.response.url))
+                self.assertIn('Per favore, descrivi la tua risposta con qualche parola in più.',self.response.text)
+        self.post({**self.answer(survey.ExperimentFeedback),
+            'experiment_perceived_purpose':'a '*20,'strategy_description':'b '*20,
+            'strategy_change':'c '*20,'information_used':' \t a b c d e \n'})
+        self.assertIn('Demographics/',str(self.response.url))
+        self.assertEqual(survey.non_whitespace_length(player.information_used),5)
+
+    def test_fresh_model_database_and_exports_omit_exactly_the_two_rating_fields(self):
+        from sqlalchemy import inspect
+        from otree.database import engine
+        player=self.start(make_production_session())
+        columns={c['name'] for c in inspect(engine).get_columns(survey.Player.__table__.name)}
+        header=list(get_rows_for_wide_csv(player.session.code))[0]
+        for name in ('experiment_liking','experiment_clarity'):
+            self.assertFalse(hasattr(survey.Player,name))
+            self.assertNotIn(name,columns)
+            self.assertNotIn(name,survey.SLIDERS)
+            self.assertNotIn('survey.1.player.'+name,header)
+        for legacy in ('experiment_changes','experiment_clarity_improvement'):
+            self.assertIn(legacy,columns)
+        self.assertEqual(survey.ExperimentFeedback.form_fields,
+            ['experiment_perceived_purpose','strategy_description','strategy_change','information_used'])
+        self.assertEqual(survey.Preferences1.form_fields,['falk_future','falk_giving','falk_risk'])
+        self.assertEqual(survey.Player.strategy_change.form_props['label'],
+            'Le tue decisioni sono cambiate durante l’esperimento? Spiega che cosa è cambiato e che cosa ti ha portato a cambiare la quantità di equipaggiamento ritirata in ciascun periodo. Se il tuo approccio non è cambiato, indicalo.')
 
     def setUp(self):
         self.client = TestClient(app)
@@ -112,8 +132,9 @@ class SurveyTests(unittest.TestCase):
         self.post()
         self.assertIn('ExperimentFeedback/', str(self.response.url))
         self.assertIn("Secondo te, qual era l'oggetto principale delle prime tre sezioni di questo studio? Descrivilo brevemente con parole tue.", self.response.text)
-        self.assertEqual(self.response.text.count('data-untouched'), 2)
-        self.assertIn('id="id_experiment_liking" name="experiment_liking" value=""', self.response.text)
+        self.assertNotIn('data-survey-scale',self.response.text)
+        self.assertNotIn('name="experiment_liking"',self.response.text)
+        self.assertNotIn('name="experiment_clarity"',self.response.text)
         self.post({})
         self.assertIn('ExperimentFeedback/', str(self.response.url))
         self.assertIn("Per favore, descrivi la tua risposta con qualche parola in più.", self.response.text)
@@ -123,23 +144,16 @@ class SurveyTests(unittest.TestCase):
             response = self.post({**self.answer(survey.ExperimentFeedback), 'experiment_perceived_purpose':bad})
             self.assertIn('ExperimentFeedback/', str(response.url))
             self.assertIn("Per favore, descrivi la tua risposta con qualche parola in più.", response.text)
-            self.assertIn('name="experiment_liking" value="0"', response.text)
-            self.assertIn('name="experiment_clarity" value="10"', response.text)
+            self.assertIn(ANSWERS['strategy_description'],response.text)
             self.assertNotIn('data-untouched', response.text)
         for bad in (' \t\n'*60, 'a '*19):
             self.post({**self.answer(survey.ExperimentFeedback), 'strategy_description':bad})
             self.assertIn("Per favore, descrivi la tua risposta con qualche parola in più.", self.response.text)
-        self.post({**self.answer(survey.ExperimentFeedback), 'experiment_liking':11})
-        self.assertIn('ExperimentFeedback/', str(self.response.url))
-        self.post({**self.answer(survey.ExperimentFeedback), 'experiment_liking':-1})
-        self.assertIn('ExperimentFeedback/', str(self.response.url))
         # Boundary lengths count only non-whitespace characters.
         feedback = {**self.answer(survey.ExperimentFeedback),
                     'experiment_perceived_purpose':'a '*20, 'strategy_description':'b '*20}
         self.post(feedback)
         self.assertIn('Demographics/', str(self.response.url))
-        self.assertEqual(player.experiment_liking, 0)
-        self.assertEqual(player.experiment_clarity, 10)
         for bad in ({}, {**self.answer(survey.Demographics), 'age':17},
                     {**self.answer(survey.Demographics), 'age':101},
                     {**self.answer(survey.Demographics), 'city_birth':'   '},
@@ -283,83 +297,81 @@ class SurveyBrowserTests(unittest.TestCase):
         return re.sub(r'([\"\'])/static/([^\"\']+)', asset, fragment)
 
     def test_feedback_and_both_gps_pages_have_deliberate_integer_sliders(self):
-        player = self.start(make_production_session())
-        lookups = _get_session_lookups(player.session.code)
-        for page in (survey.ExperimentFeedback, survey.Preferences1, survey.Preferences2):
-            pp = player.participant
-            pp._index_in_pages = next(i for i,row in lookups.items() if row.page_class is page)
-            pp._current_page_name = page.__name__
-            db.commit()
-            self.response = self.client.get(pp._start_url(),allow_redirects=True)
+        player=self.start(make_production_session())
+        lookups=_get_session_lookups(player.session.code)
+        def show(page):
+            pp=player.participant
+            pp._index_in_pages=next(i for i,row in lookups.items() if row.page_class is page)
+            pp._current_page_name=page.__name__;db.commit()
+            self.response=self.client.get(pp._start_url(),allow_redirects=True)
             self.assertEqual(self.response.status_code,200)
+        show(survey.ExperimentFeedback)
+        self.browser(self.fragment(), """
+            assert(document.querySelectorAll('textarea').length===4,'exactly four open questions');
+            assert(!document.querySelector('[data-survey-scale]'),'ratings removed');
+            assert(!document.getElementById('survey-continue').disabled,'open-response page can submit for validation');
+        """)
+        for field in survey.ExperimentFeedback.form_fields:
+            self.post({**self.answer(survey.ExperimentFeedback),field:'abcd'})
             self.browser(self.fragment(), """
-                const scales=Array.from(document.querySelectorAll('[data-survey-scale]'));
+                assert(document.body.innerText.includes('Per favore, descrivi la tua risposta con qualche parola in più.'),'short answer feedback');
+                assert(!document.body.innerText.includes('caratteri'),'no advance minimum disclosure');
+                assert(!document.querySelector('[data-survey-scale]'),'no ratings on redisplay');
+            """)
+        for page in (survey.Preferences1,survey.Preferences2):
+            show(page)
+            self.browser(self.fragment(), """
+                const scales=[...document.querySelectorAll('[data-survey-scale]')];
                 const button=document.getElementById('survey-continue');
-                assert(scales.length===COUNT,'exact requested slider count');
-                assert(button.disabled,'Continue initially disabled');
-                const followup=document.getElementById('clarity-improvement');
-                if(followup) assert(followup.hidden,'clarity follow-up hidden before selection');
-                scales.forEach(scale=>{
-                    const slider=scale.querySelector('input[type=range]');
-                    assert(slider.min==='0' && slider.max==='10' && slider.step==='1','integer 0–10 range');
-                    assert(slider.hasAttribute('data-untouched'),'initial thumb hidden');
-                    assert(scale.querySelector('input[type=hidden]').value==='','no implicit response');
-                    assert(scale.querySelector('.survey-selected strong').textContent==='—','no visible default number');
-                    const ticks=[...scale.querySelectorAll('.survey-ticks span')].map(s=>s.textContent);
-                    assert(JSON.stringify(ticks)===JSON.stringify(Array.from({length:11},(_,i)=>String(i))),'all ticks 0 through 10');
-                });
-                const form=document.getElementById('form');
-                const missing=new Event('submit',{bubbles:true,cancelable:true});
-                form.dispatchEvent(missing);assert(missing.defaultPrevented,'untouched submission prevented');
+                assert(scales.length===3 && button.disabled,'three unanswered scales');
                 scales.forEach((scale,index)=>{
                     const slider=scale.querySelector('input[type=range]');
-                    const value=index===0?'0':'10';
-                    slider.value=value;
-                    slider.dispatchEvent(new Event(index===0?'click':'input'));
-                    assert(!slider.hasAttribute('data-untouched'),'selected thumb visible');
-                    assert(scale.querySelector('input[type=hidden]').value===value,'deliberate zero/ten retained');
-                    assert(scale.querySelector('.survey-selected strong').textContent===value,'selected number updates');
-                    assert(button.disabled===(index<scales.length-1),'all sliders required');
+                    const field=scale.querySelector('input[type=hidden]');
+                    assert(slider.min==='0' && slider.max==='10' && slider.step==='1','integer scale');
+                    assert(slider.hasAttribute('data-untouched') && field.value==='','no default');
+                    assert(scale.querySelectorAll('.survey-ticks span').length===11,'all ticks');
+                    const missing=new Event('submit',{bubbles:true,cancelable:true});
+                    document.getElementById('form').dispatchEvent(missing);
+                    assert(missing.defaultPrevented,'all unanswered sliders required');
+                    slider.value=index===0?'0':'10';slider.dispatchEvent(new Event('input'));
+                    assert(field.value===slider.value && !slider.hasAttribute('data-untouched'),'active zero/ten');
+                    assert(button.disabled===(index<2),'all three required');
                 });
                 const complete=new Event('submit',{bubbles:true,cancelable:true});
-                form.dispatchEvent(complete);assert(!complete.defaultPrevented,'fully answered page can submit');
-                if(followup) {
-                    const clarity=document.getElementById('slider-experiment_clarity');
-                    const response=followup.querySelector('textarea');
-                    for(const value of [4,5,0,10]) {
-                        clarity.value=String(value);clarity.dispatchEvent(new Event('input'));
-                        assert(followup.hidden===(value>=5),'follow-up shown only below five');
-                        assert(response.required===(value<5),'only low clarity requires response');
-                    }
+                document.getElementById('form').dispatchEvent(complete);
+                assert(!complete.defaultPrevented,'answered page may submit');
+                const risk=document.getElementById('slider-falk_risk');
+                if(risk){
+                    const giving=document.getElementById('slider-falk_giving');
+                    assert(giving.compareDocumentPosition(risk)&Node.DOCUMENT_POSITION_FOLLOWING,'giving precedes risk');
+                    assert(risk.previousElementSibling.classList.contains('survey-scale-help'),'risk explanation immediately before slider');
+                    assert(risk.closest('section').querySelector('.survey-scale-help').textContent.includes('assolutamente non disposto/a a correre rischi'),'risk-specific help');
+                    assert(!giving.closest('section').querySelector('.survey-scale-help'),'no misplaced risk help');
                 }
-            """.replace('COUNT',str(2 if page is survey.ExperimentFeedback else 3)))
-        db.rollback();db.expire_all()
-        pp = player.participant
-        pp._index_in_pages = next(i for i,row in lookups.items() if row.page_class is survey.ExperimentFeedback)
-        pp._current_page_name = 'ExperimentFeedback'
-        db.commit()
-        self.response = self.client.get(pp._start_url(),allow_redirects=True)
-        self.post({**self.answer(survey.ExperimentFeedback),'experiment_perceived_purpose':'troppo breve'})
-        self.browser(self.fragment(), """
-            const scales=Array.from(document.querySelectorAll('[data-survey-scale]'));
-            assert(document.body.innerText.includes("Secondo te, qual era l'oggetto principale delle prime tre sezioni di questo studio?"),'revised purpose question visible');
-            assert(document.body.innerText.includes("Per favore, descrivi la tua risposta con qualche parola in più."),'short-answer feedback visible');
-            assert(document.body.innerText.includes("Per favore, descrivi la tua risposta con qualche parola in più."),'exact purpose feedback visible');
-            assert(!document.getElementById('survey-continue').disabled,'valid responses preserved on text error');
-            assert(scales[0].querySelector('input[type=hidden]').value==='0','zero preserved');
-            assert(scales[1].querySelector('input[type=hidden]').value==='10','ten preserved');
-            assert(scales.every(s=>!s.querySelector('input[type=range]').hasAttribute('data-untouched')),'answered state restored');
-        """)
-        self.post({**self.answer(survey.ExperimentFeedback), 'strategy_description':'troppo breve'})
-        self.browser(self.fragment(), """
-            assert(document.body.innerText.includes("Per favore, descrivi la tua risposta con qualche parola in più."),'exact changes feedback visible');
-        """)
-        db.rollback();db.expire_all()
-        pp = player.participant
-        pp._index_in_pages = next(i for i,row in lookups.items() if row.page_class is survey.UniversityBackground)
-        pp._current_page_name = 'UniversityBackground'
-        db.commit()
-        self.response = self.client.get(pp._start_url(),allow_redirects=True)
-        self.browser(self.fragment(), """
-            assert(document.body.innerText.includes('Prima di oggi, quante volte avevi già partecipato ad uno studio nel laboratorio BLESS o online?'),'exact previous-study label visible');
-        """)
+            """)
+
+    def test_feedback_and_preference_order_at_exact_lab_viewports(self):
+        import test_lab_reports_footer_timing as monitors
+        player=self.start(make_production_session())
+        lookups=_get_session_lookups(player.session.code)
+        for page in (survey.ExperimentFeedback,survey.Preferences1):
+            pp=player.participant
+            pp._index_in_pages=next(i for i,row in lookups.items() if row.page_class is page)
+            pp._current_page_name=page.__name__;db.commit()
+            source=self.client.get(pp._start_url(),allow_redirects=True).text
+            for width,height in ((1366,768),(1366,900),(650,900)):
+                monitors.PilotRefinementTests.browser(self,source,"""
+                    assert(document.documentElement.scrollWidth<=innerWidth,'no overflow');
+                    const risk=document.getElementById('slider-falk_risk');
+                    if(risk){
+                        const giving=document.getElementById('slider-falk_giving').closest('section');
+                        const section=risk.closest('section');
+                        assert(giving.getBoundingClientRect().bottom<section.getBoundingClientRect().top,'giving visually above risk');
+                        assert(section.querySelector('.survey-scale-help').textContent.includes('scala da 0 a 10'),'risk explanation remains in risk section');
+                        assert(!giving.querySelector('.survey-scale-help'),'giving has no risk explanation');
+                    } else {
+                        assert(document.querySelectorAll('textarea').length===4,'four open responses');
+                        assert(document.body.innerText.includes('Le tue decisioni sono cambiate durante l’esperimento?'),'exact new question');
+                        assert(!document.querySelector('[data-survey-scale]'),'no rating questions');
+                    }
+                """,width,height,screenshot=f'/tmp/participant-final-survey-{page.__name__}-{width}x{height}.png')

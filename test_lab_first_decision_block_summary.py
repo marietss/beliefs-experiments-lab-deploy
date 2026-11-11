@@ -47,11 +47,14 @@ class FirstDecisionTests(unittest.TestCase):
                             self.assertEqual(app.Result.get_timeout_seconds(p),60 if p.period in (5,10) else 20)
                         self.assertEqual(app.Reports.timeout_seconds,120)
                         self.assertEqual(app.BlockStart.timeout_seconds,60)
+                        self.assertEqual(app.BlockEnd.timeout_seconds,30)
                         self.assertIn(app.BlockEnd,app.page_sequence)
                         self.assertEqual(app.page_sequence[-2:], [app.BlockEndWait, app.BlockEnd])
                         self.assertTrue(app.MainCheckWait.wait_for_all_groups)
                         self.assertTrue(app.BlockEndWait.wait_for_all_groups)
                     self.assertEqual(session.config['app_sequence'][-3:],['bucket','survey','lab_payment'])
+                    import fixed
+                    self.assertEqual(fixed.PracticeDecision.timeout_seconds,60)
                     db.rollback()
 
     def test_native_decision_timeout_zero_early_submission_and_period_results(self):
@@ -135,7 +138,7 @@ class FirstDecisionTests(unittest.TestCase):
                 self.assertNotIn('id="earnings-summary"',response.text)
                 self.assertNotIn('paid_block',response.text)
                 row=lookups[pp._index_in_pages];page=row.page_class
-                if name in ('ExperimentSplash','SectionSplash','FirstBlockSplash'):
+                if name in ('ExperimentSplash','SectionSplash','FirstBlockSplash','PracticeComplete'):
                     gate=True;continue
                 from otree.api import WaitPage
                 if issubclass(page,WaitPage):continue
@@ -145,6 +148,9 @@ class FirstDecisionTests(unittest.TestCase):
                 if name.startswith('SectionComprehension'):
                     data={q['field']:q['correct'] for q in lab_comprehension.pair_questions(p,page.pair_number)}
                 elif name=='PracticeDecision':
+                    self.assertEqual(app.PracticeDecision.timeout_seconds,60)
+                    remaining=float(re.search(r'var remainingTimeoutSeconds = ([0-9.]+)',response.text)[1])
+                    self.assertTrue(0<remaining<=60)
                     self.expire(p);data=dict(timeout_happened=1)
                 elif name=='Reports':
                     data=dict(expected_own_equipment_main=50,expected_group_average_main=50)
@@ -155,6 +161,11 @@ class FirstDecisionTests(unittest.TestCase):
                     self.assertTrue(0<remaining<=duration)
                     data=dict(retirement=10);counts[pp.code]+=1
                 elif name=='Result':
+                    duration=60 if p.period in (5,10) else 20
+                    remaining=float(re.search(r'var remainingTimeoutSeconds = ([0-9.]+)',response.text)[1])
+                    self.assertTrue(0<remaining<=duration)
+                    if p.period in (5,10) and pp.id_in_session==1:
+                        self.expire(p);data=dict(timeout_happened=1)
                     if p.period==5:
                         main[pp.code]+=1
                         self.assertIn('Accertamento principale — Periodo 5',response.text)
@@ -163,8 +174,13 @@ class FirstDecisionTests(unittest.TestCase):
                         self.assertIn("Esito dell'accertamento finale",response.text)
                         self.assertTrue(p.final_block_wallet)
                 elif name=='BlockEnd':
+                    self.assertEqual(app.BlockEnd.timeout_seconds,30)
+                    remaining=float(re.search(r'var remainingTimeoutSeconds = ([0-9.]+)',response.text)[1])
+                    self.assertTrue(0<remaining<=30)
+                    if pp.id_in_session==1:
+                        self.expire(p);data=dict(timeout_happened=1)
                     summaries[pp.code]+=1
-                    self.assertIn('Il tuo portafoglio è di',response.text)
+                    self.assertIn('Il tuo portafoglio alla fine del blocco è di',response.text)
                     self.assertNotIn("Attrezzatura all'accertamento principale",response.text)
                 elif name=='BucketTask':
                     for i in range(1,51):bucket.receive(p,dict(action='allocate',bucket='blue',expected_index=i))

@@ -3,17 +3,18 @@
 <style>
     .block-group-summary .own-outcome > * { background: #fff3b0; font-weight: 700; }
     .block-group-summary .block-feedback-table { table-layout: fixed; }
+    .block-group-summary .block-wallet-summary { font-size: 1.2rem; line-height: 1.5; }
 </style>
 {{ endblock }}
 {{ block content }}
 <div class="interstitial-page"><main class="lab-page interstitial-card game-end-card lab-card block-group-summary">
     <h1 style="text-align: center;">Riepilogo del Blocco {{ summary_section }}.{{ player.local_block }}</h1>
-    <p class="text-center">Il tuo portafoglio è di {{ summary_wallet }} punti. Il massimo portafoglio in questa sezione era {{ summary_maximum }}.</p>
+    <p class="text-center block-wallet-summary">Il tuo portafoglio alla fine del blocco è di <strong>{{ summary_wallet }} punti</strong>. Il portafoglio massimo ottenibile è di {{ summary_maximum }} punti.</p>
     <table class="block-feedback-table">
-        <thead><tr><th scope="col">Altri manager</th><th scope="col">Portafoglio</th></tr></thead>
+        <thead><tr><th scope="col">Manager</th><th scope="col">Portafoglio alla fine del blocco</th></tr></thead>
         <tbody>
             {{ for row in summary_rows }}
-            <tr><th scope="row">{{ row.manager }}</th><td>{{ row.points }} punti</td></tr>
+            <tr><th scope="row">Altro manager {{ row.manager }}</th><td>{{ row.points }} punti</td></tr>
             {{ endfor }}
         </tbody>
     </table>
