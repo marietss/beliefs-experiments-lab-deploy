@@ -340,7 +340,12 @@ class FixedHTTPBarrierTests(unittest.TestCase):
             bot.submit(bot.get_next_submit())
             db.expire_all()
 
-        # Blank quiz retry -> correct printed quiz; no practice.
+        # Complete the economically inert practice before the paired comprehension flow.
+        for bot in bots:
+            submit(bot)  # practice timeout
+            submit(bot)  # practice-completed Continue
+
+        # Blank quiz retry -> correct printed quiz.
         for bot in bots:
             for _ in range(6):
                 submit(bot)  # rejected/correct submissions for each server pair
@@ -367,22 +372,31 @@ class FixedHTTPBarrierTests(unittest.TestCase):
         for bot in groups[0]:
             submit(bot)  # Result period 1
 
-        def finish_remaining_periods(group_bots, start):
-            for period in range(start, 11):
+        def finish_remaining_periods(group_bots, start, end=10):
+            for period in range(start, end + 1):
                 for bot in group_bots:
                     submit(bot)  # Decision
                 for bot in group_bots:
                     submit(bot)  # Result
 
-        finish_remaining_periods(groups[0], 2)
+        finish_remaining_periods(groups[0], 2, 4)
+        for bot in groups[0]: submit(bot)  # fast P5 decisions
+        self.assertTrue(all(bot.on_wait_page() for bot in groups[0]))
+        self.assertFalse(any(g.settlement_complete for g in subsession(session,5).get_groups()))
+        for group_bots in groups[1:]:
+            for bot in group_bots:
+                for _ in range(2): submit(bot)  # invalid/valid Reports
+            finish_remaining_periods(group_bots, 1, 4)
+            for bot in group_bots: submit(bot)  # slow P5 decisions
+        self.assertTrue(all(g.settlement_complete for g in subsession(session,5).get_groups()))
+        for bot in groups[0]: submit(bot)  # P5 Result
+        finish_remaining_periods(groups[0], 6)
         self.assertTrue(groups[0][0].on_wait_page())
         self.assertFalse(subsession(session, 10).block_barrier_complete)
         self.assertFalse(subsession(session, 11).grouping_installed)
         for group_bots in groups[1:]:
-            for bot in group_bots:
-                for _ in range(2):
-                    submit(bot)  # invalid Reports, valid Reports
-            finish_remaining_periods(group_bots, 1)
+            for bot in group_bots: submit(bot)  # P5 Result
+            finish_remaining_periods(group_bots, 6)
         self.assertTrue(subsession(session, 10).block_barrier_complete)
         self.assertTrue(subsession(session, 11).grouping_installed)
         self.assertFalse(groups[0][0].on_wait_page())

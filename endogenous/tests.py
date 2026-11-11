@@ -27,24 +27,26 @@ class PlayerBot(Bot):
             ))
             yield Reports, dict(expected_own_equipment_main=50, expected_group_average_main=50)
         # Test choices only: each group sees above, equality, then mixed zero/positive.
-        amount = (0 if p.local_block == 1 else 60 if p.local_block == 2
-                  else 100 if p.id_in_group == 1 else 60) if p.period == 1 else 0
+        amount = (0 if p.local_block == 1 else 63 if p.local_block == 2
+                  else 100 if p.id_in_group == 1 else 63) if p.period == 1 else 0
         yield Decision, dict(retirement=amount)
         db.expire_all()
         assert p.period_settled and p.group.settlement_complete
         assert decode_fraction(p.group_mean) == Fraction(p.group.equipment_total, 6)
         if p.period == 5:
             assert p.main_enforcement_applied == (p.local_block != 1)
-            assert p.applied_main_threshold == p.group.threshold == 40
+            assert p.applied_main_threshold == p.group.threshold == 37
             assert decode_fraction(p.main_fine) == (
                 0 if p.local_block == 1 or p.voluntary_equipment_after == 0
-                else Fraction(195) if p.local_block == 2 else 195
+                else Fraction("193.5") if p.local_block == 2 else Fraction("193.5")
             )
             if p.local_block == 2:
-                assert p.group.equipment_total == 240
+                assert p.group.equipment_total == 222
         yield Result
         if p.period == 10:
             assert p.final_equipment == 0
-            expected = (-75 if p.local_block == 1 else Fraction(210) if p.local_block == 2
-                        else 0 if p.id_in_group == 1 else 210)
+            expected = (-75 if p.local_block == 1 else Fraction("197.7") if p.local_block == 2
+                        else 0 if p.id_in_group == 1 else Fraction("197.7"))
             assert decode_fraction(p.final_block_wallet) == expected
+        if p.period == 10:
+            yield BlockEnd

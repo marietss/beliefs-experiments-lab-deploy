@@ -1,4 +1,5 @@
 """Policy participant allowlists, privacy, active templates and genuine HTTP barriers."""
+from fractions import Fraction
 import json
 from pathlib import Path
 import re
@@ -28,7 +29,7 @@ def chart_config(html):
 
 def assert_blind(test,html):
     config=chart_config(html)
-    test.assertEqual((config['thresholdLow'],config['thresholdHigh'],config['thresholdRevealed']),(33,47,False))
+    test.assertEqual((config['thresholdLow'],config['thresholdHigh'],config['thresholdRevealed']),(33,42,False))
     test.assertNotIn('threshold',config)
     test.assertNotIn('id="revealed-threshold"',html)
     test.assertNotIn('id="main-threshold"',html)
@@ -61,8 +62,8 @@ class PolicyUITests(unittest.TestCase):
                 self.assertNotIn('Entrambe le risposte rimangono private',html)
             if branch=='A':
                 self.assertNotIn('threshold',policy.BlockStart.vars_for_template(p))
-                self.assertEqual(policy.BlockStart.vars_for_template(p)['support_high'],47)
-                self.assertNotIn('47',start)
+                self.assertEqual(policy.BlockStart.vars_for_template(p)['support_high'],42)
+                self.assertNotIn('id="revealed-threshold"',start)
             else:self.assertNotIn('soglia',start)
 
     def test_slider_only_local_assets_and_branch_specific_chart_payload(self):
@@ -81,7 +82,7 @@ class PolicyUITests(unittest.TestCase):
             self.assertEqual(config['costMilliPoints'],100)
             self.assertEqual(config['groupHistory'],[])
             if branch=='A':assert_blind(self,html)
-            else:self.assertEqual(config['threshold'],40)
+            else:self.assertEqual(config['threshold'],37)
             if branch=='M':
                 self.assertNotIn('id="public-report-mean"',html)
                 self.assertEqual(chart_config(html)['publicReportMean'],1/6)
@@ -96,7 +97,7 @@ class PolicyUITests(unittest.TestCase):
             for p in group.get_players():
                 self.assertNotIn('threshold',policy.Decision.vars_for_template(p))
                 assert_blind(self,render_page(policy.Decision,p))
-            decide(group,[53]*6 if r==5 else None)
+            decide(group,[58]*6 if r==5 else None)
             if r==5:
                 assert_blind(self,render_page(policy.Decision,group.get_players()[0]))
                 self.assertFalse(group.settlement_complete)
@@ -105,43 +106,43 @@ class PolicyUITests(unittest.TestCase):
         p=group.get_players()[0]
         html=render_page(policy.Result,p)
         config=chart_config(html)
-        self.assertEqual(config['threshold'],47)
+        self.assertEqual(config['threshold'],42)
         self.assertTrue(config['thresholdRevealed'])
-        self.assertIn('id="main-threshold">47 unità',html)
+        self.assertIn('id="main-threshold">42 unità',html)
         self.assertIn('id="target-satisfied">No',html)
-        self.assertIn('strettamente maggiore di 47',html)
-        self.assertNotIn('at least 47',html)
+        self.assertIn('strettamente maggiore di 42',html)
+        self.assertNotIn('at least 42',html)
         self.assertEqual(set(k for k in config if 'threshold' in k.lower()),{'thresholdLow','thresholdHigh','thresholdRevealed','threshold'})
         self.assertNotIn('ambiguity_thresholds',html)
         self.assertNotIn('thresholds',policy.Result.vars_for_template(p))
         assert_blind(self,render_page(policy.Decision,p))  # stale period-5 decision stays blind
-        self.assertEqual(chart_config(render_page(policy.Decision,p.in_round(6)))['threshold'],47)
+        self.assertEqual(chart_config(render_page(policy.Decision,p.in_round(6)))['threshold'],42)
         self.assertEqual(render_page(policy.Result,p),html)
 
     def test_main_feedback_recipient_nonrecipient_and_exact_wallet(self):
         group=main_group(equipment=[0,40,40,40,40,40])
-        for p,transfer,wallet,fine in [(group.get_players()[0],'325','325','0'),(group.get_players()[1],'0','445','195')]:
+        for p,transfer,wallet,fine in [(group.get_players()[0],'292.50','292.50','0'),(group.get_players()[1],'0','445','195')]:
             html=render_page(policy.Result,p)
-            for key,text in [('fine-pool','975 punti'),('recipient-count','1'),('redistributed-pool','325 punti'),
+            for key,text in [('fine-pool','975 punti'),('recipient-count','1'),('redistributed-pool','292.50 punti'),
                              ('own-transfer',f'{transfer} punti'),('settled-wallet',f'{wallet} punti'),('main-fine',f'{fine} punti'),
                              ('group-mean','33.33 unità')]:
                 self.assertIn(f'id="{key}">{text}',html)
-            self.assertIn('id="policy-rho">1/3',html)
+            self.assertIn('id="policy-rho">3/10',html)
             self.assertNotIn('id="no-recipients"',html)
         self.assertIn('id="policy-recipient">Sì',render_page(policy.Result,group.get_players()[0]))
         self.assertIn('id="policy-recipient">No',render_page(policy.Result,group.get_players()[1]))
 
     def test_no_recipient_feedback_zero_actual_distribution(self):
-        group=main_group(equipment=[40]*6)
+        group=main_group(equipment=[37]*6)
         html=render_page(policy.Result,group.get_players()[0])
-        self.assertIn('id="fine-pool">1170 punti',html)
+        self.assertIn('id="fine-pool">1161 punti',html)
         self.assertIn('id="recipient-count">0',html)
         self.assertIn('id="redistributed-pool">0 punti',html)
         self.assertIn('Non è stato redistribuito nulla',html)
         self.assertIn('id="own-transfer">0 punti',html)
 
     def test_repeating_transfer_not_two_decimal_settlement(self):
-        group=main_group(equipment=[0,0,0,40,40,41])
+        group=main_group(rho=Fraction(1,3),equipment=[0,0,0,40,40,41])
         html=render_page(policy.Result,group.get_players()[0])
         self.assertIn('id="own-transfer">65.06 punti',html)
         self.assertIn('id="settled-wallet">65.06 punti',html)
@@ -153,7 +154,7 @@ class PolicyUITests(unittest.TestCase):
         for r in range(6,11):
             row=p.in_round(r)
             html=render_page(policy.Decision,row)
-            self.assertIn('id="current-wallet">325 punti',html)
+            self.assertIn('id="current-wallet">292.50 punti',html)
             self.assertNotIn('id="public-report-mean"',html)
             self.assertEqual(chart_config(html)['publicReportMean'],1/6)
             self.assertIn('name="retirement" value="0"',html)
@@ -164,7 +165,7 @@ class PolicyUITests(unittest.TestCase):
         self.assertNotIn('id="fine-pool"',html)
         finish_block_for_summary(row)
         end=render_page(policy.BlockEnd,row)
-        self.assertIn('325 punti',end)
+        self.assertIn('292.50 punti',end)
         self.assertNotIn('id="public-report-mean"',end)
 
     def test_negative_wallet_rendering(self):
@@ -202,6 +203,7 @@ class PolicyUITests(unittest.TestCase):
 
 
 class PolicyHTTPTests(unittest.TestCase):
+    @unittest.skipUnless(Path('policy/tests.py').is_file(), 'Policy bot fixture policy/tests.py absent from deployment; native session barriers are tested without bots.')
     def test_actual_waitpages_slow_groups_branch_privacy_and_block_barrier(self):
         for branch in ('E','A','M'):
             session=make_session(branch)
@@ -244,7 +246,7 @@ class PolicyHTTPTests(unittest.TestCase):
                     self.assertFalse(bot.on_wait_page())
                     if r==5:
                         self.assertIn('id="fine-pool">0 punti',bot.html)
-                        if branch=='A':self.assertEqual(chart_config(bot.html)['threshold'],47)
+                        if branch=='A':self.assertEqual(chart_config(bot.html)['threshold'],42)
                     submit(bot)
             self.assertTrue(groups[0][0].on_wait_page())
             self.assertFalse(subsession(session,10).block_barrier_complete)

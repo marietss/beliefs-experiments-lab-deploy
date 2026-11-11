@@ -372,6 +372,26 @@ class SessionReady(WaitPage):
         subsession.readiness_complete = True
 
 
+class PracticeDecision(Page):
+    template_name = 'fixed/Decision.html'
+    timeout_seconds = 90
+    is_displayed = staticmethod(lambda player: player.round_number == 1)
+
+    @staticmethod
+    def vars_for_template(player):
+        return dict(practice=True, equipment=rules.K0, wallet=presentation.points(rules.W0),
+                    **presentation.chart_context(player, equipment=rules.K0))
+
+    @staticmethod
+    def error_message(player, values):
+        return 'Il periodo di prova termina automaticamente allo scadere del tempo.'
+
+
+class PracticeComplete(Page):
+    template_name = 'fixed/PracticeComplete.html'
+    is_displayed = staticmethod(lambda player: player.round_number == 1)
+
+
 class LabOverview(Page):
     template_name = 'general_instructions/LabOverview.html'
     is_displayed = staticmethod(lambda player: player.round_number == 1)
@@ -474,7 +494,7 @@ class Decision(Page):
     @staticmethod
     def vars_for_template(player):
         equipment, wallet = current_state(player)
-        return dict(equipment=equipment, wallet=presentation.points(wallet),
+        return dict(practice=False, equipment=equipment, wallet=presentation.points(wallet),
                     **presentation.chart_context(player, equipment=equipment))
 
     @staticmethod
@@ -562,6 +582,6 @@ class BlockEndWait(WaitPage):
     after_all_players_arrive = staticmethod(complete_block)
 
 
-page_sequence = [ExperimentSplash, SessionReady, SectionComprehension, SectionComprehension2, SectionComprehension3, ComprehensionWait,
+page_sequence = [ExperimentSplash, SessionReady, PracticeDecision, PracticeComplete, SectionComprehension, SectionComprehension2, SectionComprehension3, ComprehensionWait,
                  FirstBlockSplash, BlockStart, BlockStartWait, Reports, ReportsWait, Decision,
-                 PeriodWait, MainCheckWait, Result, ResultWait, BlockEndWait]
+                 PeriodWait, MainCheckWait, Result, ResultWait, BlockEndWait, BlockEnd]

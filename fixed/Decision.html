@@ -7,7 +7,7 @@
 <div class="lab-page decision-page">
     <header class="lab-heading page-heading-row">
         <div class="wallet-badge current-points-badge"><span>Il tuo portafoglio:</span><strong id="current-wallet">{{ wallet }} punti</strong></div>
-        <h1 class="page-heading">Blocco 1.{{ player.local_block }} · Periodo {{ player.period }} / 10</h1>
+        <h1 class="page-heading">{{ if practice }}Periodo di prova{{ else }}Blocco 1.{{ player.local_block }} · Periodo {{ player.period }} / 10{{ endif }}</h1>
     </header>
     <div class="graph-row top-row">
         {{ include 'fixed/DecisionEquipmentGraph.html' }}
@@ -44,7 +44,7 @@
         </dl>
     </section>
     <div class="actions actions-row">
-        <button type="submit" id="confirm-retirement" class="otree-btn-next btn btn-primary" {{ if equipment > 0 }}disabled{{ endif }}>{{ if equipment == 0 }}Continua{{ else }}Conferma{{ endif }}</button>
+        <button type="{{ if practice }}button{{ else }}submit{{ endif }}" id="confirm-retirement" class="otree-btn-next btn btn-primary" {{ if equipment > 0 }}disabled{{ endif }}>{{ if equipment == 0 }}Continua{{ else }}Conferma{{ endif }}</button>
     </div>
     <noscript><p>Per il cursore di dismissione è necessario JavaScript. Avvisa il personale di laboratorio.</p></noscript>
 </div>

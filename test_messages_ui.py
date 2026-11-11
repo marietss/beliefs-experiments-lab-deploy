@@ -57,10 +57,10 @@ class MessagesUITests(unittest.TestCase):
         self.assertNotIn('type="number"', html)
         self.assertNotIn('>+</button>', html)
         self.assertNotIn('>-</button>', html)
-        self.assertEqual(chart_config(html)['threshold'], 40)
-        self.assertEqual(chart_config(html)['threshold'], 40)
+        self.assertEqual(chart_config(html)['threshold'], 37)
+        self.assertEqual(chart_config(html)['threshold'], 37)
         config = chart_config(html)
-        self.assertEqual(config['threshold'], 40)
+        self.assertEqual(config['threshold'], 37)
         self.assertEqual(config['groupHistory'], [])
         self.assertEqual(config['costMilliPoints'], 100)
         self.assertIn('/static/fixed/vendor/chart.umd-4.4.8.js', html)
@@ -68,14 +68,14 @@ class MessagesUITests(unittest.TestCase):
         self.assertNotIn('https://', html)
 
     def test_main_equality_feedback_is_not_success(self):
-        group = self.main([40] * 6)
+        group = self.main([37] * 6)
         p = group.get_players()[0]
         html = render_page(messages.Result, p)
-        for key, text in [('group-mean', '40 unità'), ('main-threshold', '40 unità'),
+        for key, text in [('group-mean', '37 unità'), ('main-threshold', '37 unità'),
                           ('target-satisfied', 'No'), ('main-enforcement', 'Sì'),
-                          ('main-fine', '195 punti'), ('settled-wallet', '445 punti')]:
+                          ('main-fine', '193.50 punti'), ('settled-wallet', '409.60 punti')]:
             self.assertIn(f'id="{key}">{text}', html)
-        self.assertIn('uguale o inferiore a 40 unità', html)
+        self.assertIn('uguale o inferiore a 37 unità', html)
         self.assertNotIn('at least 40', html)
         before = group.settlement_record
         self.assertEqual(html, render_page(messages.Result, p))
@@ -92,12 +92,12 @@ class MessagesUITests(unittest.TestCase):
             self.assertEqual(chart_config(html)['groupHistory'][-1]['equipment'], float(Fraction(241, 6)))
 
     def test_main_mixed_zero_exemption_under_common_enforcement(self):
-        group = self.main([0, 20, 40, 50, 60, 69])
-        for p, fine in zip(group.get_players(), ['0', '185', '195', '200', '205', '209.50']):
+        group = self.main([0, 20, 40, 50, 60, 51])
+        for p, fine in zip(group.get_players(), ['0', '185', '195', '200', '205', '200.50']):
             html = render_page(messages.Result, p)
             self.assertIn('id="main-enforcement">Sì', html)
             self.assertIn(f'id="main-fine">{fine} punti', html)
-            self.assertIn('id="group-mean">39.83 unità', html)
+            self.assertIn('id="group-mean">36.83 unità', html)
 
     def test_zero_continue_preserves_normal_submission(self):
         group = self.group()
@@ -107,7 +107,7 @@ class MessagesUITests(unittest.TestCase):
         self.assertNotIn('type="range"', html)
         self.assertIn('name="retirement" value="0"', html)
         self.assertIn('>Continua</button>', html)
-        self.assertEqual(chart_config(html)['threshold'], 40)
+        self.assertEqual(chart_config(html)['threshold'], 37)
 
     def test_follow_up_and_own_negative_block_wallet(self):
         for r in range(1, 11):
@@ -135,7 +135,7 @@ class MessagesUITests(unittest.TestCase):
         self.assertNotIn('report-disclosure', start)
 
     def test_privacy_and_no_A_policy_payloads(self):
-        group = self.main([0, 20, 40, 50, 60, 69])
+        group = self.main([0, 20, 40, 50, 60, 51])
         p = group.get_players()[0]
         for page, row in [(messages.Result, p), (messages.Decision, p.in_round(6))]:
             html = render_page(page, row)

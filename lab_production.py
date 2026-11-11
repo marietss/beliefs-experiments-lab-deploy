@@ -28,10 +28,10 @@ PARAMETERS = frozenset(('paid_block', 'matching_seed', 'rho', 'rho_exact',
 
 
 def templates():
-    return [dict(name=f'lab_{branch}_{size}', display_name=f'LAB {branch} — {size} participants',
+    return [dict(name=f'lab_{branch}_{size}', display_name=f'LAB {"S" if branch == "M" else branch} — {size} participants',
                  lab_production=True, lab_design_version=DESIGN_VERSION,
                  lab_session_size=size, num_demo_participants=size, branch=branch,
-                 paid_block=None, matching_seed=None, rho=1/3, rho_exact='1/3',
+                 paid_block=None, matching_seed=None, rho=0.3, rho_exact='3/10',
                  ambiguity_thresholds={}, triplet_id='', recruitment_batch='',
                  T=5, real_world_currency_per_point=0.01, participation_fee=8.00,
                  exchange_rate_text='', completion_code='',
@@ -72,9 +72,9 @@ def validate_config(config, *, currency='EUR', use_points=True):
                      periods_per_block=10, blocks_per_section=3, total_blocks=9,
                      rounds_per_app=30, main_check_period=5, follow_up_period=10,
                      players_per_group=6, group_size=6, cost_factor=Fraction(1,10),
-                     threshold=40, comparison_value=40, final_penalty_points=75,
+                     threshold=37, comparison_value=37, final_penalty_points=75,
                      main_fine_base=175, main_fine_per_unit=Fraction(1,2),
-                     follow_up_fine=75, ambiguity_threshold_low=33, ambiguity_threshold_high=47,
+                     follow_up_fine=75, ambiguity_threshold_low=33, ambiguity_threshold_high=42,
                      section1_num_blocks=3, section2_num_blocks=3, section3_num_blocks=3)
     for key, expected_value in constants.items():
         if key in result:
@@ -88,7 +88,7 @@ def validate_config(config, *, currency='EUR', use_points=True):
         rules.AMBIGUITY_THRESHOLD_LOW,rules.AMBIGUITY_THRESHOLD_HIGH,rules.FOLLOW_UP_FINE,
         rules.MAIN_FINE_BASE,rules.MAIN_FINE_PER_UNIT,rules.ROUNDS_PER_APP,
         rules.MAIN_CHECK_PERIOD,rules.FOLLOW_UP_PERIOD) != (
-            100,1000,5,10,3,9,6,Fraction(1,10),40,33,47,75,175,Fraction(1,2),30,5,10):
+            100,1000,5,10,3,9,6,Fraction(1,10),37,33,42,75,175,Fraction(1,2),30,5,10):
         raise ValueError('Executable laboratory constants differ from the production design version.')
     for key in ('triplet_id','recruitment_batch'):
         if not isinstance(result.get(key,''),str):

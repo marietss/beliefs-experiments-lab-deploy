@@ -341,4 +341,4 @@ class BlockEndWait(WaitPage):
 
 page_sequence = [SectionSplash, SessionReady, SectionComprehension, SectionComprehension2, ComprehensionWait,
                  FirstBlockSplash, BlockStart, BlockStartWait, Reports, ReportsWait, Decision,
-                 PeriodWait, MainCheckWait, Result, ResultWait, BlockEndWait]
+                 PeriodWait, MainCheckWait, Result, ResultWait, BlockEndWait, BlockEnd]

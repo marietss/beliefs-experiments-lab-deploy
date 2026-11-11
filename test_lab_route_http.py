@@ -117,7 +117,9 @@ class CrossAppHTTPTests(unittest.TestCase):
                     dest_ids={r:[g.id for g in destination.in_round(r).get_groups()] for r in range(1,11)}
                     for code in participants:
                         refresh(code)
-                        self.assertNotIn('Riepilogo del Blocco',responses[code].text)
+                        self.assertIn('Riepilogo del Blocco',responses[code].text)
+                        post(code)
+                        refresh(code)
                         self.assertNotIn(wait_page_http_header,responses[code].headers)
                         self.assertEqual(participants[code]._current_app_name,destination.get_folder_name())
                         self.assertEqual(participants[code]._round_number,1)
@@ -155,8 +157,8 @@ class CrossAppHTTPTests(unittest.TestCase):
                         context=destination_app.BlockStart.vars_for_template(p)
                         if branch=='A':
                             self.assertNotIn('threshold',context)
-                            self.assertEqual((context['support_low'],context['support_high']),(33,47))
-                        elif branch=='E':self.assertEqual(context['threshold'],40)
+                            self.assertEqual((context['support_low'],context['support_high']),(33,42))
+                        elif branch=='E':self.assertEqual(context['threshold'],37)
                         else:self.assertNotIn('report-disclosure',responses[code].text)
                     admin_release()
                     for code in participants:
@@ -216,9 +218,9 @@ class CrossAppHTTPTests(unittest.TestCase):
                     for code in all_codes:
                         refresh(code)
                         config=chart_config(responses[code].text)
-                        self.assertEqual(config['threshold'],session.config['ambiguity_thresholds']['7'] if branch=='A' else 40)
+                        self.assertEqual(config['threshold'],session.config['ambiguity_thresholds']['7'] if branch=='A' else 37)
                         self.assertIn('id="fine-pool">585.50 punti',responses[code].text)
-                        self.assertIn('id="redistributed-pool">195.17 punti',responses[code].text)
+                        self.assertIn('id="redistributed-pool">175.65 punti',responses[code].text)
                         private_payload(code,responses[code].text)
                     self.assertTrue(all(g.settlement_complete for g in destination.in_round(5).get_groups()))
                     # Source retries preserve already-collected destination reports/settlements.

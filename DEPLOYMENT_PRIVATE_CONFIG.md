@@ -14,7 +14,7 @@ Only names and purposes are recorded here. Supply actual values outside Git.
 | OTREE_LAB_CONFIG_FILE | Path to private study JSON outside this repository. |
 | JSON paid_block | Externally selected integer 1–9, hidden until the receipt. |
 | JSON matching_seed | Explicit private matching seed. |
-| JSON rho, rho_exact | Current Policy share: 1/3, with consistent exact companion. |
+| JSON rho, rho_exact | Current Policy share: exactly 30% (rho=0.3, rho_exact=3/10), with consistent exact companion. |
 | JSON ambiguity_thresholds | A/P(A): externally supplied integer thresholds 40–50 for blocks 4–9; E/M use an empty map. Never commit realized schedules. |
 | JSON triplet_id, recruitment_batch | Optional private research labels. |
 

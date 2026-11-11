@@ -26,9 +26,10 @@ import test_messages_browser as browser_harness
 
 ANSWERS = dict(
     experiment_liking=0, experiment_clarity=10,
-    experiment_clarity_improvement='',
     experiment_perceived_purpose="Lo studio riguarda le decisioni di dismissione e il comportamento delle imprese in un gruppo.",
-    experiment_changes="Non cambierei nulla perché le schermate erano comprensibili e facili da utilizzare.",
+    strategy_description="Ho ripartito le dismissioni tra i periodi per ridurre il costo quadratico.",
+    strategy_change="Ho mantenuto lo stesso approccio durante tutte le sezioni dello studio.",
+    information_used="Ho utilizzato la media del gruppo e le informazioni disponibili sul grafico.",
     gender='Preferisco non rispondere', age=24, city_birth='Bologna', current_city='Bologna',
     university_affiliation='Economia', university_status='Laurea magistrale', university_status_other='',
     unibo_time='Preferisco non rispondere', previous_experiment_experience='Non ricordo / Preferisco non rispondere',
@@ -38,24 +39,15 @@ ANSWERS = dict(
 
 
 class SurveyTests(unittest.TestCase):
-    def test_low_clarity_requires_five_non_whitespace_characters(self):
+    def test_all_four_open_answers_require_twenty_non_whitespace_characters(self):
         player = self.start(make_production_session())
         self.post()
-        for clarity in (0, 4):
-            for response in ('', ' \t\n'*10, 'a b c d'):
-                self.post({**self.answer(survey.ExperimentFeedback), 'experiment_clarity': clarity,
-                           'experiment_clarity_improvement': response})
+        for field in ('experiment_perceived_purpose', 'strategy_description', 'strategy_change', 'information_used'):
+            for bad in ('', ' \t\n'*30, 'a '*19):
+                self.post({**self.answer(survey.ExperimentFeedback), field:bad})
                 self.assertIn('ExperimentFeedback/', str(self.response.url))
-                self.assertIn("La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più come renderesti più chiare le istruzioni.", self.response.text)
-                self.assertIn('<div id="clarity-improvement" >', self.response.text)
-        self.post({**self.answer(survey.ExperimentFeedback), 'experiment_clarity': 4,
-                   'experiment_clarity_improvement': 'a b c d e'})
-        self.assertIn('Demographics/', str(self.response.url))
-        self.assertEqual(player.experiment_clarity_improvement, 'a b c d e')
-        db.rollback()
-        player = self.start(make_production_session())
-        self.post()
-        self.post({**self.answer(survey.ExperimentFeedback), 'experiment_clarity': 5})
+                self.assertIn('Per favore, descrivi la tua risposta con qualche parola in più.', self.response.text)
+        self.post({**self.answer(survey.ExperimentFeedback), 'experiment_clarity':0})
         self.assertIn('Demographics/', str(self.response.url))
 
     def setUp(self):
@@ -124,26 +116,26 @@ class SurveyTests(unittest.TestCase):
         self.assertIn('id="id_experiment_liking" name="experiment_liking" value=""', self.response.text)
         self.post({})
         self.assertIn('ExperimentFeedback/', str(self.response.url))
-        self.assertIn("La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più quello che, secondo te, era l'oggetto principale delle prime tre sezioni.", self.response.text)
-        self.assertIn("La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più cosa cambieresti oppure, se per te è tutto chiaro, dicci cosa ti è piaciuto di più.", self.response.text)
+        self.assertIn("Per favore, descrivi la tua risposta con qualche parola in più.", self.response.text)
+        self.assertIn("Per favore, descrivi la tua risposta con qualche parola in più.", self.response.text)
         self.assertNotIn('almeno 20 caratteri', self.response.text)
         for bad in (' \t\n'*60, 'x '*19):
             response = self.post({**self.answer(survey.ExperimentFeedback), 'experiment_perceived_purpose':bad})
             self.assertIn('ExperimentFeedback/', str(response.url))
-            self.assertIn("La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più quello che, secondo te, era l'oggetto principale delle prime tre sezioni.", response.text)
+            self.assertIn("Per favore, descrivi la tua risposta con qualche parola in più.", response.text)
             self.assertIn('name="experiment_liking" value="0"', response.text)
             self.assertIn('name="experiment_clarity" value="10"', response.text)
             self.assertNotIn('data-untouched', response.text)
         for bad in (' \t\n'*60, 'a '*19):
-            self.post({**self.answer(survey.ExperimentFeedback), 'experiment_changes':bad})
-            self.assertIn("La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più cosa cambieresti oppure, se per te è tutto chiaro, dicci cosa ti è piaciuto di più.", self.response.text)
+            self.post({**self.answer(survey.ExperimentFeedback), 'strategy_description':bad})
+            self.assertIn("Per favore, descrivi la tua risposta con qualche parola in più.", self.response.text)
         self.post({**self.answer(survey.ExperimentFeedback), 'experiment_liking':11})
         self.assertIn('ExperimentFeedback/', str(self.response.url))
         self.post({**self.answer(survey.ExperimentFeedback), 'experiment_liking':-1})
         self.assertIn('ExperimentFeedback/', str(self.response.url))
         # Boundary lengths count only non-whitespace characters.
         feedback = {**self.answer(survey.ExperimentFeedback),
-                    'experiment_perceived_purpose':'a '*20, 'experiment_changes':'b '*20}
+                    'experiment_perceived_purpose':'a '*20, 'strategy_description':'b '*20}
         self.post(feedback)
         self.assertIn('Demographics/', str(self.response.url))
         self.assertEqual(player.experiment_liking, 0)
@@ -351,16 +343,16 @@ class SurveyBrowserTests(unittest.TestCase):
         self.browser(self.fragment(), """
             const scales=Array.from(document.querySelectorAll('[data-survey-scale]'));
             assert(document.body.innerText.includes("Secondo te, qual era l'oggetto principale delle prime tre sezioni di questo studio?"),'revised purpose question visible');
-            assert(document.body.innerText.includes("La risposta è ancora un po' breve."),'short-answer feedback visible');
-            assert(document.body.innerText.includes("quello che, secondo te, era l'oggetto principale delle prime tre sezioni."),'exact purpose feedback visible');
+            assert(document.body.innerText.includes("Per favore, descrivi la tua risposta con qualche parola in più."),'short-answer feedback visible');
+            assert(document.body.innerText.includes("Per favore, descrivi la tua risposta con qualche parola in più."),'exact purpose feedback visible');
             assert(!document.getElementById('survey-continue').disabled,'valid responses preserved on text error');
             assert(scales[0].querySelector('input[type=hidden]').value==='0','zero preserved');
             assert(scales[1].querySelector('input[type=hidden]').value==='10','ten preserved');
             assert(scales.every(s=>!s.querySelector('input[type=range]').hasAttribute('data-untouched')),'answered state restored');
         """)
-        self.post({**self.answer(survey.ExperimentFeedback), 'experiment_changes':'troppo breve'})
+        self.post({**self.answer(survey.ExperimentFeedback), 'strategy_description':'troppo breve'})
         self.browser(self.fragment(), """
-            assert(document.body.innerText.includes("cosa cambieresti oppure, se per te è tutto chiaro, dicci cosa ti è piaciuto di più."),'exact changes feedback visible');
+            assert(document.body.innerText.includes("Per favore, descrivi la tua risposta con qualche parola in più."),'exact changes feedback visible');
         """)
         db.rollback();db.expire_all()
         pp = player.participant

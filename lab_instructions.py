@@ -11,10 +11,11 @@ from fractions import Fraction
 import json
 
 from lab_policy import configured_rho
+from lab_config import DEFAULT_RHO
 from lab_presentation import points, mean_display
 import lab_rules as rules
 
-QUIZ_VERSION = 'lab_comprehension_recalibrated_20261104_pairs_v5'
+QUIZ_VERSION = 'lab_comprehension_thresholds_20261111_pairs_v7'
 
 from lab_printed_questions import PRINTED_QUESTIONS
 
@@ -70,9 +71,9 @@ def questions(player, *, general=False):
                 for i, row in enumerate(PRINTED_QUESTIONS[section], 1)]
         if section == 'P':
             rho = configured_rho(player.session.config)
-            if rho != Fraction(1, 3):
+            if rho != DEFAULT_RHO:
                 # Keep the default printed items verbatim except for calibration;
-                # alternate configured shares must not teach a one-third rule.
+                # alternate configured shares must not teach the default 30% rule.
                 share = points(rho * 100) + '%'
                 rows[1]['options'] = [(key, f'Il {share} del fondo delle sanzioni viene diviso in parti uguali tra i manager con 0 unità di attrezzatura.' if key == rows[1]['correct'] else label) for key, label in rows[1]['options']]
                 rows[1]['feedback'] = f'Il {share} del fondo è distribuito in parti uguali tra i manager con 0 unità di attrezzatura all’Accertamento Principale.'

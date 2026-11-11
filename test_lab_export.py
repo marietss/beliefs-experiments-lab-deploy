@@ -48,7 +48,7 @@ def completed_session(branch, size, paid_block):
                         d=(100 if p.period==1 else 0) if p.id_in_group==1 else (10 if p.period in (1,2) else 1 if p.period==3 else 0)
                     elif block==3:d=100 if p.period==1 else 0
                     else:
-                        threshold=session.config['ambiguity_thresholds'][str(block)] if branch=='A' else 40
+                        threshold=session.config['ambiguity_thresholds'][str(block)] if branch=='A' else 37
                         local=(block-1)%3+1
                         target=(threshold+1 if block<7 else 0 if p.id_in_group==1 else 100) if local==1 else threshold if local==2 else (0 if p.id_in_group<=3 else 41 if p.id_in_group==6 else 40)
                         d=100-target if p.period==1 else 0
@@ -201,7 +201,7 @@ class ExportReconstructionTests(unittest.TestCase):
                 self.assertEqual(F(row['admin_payoff_stored']),cents-800)
                 self.assertTrue(row['finalized'])
                 observed.add('negative' if wallet<0 else 'zero' if wallet==0 else 'positive')
-                if wallet.denominator%3==0:observed.add('policy_fraction')
+                if row['paid_block']>=7 and wallet.denominator>1:observed.add('policy_fraction')
         self.assertEqual(observed,{'negative','zero','positive','policy_fraction'})
 
     def test_A_actual_thresholds_match_all_six_external_keys(self):

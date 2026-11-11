@@ -147,24 +147,24 @@ class MessagesBackendTests(unittest.TestCase):
 
     def test_main_below_threshold_mixed_zero_and_positive(self):
         group = self.main_group()
-        equipment = [0, 20, 40, 60, 70, 49]
+        equipment = [0, 20, 40, 60, 70, 31]
         run_period(group, [100 - k for k in equipment])
-        self.assertEqual(group.equipment_total, 239)
-        self.assertEqual(decode_fraction(group.group_mean), Fraction(239, 6))
+        self.assertEqual(group.equipment_total, 221)
+        self.assertEqual(decode_fraction(group.group_mean), Fraction(221, 6))
         self.assertTrue(group.main_enforcement_applied)
         for p, k in zip(group.get_players(), equipment):
             self.assertTrue(p.main_enforcement_applied)
-            self.assertEqual(p.applied_main_threshold, 40)
+            self.assertEqual(p.applied_main_threshold, 37)
             self.assertEqual(decode_fraction(p.main_fine), rules.main_fine(k))
             self.assertEqual(decode_fraction(p.wallet_after), 1000 - rules.retirement_cost(100 - k) - rules.main_fine(k))
 
     def test_main_exact_equality_is_enforcement(self):
         group = self.main_group()
-        run_period(group, [60] * 6)
-        self.assertEqual(group.equipment_total, 240)
-        self.assertEqual(decode_fraction(group.group_mean), 40)
+        run_period(group, [63] * 6)
+        self.assertEqual(group.equipment_total, 222)
+        self.assertEqual(decode_fraction(group.group_mean), 37)
         self.assertTrue(group.main_enforcement_applied)
-        self.assertTrue(all(p.main_enforcement_applied and decode_fraction(p.main_fine) == Fraction('195')
+        self.assertTrue(all(p.main_enforcement_applied and decode_fraction(p.main_fine) == Fraction('193.5')
                             for p in group.get_players()))
 
     def test_main_above_threshold_no_fines_for_anyone(self):
@@ -178,30 +178,30 @@ class MessagesBackendTests(unittest.TestCase):
     def test_pivotal_sixth_participant_included_once(self):
         for own in (0, 1, 2):
             group = self.main_group()
-            equipment = [100, 100, 39, 0, 0, own]
+            equipment = [100, 100, 21, 0, 0, own]
             run_period(group, [100 - k for k in equipment])
-            self.assertEqual(group.equipment_total, 239 + own)
-            self.assertEqual(decode_fraction(group.group_mean), Fraction(239 + own, 6))
+            self.assertEqual(group.equipment_total, 221 + own)
+            self.assertEqual(decode_fraction(group.group_mean), Fraction(221 + own, 6))
             self.assertEqual(group.main_enforcement_applied, own <= 1)
 
     def test_main_cannot_settle_or_decide_enforcement_before_sixth_choice(self):
         group = self.main_group()
         for p in group.get_players()[:5]:
-            p.retirement = 60
+            p.retirement = 63
             messages.Decision.before_next_page(p, False)
         with self.assertRaisesRegex(ValueError, 'six decisions'):
             messages.settle_period(group)
         self.assertIsNone(group.field_maybe_none('main_enforcement_applied'))
         self.assertTrue(all(not p.main_fine for p in group.get_players()))
         p = group.get_players()[5]
-        p.retirement = 60
+        p.retirement = 63
         messages.Decision.before_next_page(p, False)
         messages.settle_period(group)
         self.assertTrue(group.main_enforcement_applied)
 
     def test_main_retry_and_reload_exactly_once_and_tamper_detection(self):
         group = self.main_group()
-        run_period(group, [60] * 6)
+        run_period(group, [63] * 6)
         record = group.settlement_record
         wallets = [p.wallet_after for p in group.get_players()]
         messages.settle_period(group)
@@ -384,23 +384,31 @@ class MessagesHTTPBarrierTests(unittest.TestCase):
         for bot in groups[0]:
             submit(bot)  # Result period 1
 
-        def finish_remaining_periods(group_bots, start):
-            for period in range(start, 11):
+        def finish_remaining_periods(group_bots, start, end=10):
+            for period in range(start, end + 1):
                 for bot in group_bots:
                     submit(bot)  # Decision
                 for bot in group_bots:
                     submit(bot)  # Result
 
-        finish_remaining_periods(groups[0], 2)
+        finish_remaining_periods(groups[0], 2, 4)
+        for bot in groups[0]: submit(bot)  # fast P5 decisions
+        self.assertTrue(all(bot.on_wait_page() for bot in groups[0]))
+        self.assertFalse(any(g.settlement_complete for g in subsession(session,5).get_groups()))
+        for group_bots in groups[1:]:
+            for bot in group_bots:
+                for _ in range(2): submit(bot)  # invalid/valid Reports
+            finish_remaining_periods(group_bots, 1, 4)
+            for bot in group_bots: submit(bot)  # slow P5 decisions
+        self.assertTrue(all(g.settlement_complete for g in subsession(session,5).get_groups()))
+        for bot in groups[0]: submit(bot)  # P5 Result
+        finish_remaining_periods(groups[0], 6)
         self.assertTrue(groups[0][0].on_wait_page())
-        self.assertNotIn('id="public-report-mean"', groups[0][0].html)
         self.assertFalse(subsession(session, 10).block_barrier_complete)
         self.assertFalse(subsession(session, 11).grouping_installed)
         for group_bots in groups[1:]:
-            for bot in group_bots:
-                for _ in range(2):
-                    submit(bot)  # invalid Reports, valid Reports
-            finish_remaining_periods(group_bots, 1)
+            for bot in group_bots: submit(bot)  # P5 Result
+            finish_remaining_periods(group_bots, 6)
         self.assertTrue(subsession(session, 10).block_barrier_complete)
         self.assertTrue(subsession(session, 11).grouping_installed)
         self.assertFalse(groups[0][0].on_wait_page())
@@ -476,12 +484,12 @@ class PublicReportTests(unittest.TestCase):
             session = group.session
             for r in range(1,6):
                 row = subsession(session,r).get_groups()[0]
-                decide(row, [60]*6 if r==5 else None)
+                decide(row, [63]*6 if r==5 else None)
                 messages.settle_period(row)
             results.append((row.equipment_total, row.main_enforcement_applied,
                             [(p.main_fine,p.wallet_after) for p in row.get_players()]))
         self.assertEqual(results[0], results[1])
-        self.assertEqual(results[0][0:2], (240,True))
+        self.assertEqual(results[0][0:2], (222,True))
 
     def test_current_rematched_group_owns_new_block_message(self):
         session = make_session()

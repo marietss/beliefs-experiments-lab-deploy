@@ -23,12 +23,12 @@ import lab_production as production
 import lab_route
 
 
-TEST_THRESHOLDS = {'4':33,'5':41,'6':46,'7':43,'8':47,'9':40}
+TEST_THRESHOLDS = {'4':33,'5':41,'6':41,'7':38,'8':42,'9':40}
 
 
 def parameters(branch, size, *, paid_block=9):
     value=dict(paid_block=paid_block, matching_seed=f'test-production-{branch}-{size}',
-               rho=1/3,rho_exact='1/3', triplet_id='test-triplet',recruitment_batch='test-batch')
+               rho=0.3,rho_exact='3/10', triplet_id='test-triplet',recruitment_batch='test-batch')
     if branch=='A': value['ambiguity_thresholds']=dict(TEST_THRESHOLDS)
     return value
 
@@ -80,20 +80,20 @@ class ProductionConfigTests(unittest.TestCase):
         for change in ('missing','extra','bool','float','low','high'):
             c=configured('A');m=c['ambiguity_thresholds']
             if change=='missing':del m['7']
-            if change=='extra':m['10']=45
+            if change=='extra':m['10']=37
             if change=='bool':m['7']=True
-            if change=='float':m['7']=45.0
+            if change=='float':m['7']=37.0
             if change=='low':m['7']=32
             if change=='high':m['7']=48
             with self.subTest(change=change),self.assertRaises(ValueError):production.validate_config(c)
         for branch in ('E','M'):
-            c=configured(branch);c['ambiguity_thresholds']={'4':45}
+            c=configured(branch);c['ambiguity_thresholds']={'4':37}
             with self.assertRaisesRegex(ValueError,'empty or omitted'):production.validate_config(c)
 
-    def test_production_share_defaults_to_one_third_but_is_configurable(self):
+    def test_production_share_defaults_to_thirty_percent_but_is_configurable(self):
         for branch in 'EAM':
             for size in (18, 24):
-                self.assertEqual(production.validate_config(configured(branch, size))['rho_exact'], '1/3')
+                self.assertEqual(production.validate_config(configured(branch, size))['rho_exact'], '3/10')
                 for rho, exact in [(0, '0/1'), (0.5, '1/2'), (1, '1/1')]:
                     config = configured(branch, size)
                     config.update(rho=rho, rho_exact=exact)
@@ -177,7 +177,7 @@ class ProductionConfigTests(unittest.TestCase):
             for size in (18,24):
                 session=make_production_session(branch,size)
                 state=session.vars[production.PRODUCTION_KEY]
-                self.assertEqual((state['branch'],state['size'],state['rho']),(branch,size,'1/3'))
+                self.assertEqual((state['branch'],state['size'],state['rho']),(branch,size,'3/10'))
                 self.assertEqual(state['design_version'],production.DESIGN_VERSION)
                 rows=get_rows_for_wide_csv(session.code)
                 self.assertIn('session.config.lab_design_version',rows[0])

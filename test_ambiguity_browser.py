@@ -35,9 +35,9 @@ class AmbiguityBrowserTests(unittest.TestCase):
             html=re.sub(r'<script src="[^"]*chart\.umd-4\.4\.8\.js"></script>','',html)
         assertions='''
             const config=JSON.parse(document.getElementById('lab-chart-config').textContent);
-            assert(config.thresholdLow===33 && config.thresholdHigh===47, 'support bounds');
+            assert(config.thresholdLow===33 && config.thresholdHigh===42, 'support bounds');
             assert(config.thresholdRevealed===false && !('threshold' in config), 'realized value absent');
-            assert(config.thresholdLow===33 && config.thresholdHigh===47, 'support drawn in chart');
+            assert(config.thresholdLow===33 && config.thresholdHigh===42, 'support drawn in chart');
             assert(!document.getElementById('revealed-threshold') && !document.getElementById('known-threshold'), 'no realized/E marker');
             const slider=document.getElementById('retirement-slider');
             const field=document.getElementById('retirement-value');
@@ -83,21 +83,21 @@ class AmbiguityBrowserTests(unittest.TestCase):
         session=make_session()
         ready(session)
         for period in range(1,6):
-            run_period(subsession(session,period).get_groups()[0],[53]*6 if period==5 else None)
+            run_period(subsession(session,period).get_groups()[0],[58]*6 if period==5 else None)
         p=subsession(session,5).get_groups()[0].get_players()[0]
         self.browser(render_page(ambiguity.Result,p),"""
             const config=JSON.parse(document.getElementById('lab-chart-config').textContent);
-            assert(config.thresholdRevealed && config.threshold===47,'current threshold reveal');
+            assert(config.thresholdRevealed && config.threshold===42,'current threshold reveal');
             assert(!('ambiguity_thresholds' in config),'full map absent');
-            assert(document.getElementById('main-threshold').textContent==='47 unità','revealed label');
-            assert(document.getElementById('group-mean').textContent==='47 unità','actual mean');
+            assert(document.getElementById('main-threshold').textContent==='42 unità','revealed label');
+            assert(document.getElementById('group-mean').textContent==='42 unità','actual mean');
             assert(document.getElementById('target-satisfied').textContent==='No','equality not success');
             assert(document.getElementById('main-enforcement').textContent==='Sì','enforcement');
-            assert(document.getElementById('main-fine').textContent==='198.50 punti','own fine');
-            assert(Chart.getChart('equipment-chart').data.datasets[1].data.at(-1).y===47,'stored group graph');
+            assert(document.getElementById('main-fine').textContent==='196 punti','own fine');
+            assert(Chart.getChart('equipment-chart').data.datasets[1].data.at(-1).y===42,'stored group graph');
         """)
         self.browser(render_page(ambiguity.Decision,p.in_round(6)),'''
             const config=JSON.parse(document.getElementById('lab-chart-config').textContent);
-            assert(config.thresholdRevealed && config.threshold===47,'same-block post-Main threshold');
+            assert(config.thresholdRevealed && config.threshold===42,'same-block post-Main threshold');
             assert(Chart.getChart('equipment-chart').config.plugins.some(p=>p.id==='ambiguityThreshold'),'revealed threshold chart');
         ''')

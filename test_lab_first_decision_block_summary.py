@@ -1,4 +1,4 @@
-"""Focused low-thr timing and no-summary native flow regressions.
+"""Focused local-period timing, restored block-summary and native flow regressions.
 
 Use an isolated development/in-memory project copy, never a production database.
 """
@@ -47,8 +47,8 @@ class FirstDecisionTests(unittest.TestCase):
                             self.assertEqual(app.Result.get_timeout_seconds(p),60 if p.period in (5,10) else 20)
                         self.assertEqual(app.Reports.timeout_seconds,120)
                         self.assertEqual(app.BlockStart.timeout_seconds,60)
-                        self.assertNotIn(app.BlockEnd,app.page_sequence)
-                        self.assertEqual(app.page_sequence[-1],app.BlockEndWait)
+                        self.assertIn(app.BlockEnd,app.page_sequence)
+                        self.assertEqual(app.page_sequence[-2:], [app.BlockEndWait, app.BlockEnd])
                         self.assertTrue(app.MainCheckWait.wait_for_all_groups)
                         self.assertTrue(app.BlockEndWait.wait_for_all_groups)
                     self.assertEqual(session.config['app_sequence'][-3:],['bucket','survey','lab_payment'])
@@ -120,7 +120,7 @@ class FirstDecisionTests(unittest.TestCase):
         session=make_production_session('E',18)
         people=session.get_participants();db.commit()
         lookups=_get_session_lookups(session.code)
-        counts=Counter();main=Counter();follow=Counter();visited=set()
+        counts=Counter();main=Counter();follow=Counter();summaries=Counter();visited=set()
         for step in range(400):
             gate=False;done=0
             for pp in people:
@@ -128,9 +128,6 @@ class FirstDecisionTests(unittest.TestCase):
                 self.assertEqual(response.status_code,200)
                 db.expire_all()
                 name=pp._current_page_name;app_name=pp._current_app_name
-                self.assertNotEqual(name,'BlockEnd')
-                self.assertNotIn('Riepilogo del Blocco',response.text)
-                self.assertNotIn('block-group-summary',response.text)
                 if app_name=='lab_payment':
                     done+=1
                     self.assertIn('id="earnings-summary"',response.text)
@@ -147,6 +144,8 @@ class FirstDecisionTests(unittest.TestCase):
                 data={}
                 if name.startswith('SectionComprehension'):
                     data={q['field']:q['correct'] for q in lab_comprehension.pair_questions(p,page.pair_number)}
+                elif name=='PracticeDecision':
+                    self.expire(p);data=dict(timeout_happened=1)
                 elif name=='Reports':
                     data=dict(expected_own_equipment_main=50,expected_group_average_main=50)
                 elif name=='Decision':
@@ -163,6 +162,10 @@ class FirstDecisionTests(unittest.TestCase):
                         follow[pp.code]+=1
                         self.assertIn("Esito dell'accertamento finale",response.text)
                         self.assertTrue(p.final_block_wallet)
+                elif name=='BlockEnd':
+                    summaries[pp.code]+=1
+                    self.assertIn('Il tuo portafoglio è di',response.text)
+                    self.assertNotIn("Attrezzatura all'accertamento principale",response.text)
                 elif name=='BucketTask':
                     for i in range(1,51):bucket.receive(p,dict(action='allocate',bucket='blue',expected_index=i))
                     db.commit()
@@ -180,6 +183,7 @@ class FirstDecisionTests(unittest.TestCase):
         else:self.fail('Native complete route did not finish')
         for pp in people:
             self.assertEqual(counts[pp.code],90)
+            self.assertEqual(summaries[pp.code],9)
             self.assertEqual(main[pp.code],9);self.assertEqual(follow[pp.code],9)
             self.assertEqual(len(pp.vars[lab_cash.WALLETS_KEY]),9)
             record=pp.vars[lab_cash.PAYMENT_KEY]

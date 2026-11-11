@@ -87,11 +87,11 @@ class PaymentBackendTests(unittest.TestCase):
                     self.assertEqual(result['selected_wallet'], ledger['9'])
                     self.assertEqual(Decimal(p.participant.payoff_plus_participation_fee()), Decimal(result['final_eur_cents'])/100)
                     self.assertEqual(cash.finalize(p), result)
-                # Three recipients in every rematched policy group received 1171/18.
+                # Three recipients in every rematched policy group received 1171/20.
                 group = route.block_subsession(session, 9).get_groups()[0]
                 recipient = group.get_players()[0].participant
                 p = lab_payment.Player.objects_get(participant=recipient)
-                self.assertEqual(cash.decode_fraction(p.selected_wallet), Fraction(1171, 18))
+                self.assertEqual(cash.decode_fraction(p.selected_wallet), Fraction(1171, 20))
 
     def test_negative_selected_wallet_receipt_and_admin_reload(self):
         session = make_session(paid_block=1); finish_all(session)

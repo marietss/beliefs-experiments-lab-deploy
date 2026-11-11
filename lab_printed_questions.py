@@ -62,16 +62,16 @@ PRINTED_QUESTIONS = {'F': [{'prompt': 'Domanda 1 — All’inizio di ogni blocco
         'id': 'follow_up',
         'correct': 'c'}],
  'E': [{'prompt': 'Domanda 1 — All’Accertamento Principale, cosa succede se la quantità media di '
-                  'attrezzatura rimanente nel tuo gruppo è superiore a 40 unità?',
+                  'attrezzatura rimanente nel tuo gruppo è superiore a 37 unità?',
         'options': [('a', 'Viene applicata una sanzione a tutte le aziende con attrezzatura rimanente.'),
  ('b', 'La sanzione dipende soltanto dall’attrezzatura rimanente nella tua azienda.'),
  ('c', 'Non viene applicata alcuna sanzione.')],
-        'feedback': 'Se la media del gruppo è superiore a 40 unità, non viene applicata alcuna sanzione '
+        'feedback': 'Se la media del gruppo è superiore a 37 unità, non viene applicata alcuna sanzione '
                     'all’Accertamento Principale.',
         'id': 'known',
         'correct': 'c'},
        {'prompt': 'Domanda 2 — Se la quantità media di attrezzatura rimanente nel tuo gruppo è esattamente '
-                  'uguale a 40 unità, cosa succede?',
+                  'uguale a 37 unità, cosa succede?',
         'options': [('a', 'Non viene applicata alcuna sanzione perché la media ha raggiunto la soglia.'),
  ('b',
   'Se nella tua azienda rimangono più di 0 unità, si applica la sanzione; con 0 unità non si '
@@ -98,14 +98,14 @@ PRINTED_QUESTIONS = {'F': [{'prompt': 'Domanda 1 — All’inizio di ogni blocco
         'id': 'zero',
         'correct': 'c'}],
  'A': [{'prompt': 'Domanda 1 — Prima dell’Accertamento Principale, cosa sai della soglia del blocco?',
-        'options': [('a', 'È sempre uguale a 40 unità.'),
+        'options': [('a', 'È sempre uguale a 37 unità.'),
  ('b',
-  'È un numero intero tra 33 e 47; non conosci il valore selezionato né la probabilità dei '
+  'È un numero intero tra 33 e 42; non conosci il valore selezionato né la probabilità dei '
   'diversi valori.'),
  ('c',
   'Può avere qualsiasi valore tra 0 e 100 e tutti i valori sono dichiarati ugualmente '
   'probabili.')],
-        'feedback': 'La soglia può assumere i valori interi da 33 a 47. Non ne conosci il valore prima '
+        'feedback': 'La soglia può assumere i valori interi da 33 a 42. Non ne conosci il valore prima '
                     'dell’Accertamento Principale né la probabilità dei diversi valori.',
         'id': 'support',
         'correct': 'b'},
@@ -137,16 +137,16 @@ PRINTED_QUESTIONS = {'F': [{'prompt': 'Domanda 1 — All’inizio di ogni blocco
         'id': 'zero',
         'correct': 'a'}],
  'M': [{'prompt': 'Domanda 1 — All’Accertamento Principale, cosa succede se la quantità media di '
-                  'attrezzatura rimanente nel tuo gruppo è superiore a 40 unità?',
+                  'attrezzatura rimanente nel tuo gruppo è superiore a 37 unità?',
         'options': [('a', 'Viene applicata una sanzione a tutte le aziende con attrezzatura rimanente.'),
  ('b', 'La sanzione dipende soltanto dall’attrezzatura rimanente nella tua azienda.'),
  ('c', 'Non viene applicata alcuna sanzione.')],
-        'feedback': 'Se la media del gruppo è superiore a 40 unità, non viene applicata alcuna sanzione '
+        'feedback': 'Se la media del gruppo è superiore a 37 unità, non viene applicata alcuna sanzione '
                     'all’Accertamento Principale.',
         'id': 'known',
         'correct': 'c'},
        {'prompt': 'Domanda 2 — Se la quantità media di attrezzatura rimanente nel tuo gruppo è esattamente '
-                  'uguale a 40 unità, cosa succede?',
+                  'uguale a 37 unità, cosa succede?',
         'options': [('a',
   'Se nella tua azienda rimangono più di 0 unità, si applica la sanzione; con 0 unità non si '
   'applica.'),
@@ -188,17 +188,17 @@ PRINTED_QUESTIONS = {'F': [{'prompt': 'Domanda 1 — All’inizio di ogni blocco
         'options': [('a', 'L’intero fondo viene diviso in parti uguali tra tutti e sei i manager.'),
  ('b', 'Ogni manager non sanzionato riceve 175 punti, indipendentemente dal fondo.'),
  ('c',
-  'Un terzo del fondo delle sanzioni viene diviso in parti uguali tra i manager non '
+  'Il 30% del fondo delle sanzioni viene diviso in parti uguali tra i manager non '
   'sanzionati.')],
-        'feedback': 'Un terzo del fondo è distribuito in parti uguali soltanto tra i manager che non hanno '
+        'feedback': 'Il 30% del fondo è distribuito in parti uguali soltanto tra i manager che non hanno '
                     'ricevuto una sanzione all’Accertamento Principale.',
         'id': 'share',
         'correct': 'c'},
        {'prompt': 'Domanda 3 — Quattro manager pagano una sanzione di 180 punti ciascuno e due manager non '
                   'vengono sanzionati. Quanti punti riceve ciascuno dei due manager non sanzionati?',
-        'options': [('a', '120 punti.'), ('b', '240 punti.'), ('c', '180 punti.')],
-        'feedback': 'Il fondo è 4 × 180 = 720 punti. Un terzo è pari a 240 punti, divisi tra due manager non '
-                    'sanzionati: 120 punti ciascuno.',
+        'options': [('a', '108 punti.'), ('b', '216 punti.'), ('c', '180 punti.')],
+        'feedback': 'Il fondo è 4 × 180 = 720 punti. Il 30% è pari a 216 punti, divisi tra due manager non '
+                    'sanzionati: 108 punti ciascuno.',
         'id': 'distribution_example',
         'correct': 'a'},
        {'prompt': 'Domanda 4 — Quando non viene effettuata alcuna distribuzione dopo l’Accertamento '

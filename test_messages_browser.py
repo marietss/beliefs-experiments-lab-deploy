@@ -65,7 +65,7 @@ class MessagesBrowserTests(unittest.TestCase):
             fragment = re.sub(r'<script src="[^"]*chart\.umd-4\.4\.8\.js"></script>', '', fragment)
         assertions = """
             const config = JSON.parse(document.getElementById('lab-chart-config').textContent);
-            assert(config.threshold === 40, 'known threshold source');
+            assert(config.threshold === 37, 'known threshold source');
             assert(config.publicReportMean === 50, 'public aggregate');
             assert(!document.getElementById('public-report-mean') && config.publicReportMean === 50, 'public mean in chart rather than repeated box');
             assert(!document.getElementById('known-threshold'), 'threshold prose removed; configured graph reference retained');
@@ -113,7 +113,7 @@ class MessagesBrowserTests(unittest.TestCase):
         self.decision(charts=False)
 
     def test_main_equality_and_above_threshold_feedback(self):
-        for equipment, success, enforced, fine in [(40, 'No', 'Sì', '195'), (41, 'Sì', 'No', '0')]:
+        for equipment, success, enforced, fine in [(37, 'No', 'Sì', '193.50'), (38, 'Sì', 'No', '0')]:
             session = make_session()
             ready(session)
             for r in range(1, 5):
@@ -123,7 +123,7 @@ class MessagesBrowserTests(unittest.TestCase):
             fragment = render_page(messages.Result, group.get_players()[0])
             self.browser(fragment, f'''
                 assert(Chart.getChart('equipment-chart').data.datasets[3].data[0].y === 50, 'fixed block-start report');
-                assert(document.getElementById('main-threshold').textContent === '40 unità', 'threshold');
+                assert(document.getElementById('main-threshold').textContent === '37 unità', 'threshold');
                 assert(document.getElementById('group-mean').textContent === '{equipment} unità', 'actual mean');
                 assert(document.getElementById('target-satisfied').textContent === '{success}', 'strict comparison');
                 assert(document.getElementById('main-enforcement').textContent === '{enforced}', 'common enforcement');

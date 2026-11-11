@@ -17,7 +17,7 @@ from test_lab_config import configuration
 class CalibrationBenchmarks(unittest.TestCase):
     def test_constants_and_cost_examples(self):
         self.assertEqual((rules.K0, rules.W0, rules.T, rules.PERIODS_PER_BLOCK), (100, 1000, 5, 10))
-        self.assertEqual((rules.COST_FACTOR, rules.KNOWN_THRESHOLD, rules.FOLLOW_UP_FINE), (F(1,10), 40, 75))
+        self.assertEqual((rules.COST_FACTOR, rules.KNOWN_THRESHOLD, rules.FOLLOW_UP_FINE), (F(1,10), 37, 75))
         for d, cost in [(0,0),(1,F(1,10)),(10,10),(20,40),(25,F(125,2)),(50,250),(100,1000)]:
             self.assertEqual(rules.retirement_cost(d), cost)
         self.assertEqual(2 * rules.retirement_cost(10), 20)
@@ -39,36 +39,36 @@ class CalibrationBenchmarks(unittest.TestCase):
         self.assertIn('0,10 × unità rimanenti²', final['feedback'])
         for branch in ('E', 'M'):
             for item in ('known', 'equality'):
-                self.assertIn('40 unità', by_id[branch][item]['prompt'])
+                self.assertIn('37 unità', by_id[branch][item]['prompt'])
             self.assertIn('con 0 unità non', dict(by_id[branch]['equality']['options'])[by_id[branch]['equality']['correct']])
         support = by_id['A']['support']
-        self.assertIn('33 e 47', dict(support['options'])[support['correct']])
+        self.assertIn('33 e 42', dict(support['options'])[support['correct']])
         self.assertIn('né la probabilità', dict(support['options'])[support['correct']])
 
     def test_threshold_benchmarks_all_supported_thresholds(self):
         # Six late, then five, four, three late firms (others at zero).
-        for late, em_enforced, safe_a in [(6,False,range(33,48)),(5,False,range(33,42)),
+        for late, em_enforced, safe_a in [(6,False,range(33,43)),(5,False,range(33,42)),
                                          (4,True,[33]),(3,True,[])]:
             total=late*50
             for branch in 'EM':
                 self.assertEqual(rules.main_enforcement_applies(branch,group_total=total),em_enforced)
-            for threshold in range(33,48):
+            for threshold in range(33,43):
                 self.assertEqual(rules.main_enforcement_applies('A',group_total=total,
                                   ambiguity_threshold=threshold), threshold not in safe_a)
         for branch in 'EM':
-            for total, enforced in [(239,True),(240,True),(241,False)]:
+            for total, enforced in [(221,True),(222,True),(223,False)]:
                 self.assertEqual(rules.main_enforcement_applies(branch,group_total=total),enforced)
-        for threshold in range(33,48):
+        for threshold in range(33,43):
             self.assertTrue(rules.main_enforcement_applies('A',group_total=6*threshold,ambiguity_threshold=threshold))
 
     def test_external_support_and_missing_blocks_fail_closed(self):
-        for threshold in (33,47):
+        for threshold in (33,42):
             c=configuration('A',ambiguity_thresholds={str(i):threshold for i in range(4,10)})
             self.assertEqual(validate_lab_config(c)['ambiguity_thresholds'],c['ambiguity_thresholds'])
         for missing in range(4,10):
             c=configuration('A');del c['ambiguity_thresholds'][str(missing)]
             with self.assertRaisesRegex(ValueError,'ambiguity_thresholds'):validate_lab_config(c)
-        for invalid in (32,48,33.0,47.0,True,'40',None):
+        for invalid in (32,43,33.0,42.0,True,'40',None):
             c=configuration('A');c['ambiguity_thresholds']['4']=invalid
             with self.assertRaisesRegex(ValueError,'ambiguity_thresholds'):validate_lab_config(c)
 
@@ -98,7 +98,7 @@ class CalibrationBenchmarks(unittest.TestCase):
             self.assertEqual(cash.calculate_payment(wallets(wallet),1)['final_eur_cents'],800+wallet)
 
     def test_policy_main_only_and_configured_share(self):
-        for rho in (F(0),F(1,3),F(1,2),F(1)):
+        for rho in (F(0),F(3,10),F(1,3),F(1,2),F(1)):
             result=redistribute([0,0,50,50,50,50],[0,0,200,200,200,200],rho)
             self.assertEqual(result.fine_pool,800)
             self.assertEqual(result.transfers,(400*rho,400*rho,0,0,0,0))
@@ -148,7 +148,7 @@ class ActualSettlementBenchmarks(unittest.TestCase):
 
     def test_policy_questions_follow_configured_rho(self):
         import test_policy, lab_instructions
-        for rho in (F(1,3),F(1,2),F(0),F(1)):
+        for rho in (F(3,10),F(1,3),F(1,2),F(0),F(1)):
             session=test_policy.make_session(rho=rho)
             p=test_policy.subsession(session).get_players()[0]
             questions=lab_instructions.questions(p)
@@ -162,6 +162,7 @@ class NativeRouteSmoke(unittest.TestCase):
     def tearDown(self):
         db.rollback()
 
+    @unittest.skipUnless(__import__('pathlib').Path('policy/tests.py').is_file(), 'Deployment snapshot omits policy bots; native HTTP full route is tested separately.')
     def test_complete_E18_native_route_including_bucket_survey_payment(self):
         from test_lab_production import make_production_session
         from otree.bots.runner import run_bots

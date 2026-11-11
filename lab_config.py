@@ -11,7 +11,7 @@ from math import isfinite
 from numbers import Real
 
 
-DEFAULT_RHO = Fraction(1, 3)
+DEFAULT_RHO = Fraction(3, 10)
 AMBIGUITY_BLOCK_KEYS = frozenset(str(block) for block in range(4, 10))
 
 

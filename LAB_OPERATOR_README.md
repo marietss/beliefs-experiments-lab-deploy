@@ -84,8 +84,8 @@ Each entry must supply `paid_block` (JSON integer 1–9, not bool) and `matching
 string keys `"4"` through `"9"`, each a JSON integer 33–47. Values are chosen externally;
 the experiment never draws them. E/M must omit this map or supply `{}`.
 
-Templates explicitly use the current share `rho=1/3` plus canonical
-`rho_exact="1/3"`. Verify it for each study launch. To change the configured share,
+Templates explicitly use the current share `rho=0.3` plus canonical
+`rho_exact="3/10"`. Verify it for each study launch. To change the configured share,
 supply **both** numeric `rho` and matching canonical `rho_exact`; inconsistent
 pairs fail. Decimal numeric values alone are not a way to approximate thirds.
 Optional text `triplet_id` and `recruitment_batch` are admin/research metadata only.
@@ -98,8 +98,8 @@ it deliberately is not executable JSON):
   "lab_A_18": {
     "paid_block": <externally selected integer>,
     "matching_seed": "<approved reproducible study seed>",
-    "rho": 0.3333333333333333,
-    "rho_exact": "1/3",
+    "rho": 0.3,
+    "rho_exact": "3/10",
     "ambiguity_thresholds": {
       "4": <integer>, "5": <integer>, "6": <integer>,
       "7": <integer>, "8": <integer>, "9": <integer>

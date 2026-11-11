@@ -19,7 +19,7 @@ def configuration(branch='E', **overrides):
     )
     if branch == 'A':
         config['ambiguity_thresholds'] = {
-            '4': 33, '5': 35, '6': 40, '7': 44, '8': 46, '9': 47,
+            '4': 33, '5': 35, '6': 40, '7': 39, '8': 41, '9': 42,
         }
     config.update(overrides)
     return config
@@ -75,9 +75,9 @@ class LabConfigTests(unittest.TestCase):
                     validate_lab_config(config)
 
     def test_rho_boundaries_default_and_numeric_precision(self):
-        self.assertEqual(DEFAULT_RHO, Fraction(1, 3))
+        self.assertEqual(DEFAULT_RHO, Fraction(3, 10))
         for value in (0, 1 / 3, DEFAULT_RHO, 1, 0.0, 1.0,
-                      Decimal('0'), Decimal('0.3333333333333333333333333333'),
+                      Decimal('0'), Decimal('0.3'), Decimal('0.3333333333333333333333333333'),
                       Decimal('1')):
             with self.subTest(value=value):
                 validated = validate_lab_config(configuration(rho=value))
@@ -121,20 +121,20 @@ class LabConfigTests(unittest.TestCase):
         for key in ('3', '10', '04', 4):
             with self.subTest(key=key):
                 thresholds = configuration('A')['ambiguity_thresholds']
-                thresholds[key] = 45
+                thresholds[key] = 37
                 self.assert_invalid('ambiguity_thresholds', thresholds, 'A')
-        self.assert_invalid('ambiguity_thresholds', dict.fromkeys(range(4, 10), 45), 'A')
+        self.assert_invalid('ambiguity_thresholds', dict.fromkeys(range(4, 10), 37), 'A')
 
     def test_a_thresholds_must_be_strict_integers_in_support(self):
         for key in map(str, range(4, 10)):
-            for value in (32, 48, True, False, 45.0, '45', None, Decimal('45')):
+            for value in (32, 43, True, False, 37.0, '37', None, Decimal('37')):
                 with self.subTest(key=key, value=value):
                     thresholds = configuration('A')['ambiguity_thresholds']
                     thresholds[key] = value
                     self.assert_invalid('ambiguity_thresholds', thresholds, 'A')
 
     def test_every_threshold_in_support_is_valid(self):
-        for value in range(33, 48):
+        for value in range(33, 43):
             with self.subTest(value=value):
                 thresholds = dict.fromkeys(map(str, range(4, 10)), value)
                 self.assertEqual(validate_lab_config(configuration(

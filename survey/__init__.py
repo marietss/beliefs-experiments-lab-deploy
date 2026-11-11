@@ -57,11 +57,15 @@ def non_whitespace_length(value):
 class Player(BasePlayer):
     experiment_liking = scale('experiment_liking')
     experiment_clarity = scale('experiment_clarity')
-    experiment_clarity_improvement = models.LongStringField(blank=True, label='Come miglioreresti le istruzioni per renderle più chiare?')
+    experiment_clarity_improvement = models.LongStringField(blank=True)
+    # Legacy optional response columns are retained for existing data only.
     # Empty text is checked by the exact minimum-length validator below, rather
-    # than the generic blank validator. Both responses remain mandatory.
+    # than the generic blank validator. All four open responses remain mandatory.
     experiment_perceived_purpose = models.LongStringField(blank=True, label="Secondo te, qual era l'oggetto principale delle prime tre sezioni di questo studio? Descrivilo brevemente con parole tue.")
-    experiment_changes = models.LongStringField(blank=True, label="C'è qualcosa che cambieresti per rendere lo studio più chiaro o più semplice da svolgere? Se non cambieresti nulla, spiegane brevemente il motivo.")
+    experiment_changes = models.LongStringField(blank=True)
+    strategy_description = models.LongStringField(blank=True, label='Descrivi come hai deciso quante unità di equipaggiamento ritirare in ciascun periodo.')
+    strategy_change = models.LongStringField(blank=True, label='La tua strategia è cambiata durante l’esperimento? Spiega che cosa è cambiato e che cosa ti ha portato a cambiare strategia. Se il tuo approccio non è cambiato, indicalo.')
+    information_used = models.LongStringField(blank=True, label='Quali informazioni, se ce ne sono state, hai utilizzato per prendere le tue decisioni di ritiro? Spiega in che modo hanno influenzato le tue decisioni.')
     gender = models.StringField(label='Con quale genere ti identifichi?',
                                 choices=['Uomo', 'Donna', 'Altro', 'Preferisco non rispondere'])
     age = models.IntegerField(min=18, max=100, label='Quanti anni hai?')
@@ -86,14 +90,15 @@ class Player(BasePlayer):
     falk_intentions = scale('falk_intentions')
 
 
-def experiment_perceived_purpose_error_message(player, value):
+def substantive_answer_error_message(player, value):
     if non_whitespace_length(value) < 20:
-        return "La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più quello che, secondo te, era l'oggetto principale delle prime tre sezioni."
+        return 'Per favore, descrivi la tua risposta con qualche parola in più.'
 
 
-def experiment_changes_error_message(player, value):
-    if non_whitespace_length(value) < 20:
-        return "La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più cosa cambieresti oppure, se per te è tutto chiaro, dicci cosa ti è piaciuto di più."
+experiment_perceived_purpose_error_message = substantive_answer_error_message
+strategy_description_error_message = substantive_answer_error_message
+strategy_change_error_message = substantive_answer_error_message
+information_used_error_message = substantive_answer_error_message
 
 
 def city_birth_error_message(player, value):
@@ -159,14 +164,7 @@ class SurveyWelcome(SurveyFormPage):
 
 class ExperimentFeedback(SurveyFormPage):
     heading = 'La tua esperienza nello studio'
-    form_fields = ['experiment_liking', 'experiment_clarity', 'experiment_clarity_improvement', 'experiment_perceived_purpose', 'experiment_changes']
-
-    @staticmethod
-    def error_message(player, values):
-        clarity = values.get('experiment_clarity')
-        if type(clarity) is int and 0 <= clarity < 5 and non_whitespace_length(values.get('experiment_clarity_improvement')) < 5:
-            return {'experiment_clarity_improvement': "La risposta è ancora un po' breve. Per favore, descrivi con qualche parola in più come renderesti più chiare le istruzioni."}
-
+    form_fields = ['experiment_liking', 'experiment_clarity', 'experiment_perceived_purpose', 'strategy_description', 'strategy_change', 'information_used']
 
 class Demographics(SurveyFormPage):
     heading = 'Alcune informazioni su di te (I)'

@@ -35,7 +35,7 @@ class PolicyBrowserTests(unittest.TestCase):
                 let submitted=false;document.getElementById('form').addEventListener('submit',e=>{submitted=true;e.preventDefault();});
                 button.click();assert(submitted,'Conferma');
             """+('''assert(!Object.hasOwn(config,'threshold') && !config.thresholdRevealed,'A secret');
-                assert(config.thresholdLow===33 && config.thresholdHigh===47,'A range');''' if branch=='A' else "assert(config.threshold===40,'known threshold');")+
+                assert(config.thresholdLow===33 && config.thresholdHigh===42,'A range');''' if branch=='A' else "assert(config.threshold===37,'known threshold');")+
             ("""assert(config.publicReportMean===1/6,'public report only');
                 assert(!document.getElementById('public-report-mean'),'public mean box removed');
                 const planned=Chart.getChart('equipment-chart').data.datasets[3];
@@ -44,21 +44,21 @@ class PolicyBrowserTests(unittest.TestCase):
     def test_all_branch_main_recipient_and_nonrecipient_feedback(self):
         for branch in ('E','A','M'):
             group=main_group(branch,equipment=[0,40,40,40,40,40],own=[0]*5+[1])
-            for p,transfer,wallet in ((group.get_players()[0],325,325),(group.get_players()[1],0,445)):
+            for p,transfer,wallet in ((group.get_players()[0],'292.50','292.50'),(group.get_players()[1],0,445)):
                 self.browser(render_page(policy.Result,p),f'''
                     assert(document.getElementById('fine-pool').textContent==='975 punti','actual fine pool');
                     assert(document.getElementById('recipient-count').textContent==='1','recipients');
-                    assert(document.getElementById('redistributed-pool').textContent==='325 punti','actual allocation');
+                    assert(document.getElementById('redistributed-pool').textContent==='292.50 punti','actual allocation');
                     assert(document.getElementById('own-transfer').textContent==='{transfer} punti','own transfer');
                     assert(document.getElementById('settled-wallet').textContent==='{wallet} punti','wallet');
                     assert(document.getElementById('group-mean').textContent==='33.33 unità','actual mean');
-                    assert(document.getElementById('main-threshold').textContent==='{'47' if branch=='A' else '40'} unità','current threshold');
+                    assert(document.getElementById('main-threshold').textContent==='{'42' if branch=='A' else '37'} unità','current threshold');
                 '''+("assert(Chart.getChart('equipment-chart').data.datasets[3].data[0].y===1/6,'M graphical reference persists');" if branch=='M' else ''))
 
     def test_no_recipient_is_not_claimed_redistributed(self):
-        group=main_group(equipment=[40]*6)
+        group=main_group(equipment=[37]*6)
         self.browser(render_page(policy.Result,group.get_players()[0]),"""
-            assert(document.getElementById('fine-pool').textContent==='1170 punti','positive pool');
+            assert(document.getElementById('fine-pool').textContent==='1161 punti','positive pool');
             assert(document.getElementById('redistributed-pool').textContent==='0 punti','zero actual redistribution');
             assert(document.getElementById('own-transfer').textContent==='0 punti','zero transfer');
             assert(document.getElementById('no-recipients').textContent.includes('Non è stato redistribuito nulla'),'honest feedback');
@@ -75,12 +75,12 @@ class PolicyBrowserTests(unittest.TestCase):
         """)
 
     def test_A_main_reveal_and_post_main_reference(self):
-        group=main_group('A',equipment=[47]*6)
+        group=main_group('A',equipment=[42]*6)
         p=group.get_players()[0]
         for page,row in ((policy.Result,p),(policy.Decision,p.in_round(6))):
             self.browser(render_page(page,row),'''
                 const config=JSON.parse(document.getElementById('lab-chart-config').textContent);
-                assert(config.threshold===47 && config.thresholdRevealed,'own-block reveal');
+                assert(config.threshold===42 && config.thresholdRevealed,'own-block reveal');
                 assert(Chart.getChart('equipment-chart').config.plugins.some(p=>p.id==='ambiguityThreshold'),'visible revealed chart reference');
                 assert(!Object.hasOwn(config,'thresholds'),'no future map');
             ''')

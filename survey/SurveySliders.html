@@ -12,10 +12,5 @@
     <p class="survey-selected" aria-live="polite">Valore selezionato: <strong id="selected-{{ slider.name }}">{{ if slider.answered }}{{ slider.value }}{{ else }}—{{ endif }}</strong></p>
     <input type="hidden" id="id_{{ slider.name }}" name="{{ slider.name }}" value="{{ slider.value }}">
     <div id="errors-{{ slider.name }}">{{ formfield_errors slider.name }}</div>
-    {{ if slider.name == 'experiment_clarity' }}
-    <div id="clarity-improvement" {{ if not clarity_improvement_visible }}hidden{{ endif }}>
-        {{ formfield 'experiment_clarity_improvement' }}
-    </div>
-    {{ endif }}
 </section>
 {{ endfor }}

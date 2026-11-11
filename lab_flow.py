@@ -65,20 +65,18 @@ def block_summary_context(player):
     peers = player.group.get_players()
     if len(peers) != rules.GROUP_SIZE:
         raise ValueError('Block feedback requires the six firms from the completed block.')
-    main_round = player.round_number - player.period + rules.MAIN_CHECK_PERIOD
     rows = []
     for peer in sorted(peers, key=lambda p: p.id != player.id):
-        main = peer.in_round(main_round)
-        if not (peer.period_settled and peer.group.settlement_complete
-                and main.period_settled and main.group.settlement_complete):
-            raise ValueError('Block feedback requires settled Main and Final outcomes.')
-        own = peer.id == player.id
-        rows.append(dict(is_own=own, company='TU' if own else 'Altra azienda',
-                         main_equipment=main.voluntary_equipment_after,
-                         points=points(decode_fraction(peer.final_block_wallet))))
+        if not peer.period_settled or not peer.group.settlement_complete:
+            raise ValueError('Block feedback requires settled Final outcomes.')
+        if peer.id != player.id:
+            rows.append(dict(manager=len(rows), points=points(decode_fraction(peer.final_block_wallet))))
     app = player.subsession.get_folder_name()
+    branch = player.underlying_branch if app == 'policy' else None
+    maximum = 1100 if branch == 'A' else 1095 if app == 'policy' else 800 if app == 'fixed' else 900
     return dict(summary_section=1 if app == 'fixed' else 3 if app == 'policy' else 2,
-                summary_rows=rows)
+                summary_wallet=points(decode_fraction(player.final_block_wallet)),
+                summary_maximum=maximum, summary_rows=rows)
 
 
 def submit_reports(player, timeout_happened):

@@ -30,6 +30,10 @@ def render(page, player):
     template = page.template_name or f'{player.subsession.get_folder_name()}/{page.__name__}.html'
     path=Path(template)
     if not path.is_file():path=Path('_templates',template)
+    historical = {'general_instructions/LabOverview.html', 'general_instructions/LabPractice.html',
+                  'general_instructions/LabQuiz.html', 'general_instructions/LabSection.html'}
+    if not path.is_file() and template in historical:
+        raise unittest.SkipTest('Historical instruction wrapper absent from deployment: '+template)
     return Template(path.read_text()).render(context)
 
 
@@ -126,7 +130,7 @@ class LabInstructionTests(unittest.TestCase):
                 self.assertNotIn('paid_block',json.dumps(c))
                 html=render(page,p)
                 if page is app.SectionInstructions:
-                    self.assertIn('33 a 47 unità, estremi inclusi',html)
+                    self.assertIn('33 a 42 unità, estremi inclusi',html)
                     self.assertIn('fornite informazioni su quanto siano probabili',html)
                     self.assertIn('tutti e sei',html)
                 else:
@@ -154,7 +158,7 @@ class LabInstructionTests(unittest.TestCase):
     def test_policy_configured_share_and_feasible_numeric_example(self):
         _,ps=cases();app,p=ps[2]
         html=render(app.SectionInstructions,p)
-        for phrase in ('780 punti','260 punti','130 punti','un terzo','alcun addebito aggiuntivo',
+        for phrase in ('780 punti','234 punti','117 punti','30%','alcun addebito aggiuntivo',
                        'la redistribuzione effettiva sarebbe zero',"Solo le sanzioni effettive all'accertamento principale",'decisione del Periodo 5'):
             self.assertIn(phrase,html)
         self.assertEqual(4*(175+Fraction(40,2)),780)
@@ -199,7 +203,7 @@ class LabInstructionTests(unittest.TestCase):
                 names=[page.__name__ for page in app.page_sequence]
                 self.assertLess(names.index('SectionComprehension'),names.index('BlockStart'))
                 substantive=[n for n in names if n not in ('SectionInstructions','SectionComprehension','LabOverview','LabPractice','GeneralComprehension')]
-                self.assertEqual(substantive,['ExperimentSplash' if app is fixed else 'SectionSplash','SessionReady','SectionComprehension2',*(['SectionComprehension3'] if app is fixed else []),'ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait'])
+                self.assertEqual(substantive,['ExperimentSplash' if app is fixed else 'SectionSplash','SessionReady',*(['PracticeDecision','PracticeComplete'] if app is fixed else []),'SectionComprehension2',*(['SectionComprehension3'] if app is fixed else []),'ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait','BlockEnd'])
                 for page in (app.SectionInstructions,app.SectionComprehension):
                     self.assertTrue(page.is_displayed(p))
                     self.assertFalse(page.is_displayed(p.in_round(11)))

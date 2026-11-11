@@ -41,10 +41,10 @@ At the Main Check, every participant with positive equipment pays the Main fine;
 
 ## 5. Endogenous environment E
 
-**Fixed known threshold:** `kappa = 40`. Let `Kbar_g,T` be the six-person group's average equipment at the Main Check.
+**Fixed known threshold:** `kappa = 37`. Let `Kbar_g,T` be the six-person group's average equipment at the Main Check.
 
-- The no-fine condition is strictly `Kbar_g,T > 40`.
-- If `Kbar_g,T <= 40`, every participant with positive remaining equipment pays the Main fine.
+- The no-fine condition is strictly `Kbar_g,T > 37`.
+- If `Kbar_g,T <= 37`, every participant with positive remaining equipment pays the Main fine.
 - Participants at zero remain exempt.
 
 Keep the threshold visible on the normal decision screen as in the existing pilot.
@@ -53,7 +53,7 @@ Keep the threshold visible on the normal decision screen as in the existing pilo
 
 A uses E's economic logic with an ambiguous threshold: the no-fine condition is strictly `Kbar_g,T > realised threshold`; otherwise participants with positive equipment pay the Main fine, and participants at zero remain exempt.
 
-- **Fixed support:** integer thresholds from 33 through 47 inclusive.
+- **Fixed support:** integer thresholds from 33 through 42 inclusive.
 - **Configurable:** every A or P(A) block has its own preselected hidden threshold supplied through `session_config`. The experiment must not generate these values internally. Values may differ between blocks.
 - Hide the realised threshold during periods 1–5. Reveal it only after period-5 decisions are locked.
 - Tell participants the possible range, without probabilities over its values.
@@ -69,7 +69,7 @@ Elicit these once at the beginning of each block. The Reports page has a maximum
 
 ## 8. Public Messages environment M
 
-M retains E's economic rules and known threshold of 40. It adds no third elicitation question. After all six group members submit their start-of-block elicitation, calculate:
+M retains E's economic rules and known threshold of 37. It adds no third elicitation question. After all six group members submit their start-of-block elicitation, calculate:
 
 `public average = mean of the six own Main-Check equipment reports`.
 
@@ -89,7 +89,7 @@ When `N_zero > 0`, each participant at zero receives `rho × FinePool_g / N_zero
 
 The policy reallocates a share of fines already deducted; fine payers pay nothing extra for redistribution. No Follow-up fine enters the pool.
 
-**Configurable, current default:** `rho = 1/3`. Supply it through `session_config` and make it easy to change for pilots.
+**Configurable, current default:** `rho = 0.3`. Supply it through `session_config` and make it easy to change for pilots.
 
 ## 10. Follow-up Check
 
@@ -166,8 +166,8 @@ Important `session_config` parameters include at least:
 | Session size | 18 or 24 participants |
 | Session branch / treatment assignment | E, A, or M; determines the fixed nine-block sequence |
 | `paid_block` | Externally supplied integer 1–9 |
-| `rho` | Supplied redistribution share; current default 1/3 |
-| Ambiguity threshold sequence | Preselected integer 33–47 for every A/P(A) block, where applicable |
+| `rho` | Supplied redistribution share; current default 30% (3/10) |
+| Ambiguity threshold sequence | Preselected integer 33–42 for every A/P(A) block, where applicable |
 | Matching seed | Preferably configurable for reproducibility |
 
 Treatment assignment must not be hard-coded. This table specifies configuration responsibilities without settling unspecified key names or data structures.
@@ -183,13 +183,13 @@ If the configured number of active participants is not available, the session mu
 - Final sample size and number of sessions/triplets, following power analysis.
 - Exact participant-facing wording of expectation/plan questions.
 - Whether constrained rematching remains sufficiently simple or plain random rematching is preferable.
-- Possible later adjustment of `rho` from its current default of 1/3.
+- Possible later adjustment of `rho` from its current default of 30% (3/10).
 - Final detailed interface simplifications after laboratory pilots.
 
 ## Recalibration verification (November 2026)
 
 The current calibration is 0.10 points per squared unit retired in each period,
-E/M threshold 40, A/P(A) integer support 33–47, Follow-up fine 75, and base
+E/M threshold 37, A/P(A) integer support 33–42, Follow-up fine 75, and base
 payment €8.00 + 0.01 × selected-block wallet. No floor or cap is applied.
 
 | Benchmark | Final wallet | Base EUR payment |
@@ -211,3 +211,13 @@ Participants continue to receive substantive instructions on paper. Retained
 instruction templates and the active paired comprehension questions are updated;
 no instruction booklet or review control is reintroduced. The external printed
 document must also be revised before use with this calibration.
+
+## Pilot refinements — 11 November 2026
+
+Internal M/messages identifiers refer to the treatment now called S. Known E/S thresholds are 37; A/P(A) support is 33–42, externally configured and hidden until the existing Main reveal.
+
+After the initial admin-controlled splash and readiness barrier, participants receive one 90-second practice of the Fixed Decision interface, followed by “Il periodo di prova è concluso” and the existing comprehension flow. Practice only previews choices; it stores no real retirement, wallet or outcome.
+
+After every completed-block session barrier, BlockEnd shows the actual closing wallet, a fixed section benchmark (F 800; E/A/S 900; P(E)/P(S) 1095; P(A) 1100), and the previous anonymous other-managers’ actual closing wallets, indexed 0–4. No Main-equipment column is shown.
+
+The first substantive questionnaire page retains the purpose item and numeric ratings, replaces improvement questions with three strategy/information textareas, and requires 20 non-whitespace characters in each of its four open responses. Legacy optional improvement columns remain for data compatibility and are not collected.

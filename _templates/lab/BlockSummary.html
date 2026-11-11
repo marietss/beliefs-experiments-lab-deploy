@@ -8,24 +8,12 @@
 {{ block content }}
 <div class="interstitial-page"><main class="lab-page interstitial-card game-end-card lab-card block-group-summary">
     <h1 style="text-align: center;">Riepilogo del Blocco {{ summary_section }}.{{ player.local_block }}</h1>
+    <p class="text-center">Il tuo portafoglio è di {{ summary_wallet }} punti. Il massimo portafoglio in questa sezione era {{ summary_maximum }}.</p>
     <table class="block-feedback-table">
-        <colgroup>
-            <col style="width: 30%;">
-            <col style="width: 40%;">
-            <col style="width: 30%;">
-        </colgroup>
-        <thead><tr>
-            <th scope="col">Azienda</th>
-            <th scope="col">Attrezzatura all'accertamento principale</th>
-            <th scope="col">Portafoglio finale</th>
-        </tr></thead>
+        <thead><tr><th scope="col">Altri manager</th><th scope="col">Portafoglio</th></tr></thead>
         <tbody>
             {{ for row in summary_rows }}
-            <tr{{ if row.is_own }} class="own-outcome"{{ endif }}>
-                <th scope="row">{{ row.company }}</th>
-                <td>{{ row.main_equipment }} unità</td>
-                <td>{{ row.points }} punti</td>
-            </tr>
+            <tr><th scope="row">{{ row.manager }}</th><td>{{ row.points }} punti</td></tr>
             {{ endfor }}
         </tbody>
     </table>

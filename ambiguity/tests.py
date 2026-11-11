@@ -47,3 +47,5 @@ class PlayerBot(Bot):
             expected = 1000 - Fraction(1, 10) * (initial_retirement ** 2 + remaining ** 2) - main - (75 if remaining else 0)
             assert p.final_equipment == 0
             assert decode_fraction(p.final_block_wallet) == expected
+        if p.period == 10:
+            yield BlockEnd

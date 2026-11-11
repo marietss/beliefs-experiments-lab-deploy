@@ -59,7 +59,7 @@ def run_period(group, amounts=None):
 
 
 def main_group(branch='E', *, rho=None, equipment=None, threshold=None, own=None):
-    mapping = {'4':47,'5':33,'6':46,'7':47,'8':40,'9':33}
+    mapping = {'4':42,'5':33,'6':41,'7':42,'8':40,'9':33}
     if threshold is not None:
         mapping['7'] = threshold
     session = make_session(branch, rho=rho, thresholds=mapping if branch=='A' else None)
@@ -151,7 +151,7 @@ class PolicyBackendTests(unittest.TestCase):
         for branch in ('E','A','M'):
             for size in (18,24):
                 session=make_session(branch,size)
-                self.assertEqual(configured_rho(session.config),Fraction(1,3))
+                self.assertEqual(configured_rho(session.config),Fraction(3,10))
                 for r in (1,5,10,11,20,21,30):
                     ss=subsession(session,r)
                     self.assertEqual(ss.underlying_branch,branch)
@@ -159,10 +159,10 @@ class PolicyBackendTests(unittest.TestCase):
                         self.assertEqual((p.global_block,p.local_block,p.period),
                                          (rules.global_block_for_round(r,'P(Z)'),rules.local_block_for_round(r),rules.period_for_round(r)))
                         self.assertEqual(p.underlying_branch,branch)
-                        self.assertEqual(p.group.rho,'1/3')
+                        self.assertEqual(p.group.rho,'3/10')
                 db.commit();db.expire_all()
-                self.assertEqual(session.config['rho_exact'],'1/3')
-                self.assertEqual(policy.resolved_config(subsession(session))['rho'],'1/3')
+                self.assertEqual(session.config['rho_exact'],'3/10')
+                self.assertEqual(policy.resolved_config(subsession(session))['rho'],'3/10')
 
     def test_wrong_exact_size_rejected(self):
         for count in (6,12,24,30):
@@ -171,7 +171,7 @@ class PolicyBackendTests(unittest.TestCase):
             db.rollback()
 
     def test_branch_rho_threshold_snapshot_and_standalone_guard(self):
-        for change in ({'branch':'M'}, {'rho':1}, {'ambiguity_thresholds':{'4':41,'5':43,'6':45,'7':46,'8':40,'9':33}}):
+        for change in ({'branch':'M'}, {'rho':1}, {'ambiguity_thresholds':{'4':41,'5':38,'6':41,'7':41,'8':40,'9':33}}):
             session=make_session('A' if 'ambiguity_thresholds' in change else 'E')
             session.config={**session.config,**change}
             with self.assertRaisesRegex(ValueError,'configuration changed|agree'):
@@ -181,7 +181,7 @@ class PolicyBackendTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'standalone'):policy.validated_session(subsession(session))
 
     def test_A_complete_map_required_and_no_fallback(self):
-        for mapping in ({}, {'7':47,'8':40,'9':50}):
+        for mapping in ({}, {'7':42,'8':40,'9':50}):
             with self.assertRaisesRegex(ValueError,'exactly string keys'):
                 make_session('A',thresholds=mapping)
             db.rollback()
@@ -189,19 +189,19 @@ class PolicyBackendTests(unittest.TestCase):
     def test_six_locked_decisions_before_fines_or_transfers(self):
         group=main_group()
         for p in group.get_players()[:5]:
-            p.retirement=60;policy.Decision.before_next_page(p,False)
+            p.retirement=63;policy.Decision.before_next_page(p,False)
         with self.assertRaisesRegex(ValueError,'six decisions'):policy.settle_period(group)
         self.assertFalse(group.settlement_complete)
         self.assertEqual((group.fine_pool,group.redistributed_pool),('',''))
         self.assertTrue(all(not p.main_fine and not p.own_transfer for p in group.get_players()))
-        p=group.get_players()[-1];p.retirement=60;policy.Decision.before_next_page(p,False)
+        p=group.get_players()[-1];p.retirement=63;policy.Decision.before_next_page(p,False)
         policy.settle_period(group)
-        self.assertEqual(group.equipment_total,240)
+        self.assertEqual(group.equipment_total,222)
         self.assertTrue(group.main_enforcement_applied)
 
     def test_E_M_and_A_strict_equality_above_below(self):
         for branch in ('E','M','A'):
-            for threshold in ((33,40,47) if branch=='A' else (40,)):
+            for threshold in ((33,40,42) if branch=='A' else (37,)):
                 for delta in (-1,0,1):
                     equipment=[threshold]*5+[threshold+delta]
                     group=main_group(branch,equipment=equipment,threshold=threshold)
@@ -215,14 +215,14 @@ class PolicyBackendTests(unittest.TestCase):
 
     def test_one_recipient_no_second_payer_charge(self):
         group=main_group(equipment=[0,40,40,40,40,40])
-        self.assertEqual((decode_fraction(group.fine_pool),group.recipient_count,decode_fraction(group.redistributed_pool)),(975,1,325))
+        self.assertEqual((decode_fraction(group.fine_pool),group.recipient_count,decode_fraction(group.redistributed_pool)),(975,1,Fraction(585,2)))
         for p in group.get_players():
             fine=decode_fraction(p.main_fine);transfer=decode_fraction(p.own_transfer)
             before=decode_fraction(p.wallet_before);cost=decode_fraction(p.voluntary_cost)
             self.assertEqual(decode_fraction(p.wallet_after_main_fine),before-cost-fine)
             self.assertEqual(decode_fraction(p.wallet_after),before-cost-fine+transfer)
-            self.assertEqual(transfer,325 if p.voluntary_equipment_after==0 else 0)
-        self.assertEqual(sum(decode_fraction(p.own_transfer) for p in group.get_players()),325)
+            self.assertEqual(transfer,Fraction(585,2) if p.voluntary_equipment_after==0 else 0)
+        self.assertEqual(sum(decode_fraction(p.own_transfer) for p in group.get_players()),Fraction(585,2))
 
     def test_multiple_recipients_repeating_fraction_and_rho_boundaries(self):
         for rho in (0,Fraction(1,3),1):
@@ -233,7 +233,7 @@ class PolicyBackendTests(unittest.TestCase):
             self.assertEqual(sum(decode_fraction(p.own_transfer) for p in group.get_players()),rho*pool)
             for p in group.get_players()[:3]:
                 self.assertEqual(decode_fraction(p.own_transfer),rho*pool/3)
-        group=main_group(equipment=[0,0,0,40,40,41])
+        group=main_group(rho=Fraction(1,3),equipment=[0,0,0,40,40,41])
         self.assertEqual(group.get_players()[0].own_transfer,'1171/18')
 
     def test_no_enforcement_no_pool_despite_recipient(self):
@@ -244,8 +244,8 @@ class PolicyBackendTests(unittest.TestCase):
         self.assertTrue(all(p.own_transfer=='0/1' for p in group.get_players()))
 
     def test_fines_but_no_recipients(self):
-        group=main_group(equipment=[40]*6)
-        self.assertEqual(group.fine_pool,'1170/1')
+        group=main_group(equipment=[37]*6)
+        self.assertEqual(group.fine_pool,'1161/1')
         self.assertEqual((group.recipient_count,group.redistributed_pool),(0,'0/1'))
         self.assertTrue(all(p.own_transfer=='0/1' for p in group.get_players()))
 
@@ -264,8 +264,8 @@ class PolicyBackendTests(unittest.TestCase):
             run_period(row)
             recipient=initial.in_round(r)
             self.assertTrue(recipient.decision_submitted and recipient.period_settled)
-            self.assertEqual(decode_fraction(recipient.wallet_before),325)
-            self.assertEqual(decode_fraction(recipient.wallet_after),325)
+            self.assertEqual(decode_fraction(recipient.wallet_before),Fraction(585,2))
+            self.assertEqual(decode_fraction(recipient.wallet_after),Fraction(585,2))
             self.assertEqual(row.fine_pool,'0/1')
             self.assertEqual(row.redistributed_pool,'0/1')
             self.assertTrue(all(p.own_transfer=='0/1' for p in row.get_players()))
@@ -274,7 +274,7 @@ class PolicyBackendTests(unittest.TestCase):
             self.assertEqual(decode_fraction(p.follow_up_fine),75)
             self.assertEqual(decode_fraction(p.forced_retirement_cost),160)
         self.assertEqual(main.fine_pool,'975/1')
-        self.assertEqual(main.redistributed_pool,'325/1')
+        self.assertEqual(main.redistributed_pool,'585/2')
 
     def test_actual_game_can_end_with_negative_fine_payer_wallet(self):
         session=make_session();ready(session)
@@ -290,8 +290,8 @@ class PolicyBackendTests(unittest.TestCase):
         run_period(group,[100,60,60,60,60,60])
         recipient=group.get_players()[0]
         self.assertEqual(decode_fraction(recipient.wallet_after_main_fine),-1100)
-        self.assertEqual(decode_fraction(recipient.wallet_after),-775)
-        self.assertEqual(decode_fraction(recipient.own_transfer),325)
+        self.assertEqual(decode_fraction(recipient.wallet_after),Fraction(-1615,2))
+        self.assertEqual(decode_fraction(recipient.own_transfer),Fraction(585,2))
         self.assertLess(decode_fraction(group.get_players()[1].wallet_after),0)
 
     def test_main_idempotence_reload_and_tamper_detection(self):
@@ -309,7 +309,7 @@ class PolicyBackendTests(unittest.TestCase):
         import endogenous,ambiguity,messages
         for branch,app in [('E',endogenous),('A',ambiguity),('M',messages)]:
             equipment=[0,20,40,60,70,79]
-            pg=main_group(branch,equipment=equipment,threshold=47)
+            pg=main_group(branch,equipment=equipment,threshold=42)
             session=create_session(f'dev_lab_{app.__name__}_18',num_participants=18)
             first=app.Subsession.objects_get(session=session,round_number=1)
             app.SessionReady.after_all_players_arrive(first)
@@ -374,7 +374,7 @@ class PolicyBackendTests(unittest.TestCase):
                     matrix=policy.stored_matrix(subsession(session),global_block)
                     for r in range(first,first+10):
                         self.assertEqual(policy._actual_matrix(subsession(session,r)),matrix)
-                        self.assertEqual(policy.threshold_for_round(subsession(session,r)),{7:47,8:40,9:33}[global_block])
+                        self.assertEqual(policy.threshold_for_round(subsession(session,r)),{7:42,8:40,9:33}[global_block])
                     finish_block(session,local)
                     if local<3:
                         self.assertEqual(select.call_args.args[2],global_block+1)
@@ -388,7 +388,7 @@ class PolicyBackendTests(unittest.TestCase):
                 self.assertTrue(subsession(session,30).block_barrier_complete)
 
     def test_waitpages_and_unfinished_session_cannot_rematch(self):
-        self.assertEqual([p.__name__ for p in policy.page_sequence],['SectionSplash','SessionReady','SectionComprehension','SectionComprehension2','ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait'])
+        self.assertEqual([p.__name__ for p in policy.page_sequence],['SectionSplash','SessionReady','SectionComprehension','SectionComprehension2','ComprehensionWait','FirstBlockSplash','BlockStart','BlockStartWait','Reports','ReportsWait','Decision','PeriodWait','MainCheckWait','Result','ResultWait','BlockEndWait','BlockEnd'])
         for page in (policy.SessionReady,policy.ComprehensionWait,policy.BlockStartWait,policy.ReportsWait,policy.PeriodWait,policy.MainCheckWait,policy.ResultWait,policy.BlockEndWait):
             self.assertTrue(issubclass(page,WaitPage))
         self.assertTrue(policy.SessionReady.wait_for_all_groups and policy.BlockEndWait.wait_for_all_groups)
@@ -435,3 +435,72 @@ class PolicyAdditionalBoundaryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'used destination'):policy._install_block(source,8)
         self.assertFalse(subsession(session,11).grouping_installed)
         self.assertEqual(set(session.vars[policy.MATCHING_KEY]['matrices']),{'7'})
+
+
+class ThirtyPercentPolicyTests(unittest.TestCase):
+    """Exact current-default economics; no rounded display inputs enter settlement."""
+    def tearDown(self): db.rollback()
+
+    def test_all_production_and_dev_defaults_are_exactly_thirty_percent(self):
+        import lab_production
+        from otree.session import SESSION_CONFIGS_DICT
+        from lab_config import DEFAULT_RHO
+        self.assertEqual(DEFAULT_RHO,Fraction(3,10))
+        for config in lab_production.templates():
+            self.assertEqual((config['rho'],config['rho_exact']),(0.3,'3/10'))
+            self.assertEqual(configured_rho(config),Fraction(3,10))
+        for name,config in SESSION_CONFIGS_DICT.items():
+            if name.startswith('dev_lab_'):
+                self.assertEqual((config['rho'],config['rho_exact']),(0.3,'3/10'),name)
+        # Production sessions inherit 30% when the external study fields omit rho.
+        from test_lab_production import register_templates, parameters
+        register_templates()
+        for branch in ('E','A','M'):
+            for size in (18,24):
+                supplied=parameters(branch,size)
+                supplied.pop('rho');supplied.pop('rho_exact')
+                session=create_session(f'lab_{branch}_{size}',num_participants=size,
+                                       modified_session_config_fields=supplied)
+                self.assertEqual((session.config['rho'],session.config['rho_exact']),(0.3,'3/10'))
+                self.assertEqual(session.vars[lab_production.PRODUCTION_KEY]['rho'],'3/10')
+                db.rollback()
+        self.assertEqual(configured_rho({'rho':0.3,'rho_exact':'3/10'}),Fraction(3,10))
+        with self.assertRaises(ValueError):configured_rho({'rho':0.3,'rho_exact':'1/3'})
+
+    def test_one_zero_recipient_gets_thirty_percent_of_actual_main_fines_in_E_S_A(self):
+        for branch in ('E','M','A'):
+            group=main_group(branch,equipment=[0,40,40,40,40,40])
+            self.assertEqual(group.rho,'3/10')
+            self.assertEqual(decode_fraction(group.fine_pool),975)
+            self.assertEqual(decode_fraction(group.redistributed_pool),Fraction(585,2))
+            self.assertEqual(group.recipient_count,1)
+            self.assertEqual([decode_fraction(p.own_transfer) for p in group.get_players()],
+                             [Fraction(585,2),0,0,0,0,0])
+            db.rollback()
+
+    def test_multiple_zero_recipients_share_thirty_percent_equally(self):
+        group=main_group(equipment=[0,0,40,40,40,40])
+        self.assertEqual(decode_fraction(group.fine_pool),780)
+        self.assertEqual(decode_fraction(group.redistributed_pool),234)
+        self.assertEqual([decode_fraction(p.own_transfer) for p in group.get_players()],[117,117,0,0,0,0])
+        fractional=main_group(equipment=[0,0,0,40,40,41])
+        self.assertEqual(decode_fraction(fractional.redistributed_pool),Fraction(3513,20))
+        self.assertEqual([p.own_transfer for p in fractional.get_players()[:3]],['1171/20']*3)
+
+    def test_no_fines_or_no_eligible_firms_never_manufactures_transfers(self):
+        for equipment,pool in [([0,100,100,100,100,100],0),([37]*6,1161)]:
+            group=main_group(equipment=equipment)
+            self.assertEqual(decode_fraction(group.fine_pool),pool)
+            self.assertEqual(decode_fraction(group.redistributed_pool),0)
+            self.assertTrue(all(decode_fraction(p.own_transfer)==0 for p in group.get_players()))
+
+    def test_follow_up_fines_never_enter_the_thirty_percent_pool(self):
+        main=main_group(equipment=[0,40,40,40,40,40])
+        for r in range(6,11):
+            group=subsession(main.session,r).get_groups()[0];run_period(group)
+        self.assertEqual(sum(decode_fraction(p.follow_up_fine) for p in group.get_players()),375)
+        self.assertEqual(decode_fraction(group.fine_pool),0)
+        self.assertEqual(decode_fraction(group.redistributed_pool),0)
+        self.assertTrue(all(decode_fraction(p.own_transfer)==0 for p in group.get_players()))
+        self.assertEqual((main.fine_pool,main.redistributed_pool),('975/1','585/2'))
+        self.assertEqual(decode_fraction(group.get_players()[0].wallet_after),Fraction(585,2))

@@ -205,7 +205,7 @@ class FixedUITests(unittest.TestCase):
         from otree.asgi import app
         from starlette.testclient import TestClient
         with TestClient(app) as client:
-            for name in ('vendor/chart.umd-4.4.8.js', 'charts.js', 'decision.js', 'interface.css'):
+            for name in ('vendor/chart.umd-4.4.8.js', 'comparable-charts.js', 'decision.js', 'interface.css'):
                 response = client.get('/static/fixed/' + name)
                 self.assertEqual(response.status_code, 200, name)
                 self.assertEqual(response.content, Path('_static/fixed', name).read_bytes())

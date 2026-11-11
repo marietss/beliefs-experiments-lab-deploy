@@ -5,7 +5,7 @@ import lab_instructions as instructions
 from otree.api import Bot, Submission, SubmissionMustFail
 from otree.database import db
 from lab_persistence import decode_fraction
-from . import ExperimentSplash, FirstBlockSplash, SectionComprehension, SectionComprehension2, SectionComprehension3, BlockStart, Reports, Decision, Result, BlockEnd
+from . import PracticeDecision, PracticeComplete, ExperimentSplash, FirstBlockSplash, SectionComprehension, SectionComprehension2, SectionComprehension3, BlockStart, Reports, Decision, Result, BlockEnd
 
 
 class PlayerBot(Bot):
@@ -13,6 +13,8 @@ class PlayerBot(Bot):
         p = self.player
         if p.round_number == 1:
             yield Submission(ExperimentSplash, timeout_happened=True, check_html=False)
+            yield Submission(PracticeDecision, timeout_happened=True, check_html=False)
+            yield PracticeComplete
             for page in (SectionComprehension, SectionComprehension2, SectionComprehension3):
                 yield SubmissionMustFail(page, {})
                 answers = instructions.correct_answers(p)
@@ -40,3 +42,5 @@ class PlayerBot(Bot):
             assert decode_fraction(p.final_block_wallet) == (
                 Fraction(0) if mode == 0 else Fraction('-279.7') if mode == 1 else Fraction(-300)
             )
+        if p.period == 10:
+            yield BlockEnd

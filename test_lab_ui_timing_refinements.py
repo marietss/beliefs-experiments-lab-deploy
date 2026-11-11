@@ -156,7 +156,7 @@ class RefinementTests(unittest.TestCase):
                         self.assertNotIn(wait_page_http_header,responses[player.id].headers)
                         self.assertIn('Accertamento principale — Periodo 5',responses[player.id].text)
                         k=100-d
-                        threshold=session.config['ambiguity_thresholds'][str(player.global_block)] if app.__name__=='ambiguity' or branch=='A' else 40
+                        threshold=session.config['ambiguity_thresholds'][str(player.global_block)] if app.__name__=='ambiguity' or branch=='A' else 37
                         enforced=app.__name__=='fixed' or total<=6*threshold
                         self.assertEqual(decode_fraction(player.main_fine),175+Fraction(k,2) if enforced and k else 0)
                         if app.__name__=='ambiguity' or branch=='A':
@@ -165,8 +165,8 @@ class RefinementTests(unittest.TestCase):
                             self.assertTrue(config['thresholdRevealed'])
                         if app.__name__=='policy':
                             context=app.Result.vars_for_template(player)
-                            self.assertEqual(context['fine_pool'], '585' if i==2 else '1170' if i==0 else '0')
-                            self.assertEqual(context['own_transfer'],'65' if i==2 and k==0 else '0')
+                            self.assertEqual(context['fine_pool'], '585' if i==2 else '1170' if i==0 and branch=='A' else '0')
+                            self.assertEqual(context['own_transfer'],'58.50' if i==2 and k==0 else '0')
                         if app.__name__=='messages' or branch=='M':
                             self.assertEqual(lab_reports.read_public_plans(player),[50]*6)
                 for r in range(1,11): self.assertEqual(member_matrix(r),identities)
@@ -190,8 +190,8 @@ class RefinementTests(unittest.TestCase):
                 last=self.post(end_responses[-1][1])
                 self.assertTrue(end.block_barrier_complete)
                 self.assertTrue(helpers.subsession(session,11).grouping_installed)
-                self.assertNotIn('Riepilogo del Blocco',last.text)
-                self.assertEqual(end.get_players()[-1].participant._current_page_name, 'BlockStart')
+                self.assertIn('Riepilogo del Blocco',last.text)
+                self.assertEqual(end.get_players()[-1].participant._current_page_name, 'BlockEnd')
                 self.assertEqual(member_matrix(5),identities)
                 self.assertNotEqual(member_matrix(11),identities)
                 db.rollback()
@@ -220,8 +220,8 @@ class RefinementTests(unittest.TestCase):
 
     def test_reordering_preserves_every_question_option_feedback_and_correct_meaning(self):
         from lab_printed_questions import PRINTED_QUESTIONS
-        # Frozen from the validated starting working tree, independent of option order/letters.
-        expected = {'F': '6a09f33d41d8bd06aa93fbe8d00925957fb96dfa38c943fa6fb05d65b60ba4ce', 'E': '488b2d5a4382e83781e7ad9062a59037ea1cf9635b1e779d8e732b25fd35a0cf', 'A': 'c760bdb780038fa3e6a0f44c4c07971dd61f552dd79a54fd7bf730292614cf9c', 'M': 'adae03738d23e7ee06490053a6a0b60a88333f1635630daff4850bcf49ddfc5a', 'P': '9bb6be1444a014b6090deb6eea312ac21efc64bfd6a1a0adeaca6e6553a5b45e'}
+        # Frozen after the requested 37 / 33–42 threshold update, independent of option order/letters.
+        expected = {'F': '6a09f33d41d8bd06aa93fbe8d00925957fb96dfa38c943fa6fb05d65b60ba4ce', 'E': '97e144756ae05d86344b573f5ff6c5a76884e30d5c5a3a86221433d53ba5eb89', 'A': '0953acbe145c53e878f3cd0221f8cca4c31d5163b8c9fbef94601f76c9e82f54', 'M': '62329bb51a2df0f6ff1e27683ca64bef675800a6c9c08c788679a900b9e3f9df', 'P': 'a40051e22d17691b0083dea625af18986e4d2b4c7edbcad4d2975108a9afbd7f'}
         for section, rows in PRINTED_QUESTIONS.items():
             semantic = [dict(id=q['id'], prompt=q['prompt'], feedback=q['feedback'],
                 options=sorted(label for _, label in q['options']),

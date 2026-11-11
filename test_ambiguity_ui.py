@@ -33,7 +33,7 @@ def chart_config(html):
 def assert_blind(test, html):
     config = chart_config(html)
     test.assertEqual(config['thresholdLow'], 33)
-    test.assertEqual(config['thresholdHigh'], 47)
+    test.assertEqual(config['thresholdHigh'], 42)
     test.assertFalse(config['thresholdRevealed'])
     test.assertNotIn('threshold', config)
     test.assertNotIn('ambiguity_thresholds', html)
@@ -60,13 +60,13 @@ class AmbiguityUITests(unittest.TestCase):
     def test_start_reports_and_decisions_context_allowlist(self):
         p=self.group().get_players()[0]
         context=ambiguity.BlockStart.vars_for_template(p)
-        self.assertEqual(context, dict(support_low=33,support_high=47,threshold_revealed=False))
-        self.assertNotIn('threshold',context)  # Public support may include realized value 47.
+        self.assertEqual(context, dict(support_low=33,support_high=42,threshold_revealed=False))
+        self.assertNotIn('threshold',context)  # Public support may include realized value 42.
         reports(p.group)
         context=ambiguity.Decision.vars_for_template(p)
         self.assertNotIn('threshold',context)
         self.assertNotIn('ambiguity_thresholds',json.dumps(context))
-        self.assertNotIn('threshold',context)  # Public support may include realized value 47.
+        self.assertNotIn('threshold',context)  # Public support may include realized value 42.
         html=render_page(ambiguity.Decision,p)
         config=assert_blind(self,html)
         self.assertEqual(config['groupHistory'],[])
@@ -96,7 +96,7 @@ class AmbiguityUITests(unittest.TestCase):
                 self.assertNotIn('threshold',context)
                 assert_blind(self,render_page(ambiguity.Decision,p))
                 error=ambiguity.Decision.error_message(p,dict(retirement=101))
-                self.assertNotIn('47',error)
+                self.assertNotIn('42',error)
             decide(group)
             if period==5:
                 # Six locks are still insufficient until the WaitPage settles.
@@ -108,21 +108,21 @@ class AmbiguityUITests(unittest.TestCase):
 
     def test_reveal_current_only_reload_and_post_main_visibility(self):
         for period in range(1,6):
-            run_period(self.group(period),[53]*6 if period==5 else None)
+            run_period(self.group(period),[58]*6 if period==5 else None)
         p=self.group(5).get_players()[0]
         html=render_page(ambiguity.Result,p)
         context=ambiguity.Result.vars_for_template(p)
-        self.assertEqual(context['threshold'],47)
+        self.assertEqual(context['threshold'],42)
         config=chart_config(html)
         self.assertTrue(config['thresholdRevealed'])
-        self.assertEqual(config['threshold'],47)
-        self.assertIn('id="main-threshold">47 unità',html)
-        self.assertIn('id="group-mean">47 unità',html)
+        self.assertEqual(config['threshold'],42)
+        self.assertIn('id="main-threshold">42 unità',html)
+        self.assertIn('id="group-mean">42 unità',html)
         self.assertIn('id="target-satisfied">No',html)
         self.assertIn('id="main-enforcement">Sì',html)
-        self.assertIn('id="main-fine">198.50 punti',html)
-        self.assertIn('strettamente maggiore di 47',html)
-        self.assertNotIn('at least 47',html)
+        self.assertIn('id="main-fine">196 punti',html)
+        self.assertIn('strettamente maggiore di 42',html)
+        self.assertNotIn('at least 42',html)
         self.assertNotIn('ambiguity_thresholds',html)
         self.assertNotIn('49',json.dumps({k:v for k,v in config.items() if 'threshold' in k.lower()}))
         self.assertEqual(set(k for k in config if 'threshold' in k.lower()),
@@ -132,7 +132,7 @@ class AmbiguityUITests(unittest.TestCase):
         self.assertEqual(html,render_page(ambiguity.Result,p))
         self.assertEqual(before,(p.wallet_after,p.group.settlement_record))
         later=render_page(ambiguity.Decision,p.in_round(6))
-        self.assertEqual(chart_config(later)['threshold'],47)
+        self.assertEqual(chart_config(later)['threshold'],42)
         # Even a stale period-5 Decision request remains blind.
         assert_blind(self,render_page(ambiguity.Decision,p))
 
@@ -217,16 +217,27 @@ class AmbiguityHTTPSecrecyTests(unittest.TestCase):
                 if period==5 and index<5:
                     self.assertFalse(active.settlement_complete)
                     self.assertNotIn('ambiguity_thresholds',bot.html)
+            if period==5:
+                self.assertTrue(all(bot.on_wait_page() for bot in selected))
+                self.assertFalse(any(g.settlement_complete for g in subsession(session,5).get_groups()))
+                for other in subsession(session).get_groups()[1:]:
+                    other_bots=[by_code[p.participant.code] for p in other.get_players()]
+                    for bot in other_bots:
+                        for _ in range(2):submit(bot)
+                    for r in range(1,5):
+                        for bot in other_bots:submit(bot)  # Decision
+                        for bot in other_bots:submit(bot)  # Result
+                    for bot in other_bots:submit(bot)  # P5 Decision; session barrier
             for bot in selected:
                 self.assertFalse(bot.on_wait_page())
                 if period==5:
                     self.assertTrue(active.settlement_complete)
-                    self.assertEqual(chart_config(bot.html)['threshold'],47)
+                    self.assertEqual(chart_config(bot.html)['threshold'],42)
                     self.assertNotIn('ambiguity_thresholds',bot.html)
                 else:
                     assert_blind(self,bot.html)
                 submit(bot)  # stored Result -> next Decision
         for bot in selected:
             self.assertFalse(bot.on_wait_page())
-            self.assertEqual(chart_config(bot.html)['threshold'],47)
-        self.assertFalse(subsession(session,5).get_groups()[1].settlement_complete)
+            self.assertEqual(chart_config(bot.html)['threshold'],42)
+        self.assertTrue(all(g.settlement_complete for g in subsession(session,5).get_groups()))

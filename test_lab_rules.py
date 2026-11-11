@@ -132,16 +132,16 @@ class MainEnforcementTests(unittest.TestCase):
 
     def test_e_m_strict_exact_total_comparison(self):
         for branch in ('E', 'M'):
-            # Means 239/6 < 40, 240/6 == 40, and 241/6 > 40.
-            for total, expected in ((0, True), (239, True), (240, True),
-                                    (241, False), (600, False)):
+            # Means 221/6 < 37, 222/6 == 37, and 223/6 > 37.
+            for total, expected in ((0, True), (221, True), (222, True),
+                                    (223, False), (600, False)):
                 with self.subTest(branch=branch, total=total):
                     self.assertEqual(rules.main_enforcement_applies(
                         branch, group_total=total,
                     ), expected)
 
     def test_ambiguity_external_support_and_strict_comparison(self):
-        for threshold in range(33, 48):
+        for threshold in range(33, 43):
             for difference, expected in ((-1, True), (0, True), (1, False)):
                 with self.subTest(threshold=threshold, difference=difference):
                     self.assertEqual(rules.main_enforcement_applies(
@@ -149,16 +149,16 @@ class MainEnforcementTests(unittest.TestCase):
                         ambiguity_threshold=threshold,
                     ), expected)
 
-    def test_a_at_40_matches_e_m(self):
-        for total in (0, 239, 240, 241, 600):
+    def test_a_at_37_matches_e_m(self):
+        for total in (0, 221, 222, 223, 600):
             actual = rules.main_enforcement_applies(
-                'A', group_total=total, ambiguity_threshold=40,
+                'A', group_total=total, ambiguity_threshold=37,
             )
             for branch in ('E', 'M'):
                 self.assertEqual(actual, rules.main_enforcement_applies(branch, group_total=total))
 
     def test_invalid_ambiguity_thresholds_and_unexpected_overrides(self):
-        for value in (None, 32, 48, True, False, 40.0, '40', Decimal(40)):
+        for value in (None, 32, 43, True, False, 40.0, '40', Decimal(40)):
             with self.subTest(value=value):
                 with self.assertRaisesRegex(ValueError, 'ambiguity_threshold'):
                     rules.main_enforcement_applies('A', group_total=240, ambiguity_threshold=value)

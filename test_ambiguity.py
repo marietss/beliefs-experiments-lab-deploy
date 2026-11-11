@@ -16,7 +16,7 @@ import ambiguity
 import endogenous
 
 
-MAP = {'4': 47, '5': 33, '6': 46, '7': 47, '8': 40, '9': 33}
+MAP = {'4': 42, '5': 33, '6': 41, '7': 42, '8': 40, '9': 33}
 
 
 def make_session(size=18, thresholds=None, **overrides):
@@ -68,7 +68,7 @@ class AmbiguityBackendTests(unittest.TestCase):
     def tearDown(self):
         db.rollback()
 
-    def main_group(self, k=47):
+    def main_group(self, k=42):
         session = make_session(thresholds={**MAP, '4': k})
         ready(session)
         for r in range(1, 5):
@@ -94,9 +94,9 @@ class AmbiguityBackendTests(unittest.TestCase):
             db.rollback()
 
     def test_full_production_threshold_map_required_before_play(self):
-        bad = [None, {}, {'4': 47, '5': 40, '6': 50},
+        bad = [None, {}, {'4': 42, '5': 40, '6': 50},
                {**MAP, '4': True}, {**MAP, '4': 32}, {**MAP, '4': 48},
-               {**MAP, '4': 47.0}, {**MAP, '10': 47}]
+               {**MAP, '4': 42.0}, {**MAP, '10': 42}]
         for mapping in bad:
             with self.assertRaisesRegex(ValueError, 'ambiguity_thresholds'):
                 if mapping is None:
@@ -120,13 +120,13 @@ class AmbiguityBackendTests(unittest.TestCase):
         before = dict(session.vars[ambiguity.THRESHOLDS_KEY])
         ambiguity.creating_session(subsession(session))
         self.assertEqual(before, session.vars[ambiguity.THRESHOLDS_KEY])
-        session.config = {**session.config, 'ambiguity_thresholds': {**MAP, '4': 46}}
+        session.config = {**session.config, 'ambiguity_thresholds': {**MAP, '4': 41}}
         with self.assertRaisesRegex(ValueError, 'configuration changed'):
             ambiguity.threshold_for_round(subsession(session))
         self.assertEqual(before, session.vars[ambiguity.THRESHOLDS_KEY])
 
     def test_all_support_values_exact_equality_enforces(self):
-        for k in range(33, 48):
+        for k in range(33, 43):
             with self.subTest(k=k):
                 group = self.main_group(k)
                 run_period(group, [100 - k] * 6)
@@ -139,7 +139,7 @@ class AmbiguityBackendTests(unittest.TestCase):
                     self.assertEqual(decode_fraction(p.main_fine), Fraction(175) + Fraction(k, 2))
 
     def test_above_by_one_unit_and_below_for_33_40_47(self):
-        for k in (33, 40, 47):
+        for k in (33, 40, 42):
             for delta in (-1, 1):
                 with self.subTest(k=k, delta=delta):
                     group = self.main_group(k)
@@ -161,8 +161,8 @@ class AmbiguityBackendTests(unittest.TestCase):
             self.assertEqual(decode_fraction(p.main_fine), rules.main_fine(own))
 
     def test_enforcement_independent_of_display_rounding(self):
-        group = self.main_group(47)
-        decide(group, [53] * 5 + [52])  # 283/6, strictly above 47
+        group = self.main_group(42)
+        decide(group, [53] * 5 + [52])  # 283/6, strictly above 42
         with patch('lab_presentation.mean_display', return_value='0'):
             ambiguity.settle_period(group)
             self.assertFalse(group.main_enforcement_applied)
@@ -188,10 +188,10 @@ class AmbiguityBackendTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'before group settlement'):
             ambiguity.Result.vars_for_template(players[0])
         ambiguity.PeriodWait.after_all_players_arrive(group)
-        self.assertEqual(ambiguity.Result.vars_for_template(players[0])['threshold'], 47)
+        self.assertEqual(ambiguity.Result.vars_for_template(players[0])['threshold'], 42)
 
     def test_main_replay_and_reload_do_not_change_outcomes_or_reveal(self):
-        group = self.main_group(46)
+        group = self.main_group(41)
         run_period(group, [54] * 6)
         p = group.get_players()[0]
         context = ambiguity.Result.vars_for_template(p)
