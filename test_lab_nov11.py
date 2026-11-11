@@ -136,7 +136,7 @@ class NovemberTests(unittest.TestCase):
                 assert(table.querySelectorAll('thead th').length===2,'two columns');
                 assert(table.querySelectorAll('tbody tr').length===5,'five actual other managers');
                 assert([...table.querySelectorAll('thead th')].map(e=>e.textContent).join('|')==='Manager|Portafoglio alla fine del blocco','exact headings');
-                assert([...table.querySelectorAll('tbody th')].map(e=>e.textContent).join('|')===[1,2,3,4,5].map(i=>'Altro manager '+i).join('|'),'anonymous peer labels');
+                assert([...table.querySelectorAll('tbody th')].map(e=>e.textContent).join('|')===Array(5).fill('Altro manager').join('|'),'anonymous peer labels');
                 assert(document.documentElement.scrollWidth<=innerWidth,'no horizontal overflow');
             """,width,height,screenshot=f'/tmp/nov11-summary-{width}x{height}.png')
 
@@ -158,7 +158,7 @@ class NovemberTests(unittest.TestCase):
             self.assertEqual(context['summary_wallet'],points(decode_fraction(p.final_block_wallet)))
             response=self.open_page(p,app.BlockEnd)
             self.assertIn('Il tuo portafoglio alla fine del blocco è di <strong>'+context['summary_wallet']+' punti</strong>.',response.text)
-            self.assertIn('Altro manager 1',response.text)
+            self.assertEqual(response.text.count('>Altro manager</th>'),5)
             self.assertNotIn("Attrezzatura all'accertamento principale",response.text)
             self.assertNotIn('main_equipment',response.text)
             self.assertEqual(app.page_sequence[-2:],[app.BlockEndWait,app.BlockEnd])

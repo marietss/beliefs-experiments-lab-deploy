@@ -14,7 +14,7 @@
         <thead><tr><th scope="col">Manager</th><th scope="col">Portafoglio alla fine del blocco</th></tr></thead>
         <tbody>
             {{ for row in summary_rows }}
-            <tr><th scope="row">Altro manager {{ row.manager }}</th><td>{{ row.points }} punti</td></tr>
+            <tr><th scope="row">Altro manager</th><td>{{ row.points }} punti</td></tr>
             {{ endfor }}
         </tbody>
     </table>
